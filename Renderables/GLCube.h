@@ -17,6 +17,8 @@ public:
 	void		Render();
 	void		Kill();
 
+	void		SetPosition(const glm::vec3& loc);
+
 private:
 	GLCube(const GLCube&);
 	void operator=(const GLCube&);
@@ -37,6 +39,8 @@ private:
 	GLint		hWorld;
 	GLint		hView;
 	GLint		hProj;
+
+	glm::vec3	vecPosition;		// World Space Position
 
 	glm::mat4   matWorld;
 	glm::mat4	matView;

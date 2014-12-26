@@ -12,10 +12,10 @@ GLCube::GLCube()
 	vertices[1] = VertexPC(glm::vec3(1,-1,1), glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));
 	vertices[2] = VertexPC(glm::vec3(1,1,1), glm::vec4(0.0f, 0.0f, 1.0f, 1.0f));
 	vertices[3] = VertexPC(glm::vec3(-1,1,1), glm::vec4(1.0f, 1.0f, 0.0f, 1.0f));
-	vertices[4] = VertexPC(glm::vec3(-1,-1,-1), glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
-	vertices[5] = VertexPC(glm::vec3(1,-1,-1), glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));
-	vertices[6] = VertexPC(glm::vec3(1,1,-1), glm::vec4(0.0f, 0.0f, 1.0f, 1.0f));
-	vertices[7] = VertexPC(glm::vec3(-1,1,-1), glm::vec4(1.0f, 1.0f, 0.0f, 1.0f));
+	vertices[4] = VertexPC(glm::vec3(-1,-1,-1), glm::vec4(1.0f, 1.0f, 0.0f, 1.0f));
+	vertices[5] = VertexPC(glm::vec3(1,-1,-1), glm::vec4(0.0f, 0.0f, 1.0f, 1.0f));
+	vertices[6] = VertexPC(glm::vec3(1,1,-1), glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));
+	vertices[7] = VertexPC(glm::vec3(-1,1,-1), glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
 
 	// Index data ( 6 faces = 12 triangles = 36 indices )
 
@@ -87,6 +87,12 @@ void GLCube::SetupViewProjMatrix()
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
+void GLCube::SetPosition(const glm::vec3& loc)
+{
+	vecPosition = loc;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
 void GLCube::Init()
 {
 	// Create shader object
@@ -120,13 +126,28 @@ void GLCube::Init()
 	SetupViewProjMatrix();
 
 	glEnable(GL_DEPTH_TEST);
+	
+	// WIREFRAME MODE!
+	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
 void GLCube::Update(float dt)
 {
+	static float angle = 0.0f;
+	angle += 0.05f * dt;
+	
+	// create world transformation matrix
+	// So what we are doing is, basically glm::translate/rotate etc matrices take first param
+	// as an argument which usually is kept to be identity matrix. Internally, these functions,
+	// multiply with the first argument.
+	// https://www.youtube.com/watch?v=U_RtSchYYec
+
+	glm::mat4 translation = glm::translate(glm::mat4(1), vecPosition);
+	matWorld = glm::rotate(translation, angle, glm::vec3(0.0f, 1.0f, 0.0f));
+
 	// Create composite ViewProjection matrix
-	matWorld = glm::rotate(matWorld, 0.1f*dt, glm::vec3(0.0f, 1.0f, 0.0f));
+	//matWorld = glm::rotate(matWorld, 0.1f*dt, glm::vec3(0.0f, 1.0f, 0.0f));
 	matView = Camera::getInstance().getViewMatrix(); 
 	matProj = Camera::getInstance().getProjectionMatrix(); 
 }

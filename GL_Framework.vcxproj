@@ -150,6 +150,8 @@
   <ItemGroup>
     <ClInclude Include="Camera\Camera.h" />
     <ClInclude Include="Helpers\VertexStructures.h" />
+    <ClInclude Include="ObjectSystem\GameObject.h" />
+    <ClInclude Include="ObjectSystem\IObject.h" />
     <ClInclude Include="Renderables\GLCube.h" />
     <ClInclude Include="ShaderEngine\GLSLParser.h" />
   </ItemGroup>

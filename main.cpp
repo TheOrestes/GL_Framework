@@ -9,7 +9,9 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////
 GLFWwindow* window;
-GLCube cube;//(glm::vec4(0.2,0.5,0.2,0));
+GLCube cube(glm::vec4(1,0,0,1)); 
+GLCube cube2(glm::vec4(0,1,0,1));
+GLCube cube3(glm::vec4(0,0,1,0));
 
 //////////////////////////////////////////////////////////////////////////////////////////
 void Render()
@@ -19,6 +21,12 @@ void Render()
 
 	cube.Update(0.6667f);
 	cube.Render();
+
+	cube2.Update(0.6667f);
+	cube2.Render();
+
+	cube3.Update(0.6667f);
+	cube3.Render();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -44,6 +52,13 @@ int main(void)
 	glewInit();
 	
 	cube.Init();
+	//cube.SetPosition(glm::vec3(0,0,0));
+
+	cube2.Init();
+	cube2.SetPosition(glm::vec3(-4,0,0));
+
+	cube3.Init();
+	cube3.SetPosition(glm::vec3(4,0,0));
 	//quad.Init();
 
 	/// Message Loop!
