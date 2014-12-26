@@ -1,0 +1,54 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Camera">
+      <UniqueIdentifier>{2e71b722-29a9-42a9-9687-ea12336f2584}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Renderables">
+      <UniqueIdentifier>{973ae9d8-d09e-4e9c-bdbd-46a1a57f9cac}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ShaderEngine">
+      <UniqueIdentifier>{d79959e0-5a69-4b28-abf3-29bb1b0edd92}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders">
+      <UniqueIdentifier>{59432f32-fc1a-406f-8a98-aabeeef88183}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Helpers">
+      <UniqueIdentifier>{c104cf40-8c64-430d-aa61-91dd6a12ba52}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Camera\Camera.cpp">
+      <Filter>Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="ShaderEngine\GLSLParser.cpp">
+      <Filter>ShaderEngine</Filter>
+    </ClCompile>
+    <ClCompile Include="Renderables\GLCube.cpp">
+      <Filter>Renderables</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Camera\Camera.h">
+      <Filter>Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderEngine\GLSLParser.h">
+      <Filter>ShaderEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="Renderables\GLCube.h">
+      <Filter>Renderables</Filter>
+    </ClInclude>
+    <ClInclude Include="Helpers\VertexStructures.h">
+      <Filter>Helpers</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Shaders\ps.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\vs.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+  </ItemGroup>
+</Project>
