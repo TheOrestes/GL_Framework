@@ -8,6 +8,8 @@ class GLCube
 {
 public:
 	GLCube();
+	GLCube(const glm::vec4& color);
+
 	~GLCube();
 
 	void		Init();
@@ -32,10 +34,11 @@ private:
 	VertexPC	vertices[8];		// vertices of a cube
 	GLuint		indices[36];		// indices of a cube
 
-	GLint		hWVP;
+	GLint		hWorld;
+	GLint		hView;
+	GLint		hProj;
 
 	glm::mat4   matWorld;
 	glm::mat4	matView;
 	glm::mat4	matProj;
-	glm::mat4	matWVP;
 };

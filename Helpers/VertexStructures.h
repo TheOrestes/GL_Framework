@@ -19,7 +19,7 @@ struct VertexPC
 		position(0.0f),
 		color(1.0f){}
 
-	VertexPC(const glm::vec3& _p, const glm::vec4 _c) : 
+	VertexPC(const glm::vec3& _p, const glm::vec4& _c) : 
 		position(_p),
 		color(_c) {}
 
