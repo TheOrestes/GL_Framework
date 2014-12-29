@@ -4,13 +4,11 @@
 #include "GL\glew.h"
 #include "..\Helpers\VertexStructures.h"
 
-class GLCube
+class GLGrid 
 {
 public:
-	GLCube();
-	GLCube(const glm::vec4& color);
-
-	~GLCube();
+	GLGrid();
+	~GLGrid();
 
 	void		Init();
 	void		Update(float dt);
@@ -20,8 +18,8 @@ public:
 	void		SetPosition(const glm::vec3& loc);
 
 private:
-	GLCube(const GLCube&);
-	void operator=(const GLCube&);
+	GLGrid(const GLGrid&);
+	void operator=(const GLGrid&);
 
 	void		SetupViewProjMatrix();
 
@@ -40,7 +38,6 @@ private:
 	GLint		hView;
 	GLint		hProj;
 
-	glm::vec3	vecPosition;		// World Space Position
 	bool		m_bWireframe;
 
 	glm::mat4   matWorld;

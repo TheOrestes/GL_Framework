@@ -2,18 +2,19 @@
 #include "Camera.h"
 
 //////////////////////////////////////////////////////////////////////////////////////////
-Camera::Camera()
+Camera::Camera() : 
+	m_vecPosition(0,0,5),
+	m_vecDirection(0,0,1),
+	m_vecRight(1,0,0),
+	m_vecUp(0,1,0),
+	m_vecWorldUp(0,1,0),
+	m_fYaw(-90.0f),
+	m_fPitch(0.0f),
+	m_fSpeed(30.0f),
+	m_fSensitivity(0.01f),
+	m_fZoom(45.0f)
 {
-	position = glm::vec3(0.0f, 2.0f, 10.0f);
-	up		 = glm::vec3(0.0f, 1.0f, 0.0f);
-	rightVec = glm::vec3(1.0f, 0.0f, 0.0f);
-
-	bPerspective = true;	
-	near = 0.1f;				
-	far = 100.0f;
-	fov = 45.0f;	// in degrees
-
-	Init();
+	Update();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -23,59 +24,88 @@ Camera::~Camera()
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
-void Camera::Init()
+void Camera::Update()
 {
-	// Create View Matrix
-	viewMatrix = glm::lookAt(position, glm::vec3(0.0f, 0.0f, 0.0f), up);
+	// calculate new front vector
+	glm::vec3 front;
+	front.x = cos(glm::radians(m_fYaw)) * cos(glm::radians(m_fPitch));
+	front.y = sin(glm::radians(m_fPitch));
+	front.z = sin(glm::radians(m_fYaw)) * cos(glm::radians(m_fPitch));
 
-	// By default, initialize Perspective Projection matrix...
-	InitPerspectiveProjection();
+	m_vecDirection = glm::normalize(front);
+	m_vecRight = glm::normalize(glm::cross(m_vecDirection, m_vecWorldUp));
+	m_vecUp = glm::normalize(glm::cross(m_vecDirection, m_vecRight));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
-void Camera::InitPerspectiveProjection()
+void Camera::ProcessKeyboard(CameraMovement mov, float dt)
 {
-	// Create Perspective Projection
-	projMatrix = glm::perspective(45.0f, 800.0f/600.0f, 0.1f, 1000.0f);
+	float speed = m_fSpeed * dt;
 
-	/*top = near * tan((glm::pi<float>()/180) * (fov/2));
-	bottom = -top;
-	right = top * 1.3333f;			// top * aspect
-	left = -right;
+	switch (mov)
+	{
+	case FORWARD:
+		{
+			m_vecPosition += m_vecDirection * speed;
+		}
+		break;
 
+	case BACK:
+		{
+			m_vecPosition -= m_vecDirection * speed;
+		}
+		break;
 
-	// Create Column major matrix!
-	float mat[16];
+	case LEFT:
+		{
+			m_vecPosition += m_vecRight * speed;
+		}
+		break;
 
-	mat[0] = (2*near)/(right-left);		mat[4] = 0;							mat[8] = (right+left)/(right-left);		mat[12] = 0;
-	mat[1] = 0;							mat[5] = (2*near)/(top-bottom);		mat[9] = (top+bottom)/(top-bottom);		mat[13] = 0;
-	mat[2] = 0;							mat[6] = 0;							mat[10] = (near+far)/(near-far);		mat[14] = (2*near*far)/(near-far);
-	mat[3] = 0;							mat[7] = 0;							mat[11] = -1;							mat[15] = 0;
-
-	projMatrix = glm::make_mat4(mat);*/
+	case RIGHT:
+		{
+			m_vecPosition -= m_vecRight * speed;
+		}
+		break;
+	}
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
-void Camera::InitOrthographicProjection()
+void Camera::ProcessMouseMovement(float xOffset, float yOffset, bool bConstraintPitch /* = true */)
 {
-	// Create Orthographic Projection
-	projMatrix = glm::ortho(-1.3333f, 1.3333f, -1.0f, 1.0f, -1.0f, 100.0f);//(45.0f, 800.0f/600.0f, 0.1f, 1000.0f);
+	xOffset *= m_fSensitivity;
+	yOffset *= m_fSensitivity;
+
+	m_fYaw -= xOffset;
+	m_fPitch -= yOffset;
+
+	if(bConstraintPitch)
+	{
+		if(m_fPitch > 89.0f)
+			m_fPitch = 89.0f;
+
+		if (m_fPitch < -89.0f)
+			m_fPitch = -89.0f;
+	}
+
+	Update();
 }
 
-void Camera::Update(float dt)
+//////////////////////////////////////////////////////////////////////////////////////////
+void Camera::ProcessMouseScroll(float offset)
 {
-	
+
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
 glm::mat4x4 Camera::getViewMatrix()
 {
-	return viewMatrix;
+	return glm::lookAt(m_vecPosition, m_vecPosition + m_vecDirection, m_vecUp);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
 glm::mat4x4 Camera::getProjectionMatrix()
 {
-	return projMatrix;
+	return glm::perspective(m_fZoom, 1.3333f, 0.1f, 1000.0f);
 }
 

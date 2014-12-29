@@ -7,6 +7,13 @@
 #include "glm/gtc/matrix_transform.hpp"
 #include "glm/gtc/type_ptr.hpp"
 
+enum CameraMovement
+{
+	FORWARD,
+	BACK,
+	LEFT,
+	RIGHT
+};
 
 class Camera
 {
@@ -19,11 +26,10 @@ public:
 
 	~Camera();
 
-	void			Init();
-	void			InitPerspectiveProjection();
-	void			InitOrthographicProjection();
-
-	void			Update(float dt);
+	void			Update();
+	void			ProcessKeyboard(CameraMovement mov, float dt);
+	void			ProcessMouseMovement(float xOffset, float yOffset, bool bConstraintPitch = true);
+	void			ProcessMouseScroll(float offset);
 
 	glm::mat4x4		getViewMatrix();
 	glm::mat4x4		getProjectionMatrix();
@@ -34,22 +40,24 @@ private:
 	Camera(const Camera&);
 	void operator=(const Camera&);
 
-	// camera properties
-	glm::vec3		position;
-	glm::vec3		up;
-	glm::vec3		rightVec;
+	// Attributes
+	glm::vec3		m_vecPosition;
+	glm::vec3		m_vecDirection;
+	glm::vec3		m_vecRight;
+	glm::vec3		m_vecUp;
 
-	float			near;
-	float			far;
-	float			left;
-	float			right;
-	float			top;
-	float			bottom;
-	
-	float			fov;
+	glm::vec3		m_vecWorldUp;
 
-	bool			bPerspective;
+	// Euler Angles
+	float			m_fYaw;
+	float			m_fPitch;
 
-	glm::mat4x4		viewMatrix;
-	glm::mat4x4		projMatrix;
+	// Options
+	float			m_fSpeed;
+	float			m_fSensitivity;
+	float			m_fZoom;
+
+	// Matrices
+	glm::mat4		m_matView;
+	glm::mat4		m_matProjection;
 };

@@ -31,6 +31,9 @@
       <Filter>Renderables</Filter>
     </ClCompile>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Renderables\GLGrid.cpp">
+      <Filter>Renderables</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera\Camera.h">
@@ -50,6 +53,9 @@
     </ClInclude>
     <ClInclude Include="ObjectSystem\GameObject.h">
       <Filter>ObjectSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="Renderables\GLGrid.h">
+      <Filter>Renderables</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -145,6 +145,7 @@
     <ClCompile Include="Camera\Camera.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Renderables\GLCube.cpp" />
+    <ClCompile Include="Renderables\GLGrid.cpp" />
     <ClCompile Include="ShaderEngine\GLSLParser.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -153,6 +154,7 @@
     <ClInclude Include="ObjectSystem\GameObject.h" />
     <ClInclude Include="ObjectSystem\IObject.h" />
     <ClInclude Include="Renderables\GLCube.h" />
+    <ClInclude Include="Renderables\GLGrid.h" />
     <ClInclude Include="ShaderEngine\GLSLParser.h" />
   </ItemGroup>
   <ItemGroup>

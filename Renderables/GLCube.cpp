@@ -36,6 +36,9 @@ GLCube::GLCube()
 
 	indices[30] = 1;			indices[31] = 5;		indices[32] = 6;
 	indices[33] = 6;			indices[34] = 2;		indices[35] = 1;
+
+	// Wireframe?
+	m_bWireframe = false;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -70,6 +73,9 @@ GLCube::GLCube(const glm::vec4& color)
 
 	indices[30] = 1;			indices[31] = 5;		indices[32] = 6;
 	indices[33] = 6;			indices[34] = 2;		indices[35] = 1;
+
+	// Wireframe?
+	m_bWireframe = false;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -128,14 +134,15 @@ void GLCube::Init()
 	glEnable(GL_DEPTH_TEST);
 	
 	// WIREFRAME MODE!
-	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	if(m_bWireframe)
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); 
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
 void GLCube::Update(float dt)
 {
 	static float angle = 0.0f;
-	angle += 0.05f * dt;
+	angle += dt;
 	
 	// create world transformation matrix
 	// So what we are doing is, basically glm::translate/rotate etc matrices take first param
@@ -148,8 +155,8 @@ void GLCube::Update(float dt)
 
 	// Create composite ViewProjection matrix
 	//matWorld = glm::rotate(matWorld, 0.1f*dt, glm::vec3(0.0f, 1.0f, 0.0f));
-	matView = Camera::getInstance().getViewMatrix(); 
-	matProj = Camera::getInstance().getProjectionMatrix(); 
+	matView = Camera::getInstance().getViewMatrix();
+	matProj = Camera::getInstance().getProjectionMatrix();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
