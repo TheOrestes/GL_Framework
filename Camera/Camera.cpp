@@ -26,15 +26,18 @@ Camera::~Camera()
 //////////////////////////////////////////////////////////////////////////////////////////
 void Camera::Update()
 {
-	// calculate new front vector
+	// calculate new front vector based on updated yaw & pitch values...
 	glm::vec3 front;
 	front.x = cos(glm::radians(m_fYaw)) * cos(glm::radians(m_fPitch));
 	front.y = sin(glm::radians(m_fPitch));
 	front.z = sin(glm::radians(m_fYaw)) * cos(glm::radians(m_fPitch));
 
+	// calculate new camera direction...
 	m_vecDirection = glm::normalize(front);
+
+	// calculate new right & up vector...
 	m_vecRight = glm::normalize(glm::cross(m_vecDirection, m_vecWorldUp));
-	m_vecUp = glm::normalize(glm::cross(m_vecDirection, m_vecRight));
+	m_vecUp = glm::normalize(glm::cross(m_vecRight, m_vecDirection));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -68,6 +71,9 @@ void Camera::ProcessKeyboard(CameraMovement mov, float dt)
 		}
 		break;
 	}
+
+	// for FPS camera, enable this!
+	// m_vecPosition.y = 0.0f;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -76,8 +82,8 @@ void Camera::ProcessMouseMovement(float xOffset, float yOffset, bool bConstraint
 	xOffset *= m_fSensitivity;
 	yOffset *= m_fSensitivity;
 
-	m_fYaw -= xOffset;
-	m_fPitch -= yOffset;
+	m_fYaw += xOffset;
+	m_fPitch = yOffset;
 
 	if(bConstraintPitch)
 	{
