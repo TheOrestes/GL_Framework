@@ -4,13 +4,13 @@
 #include "GL\glew.h"
 #include "..\Helpers\VertexStructures.h"
 
-class GLCube
+class GLCubeNormal
 {
 public:
-	GLCube();
-	GLCube(const glm::vec4& color);
+	GLCubeNormal();
+	GLCubeNormal(const glm::vec4& color);
 
-	~GLCube();
+	~GLCubeNormal();
 
 	void		Init();
 	void		Update(float dt);
@@ -22,8 +22,8 @@ public:
 	void		SetRotation(const glm::vec3& ax, float angle);
 
 private:
-	GLCube(const GLCube&);
-	void operator=(const GLCube&);
+	GLCubeNormal(const GLCubeNormal&);
+	void operator=(const GLCubeNormal&);
 
 	void		SetupViewProjMatrix();
 
@@ -35,17 +35,21 @@ private:
 
 	GLint		posAttrib;			// vertex attribute id
 	GLint		colAttrib;			// color attribute id
-	VertexPC	vertices[8];		// vertices of a cube
+	VertexPN	vertices[8];		// vertices of a cube
 	GLuint		indices[36];		// indices of a cube
 
 	GLint		hWorld;				// handle to World matrix
 	GLint		hView;				// handle to View matrix
 	GLint		hProj;				// handle to projection matrix
+	GLint		hLightDir;			// handle to global light direction
+	GLint		hObjectColor;		// handle for an object color
 
 	glm::vec3	vecPosition;		// World Space Position
 	glm::vec3	vecScale;			// Scale of an object
 	glm::vec3	vecRotationAxis;	// rotation axis
 	float		m_fAngle;			// angle of rotation
+
+	glm::vec4	m_color;
 
 	bool		m_bWireframe;		// wire-frame rendering flag
 

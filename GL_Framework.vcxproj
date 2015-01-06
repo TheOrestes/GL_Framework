@@ -98,13 +98,13 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(SolutionDir)\Dependencies\glew_1.11.0\include;$(SolutionDir)\Dependencies\glfw_3.0.4;$(SolutionDir)\Dependencies\glm_0.9.6.1;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\Dependencies\glew_1.11.0\include;$(SolutionDir)\Dependencies\glfw_3.0.4;$(SolutionDir)\Dependencies\glm_0.9.6.1;$(SolutionDir)\Dependencies\assimp-3.1.1\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(SolutionDir)\Dependencies\glew_1.11.0\Debug;$(SolutionDir)\Dependencies\glfw_3.0.4\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>glew32d.lib;glfw3dll.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)\Dependencies\glew_1.11.0\Debug;$(SolutionDir)\Dependencies\glfw_3.0.4\Debug;$(SolutionDir)\Dependencies\assimp-3.1.1\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>glew32d.lib;glfw3dll.lib;opengl32.lib;assimpd.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -143,23 +143,33 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Camera\Camera.cpp" />
+    <ClCompile Include="Helpers\AssimpLoader.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Renderables\GLCube.cpp" />
+    <ClCompile Include="Renderables\GLCubeNormal.cpp" />
     <ClCompile Include="Renderables\GLGrid.cpp" />
+    <ClCompile Include="Renderables\GLMesh.cpp" />
+    <ClCompile Include="Scene\Scene.cpp" />
     <ClCompile Include="ShaderEngine\GLSLParser.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera\Camera.h" />
+    <ClInclude Include="Helpers\AssimpLoader.h" />
     <ClInclude Include="Helpers\VertexStructures.h" />
     <ClInclude Include="ObjectSystem\GameObject.h" />
     <ClInclude Include="ObjectSystem\IObject.h" />
     <ClInclude Include="Renderables\GLCube.h" />
+    <ClInclude Include="Renderables\GLCubeNormal.h" />
     <ClInclude Include="Renderables\GLGrid.h" />
+    <ClInclude Include="Renderables\GLMesh.h" />
+    <ClInclude Include="Scene\Scene.h" />
     <ClInclude Include="ShaderEngine\GLSLParser.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\ps.glsl" />
+    <None Include="Shaders\psLighting.glsl" />
     <None Include="Shaders\vs.glsl" />
+    <None Include="Shaders\vsLighting.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

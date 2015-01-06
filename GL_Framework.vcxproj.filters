@@ -19,6 +19,9 @@
     <Filter Include="ObjectSystem">
       <UniqueIdentifier>{c24d4cf3-2302-403e-b5ba-97ee1cb4b08a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Scene">
+      <UniqueIdentifier>{a6d838d3-fb73-4ed7-845d-a646eccc1a2c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Camera\Camera.cpp">
@@ -33,6 +36,18 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Renderables\GLGrid.cpp">
       <Filter>Renderables</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene\Scene.cpp">
+      <Filter>Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Renderables\GLCubeNormal.cpp">
+      <Filter>Renderables</Filter>
+    </ClCompile>
+    <ClCompile Include="Renderables\GLMesh.cpp">
+      <Filter>Renderables</Filter>
+    </ClCompile>
+    <ClCompile Include="Helpers\AssimpLoader.cpp">
+      <Filter>Helpers</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -57,12 +72,30 @@
     <ClInclude Include="Renderables\GLGrid.h">
       <Filter>Renderables</Filter>
     </ClInclude>
+    <ClInclude Include="Scene\Scene.h">
+      <Filter>Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="Renderables\GLCubeNormal.h">
+      <Filter>Renderables</Filter>
+    </ClInclude>
+    <ClInclude Include="Renderables\GLMesh.h">
+      <Filter>Renderables</Filter>
+    </ClInclude>
+    <ClInclude Include="Helpers\AssimpLoader.h">
+      <Filter>Helpers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\ps.glsl">
       <Filter>Shaders</Filter>
     </None>
     <None Include="Shaders\vs.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\psLighting.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\vsLighting.glsl">
       <Filter>Shaders</Filter>
     </None>
   </ItemGroup>

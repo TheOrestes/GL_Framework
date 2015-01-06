@@ -6,13 +6,13 @@
 
 #include "Camera/Camera.h"
 #include "ShaderEngine/GLSLParser.h"
-#include "Renderables/GLCube.h"
+#include "Scene/Scene.h"
 
 //////////////////////////////////////////////////////////////////////////////////////////
 GLFWwindow* window;
-GLCube cube;//(glm::vec4(1,0,0,1)); 
-GLCube cube2;//(glm::vec4(0,1,0,1));
-GLCube cube3;//(glm::vec4(0,0,1,0));
+Scene		gScene;
+
+//GLCube		cube;
 
 const float gScreenWidth	=	800.0f;
 const float gScreenHeight	=	600.0f;
@@ -23,11 +23,11 @@ float lastX					=	gScreenWidth / 2.0f;
 float lastY					=	gScreenHeight / 2.0f;
 
 //////////////////////////////////////////////////////////////////////////////////////////
-void key_callback(GLFWwindow* window, int key, int scancode,	int action, int mods)
+void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
 	if(key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
 	{
-		glfwWindowShouldClose(window);
+		glfwSetWindowShouldClose(window, true);
 	}
 
 	if (key == GLFW_KEY_W && action == GLFW_REPEAT)
@@ -70,31 +70,24 @@ void Mouse_Callback(GLFWwindow* window, double xPos, double yPos)
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
-void Render()
+void GameLoop()
 {
+	glfwPollEvents();
+
 	glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	cube.Update(tick);
-	cube.Render();
+	//cube.Update(tick);
+	//cube.Render();
 
-	cube2.Update(tick);
-	cube2.Render();
-
-	cube3.Update(tick);
-	cube3.Render();
+	gScene.Update(tick);
+	gScene.Render();
 }
 
 void InitializeScene()
 {
-	// Geometry
-	cube.Init();
-
-	cube2.Init();
-	cube2.SetPosition(glm::vec3(-4,0,0));
-
-	cube3.Init();
-	cube3.SetPosition(glm::vec3(4,0,0));
+	//cube.Init();
+	gScene.Init();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -125,6 +118,7 @@ int main(void)
 	/// Init GLEW after window & context creation
 	glewExperimental = true;
 	glewInit();
+
 	
 	// Initialize Scene
 	InitializeScene();
@@ -132,14 +126,7 @@ int main(void)
 	/// Message Loop!
 	while (!glfwWindowShouldClose(window))
 	{
-		Render();
-
-		/// Lookout for key press!
-		glfwPollEvents();
-		if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-		{
-			glfwSetWindowShouldClose(window, true);
-		}
+		GameLoop();
 		
 		glfwSwapBuffers(window);
 	}

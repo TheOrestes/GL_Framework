@@ -28,5 +28,5 @@ private:
 	GLSLParser(const GLSLParser&);
 	void operator=(const GLSLParser&);
 
-	bool		IsShaderCompiled(GLuint shaderID);
+	bool		IsShaderCompiled(GLuint shaderID, const std::string& name);
 };

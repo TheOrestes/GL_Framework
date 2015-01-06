@@ -11,7 +11,7 @@ Camera::Camera() :
 	m_fYaw(-90.0f),
 	m_fPitch(0.0f),
 	m_fSpeed(30.0f),
-	m_fSensitivity(0.01f),
+	m_fSensitivity(0.05f),
 	m_fZoom(45.0f)
 {
 	Update();
@@ -61,13 +61,13 @@ void Camera::ProcessKeyboard(CameraMovement mov, float dt)
 
 	case LEFT:
 		{
-			m_vecPosition += m_vecRight * speed;
+			m_vecPosition -= m_vecRight * speed;
 		}
 		break;
 
 	case RIGHT:
 		{
-			m_vecPosition -= m_vecRight * speed;
+			m_vecPosition += m_vecRight * speed;
 		}
 		break;
 	}
@@ -83,7 +83,7 @@ void Camera::ProcessMouseMovement(float xOffset, float yOffset, bool bConstraint
 	yOffset *= m_fSensitivity;
 
 	m_fYaw += xOffset;
-	m_fPitch = yOffset;
+	m_fPitch += yOffset;
 
 	if(bConstraintPitch)
 	{

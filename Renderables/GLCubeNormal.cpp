@@ -1,21 +1,21 @@
 
-#include "GLCube.h"
+#include "GLCubeNormal.h"
 #include "..\ShaderEngine\GLSLParser.h"
 #include "..\Camera\Camera.h"
 #include "..\Helpers\VertexStructures.h"
 
 //////////////////////////////////////////////////////////////////////////////////////////
-GLCube::GLCube()
+GLCubeNormal::GLCubeNormal()
 {
 	// Vertex Data
-	vertices[0] = VertexPC(glm::vec3(-1,-1,1), glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
-	vertices[1] = VertexPC(glm::vec3(1,-1,1), glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));
-	vertices[2] = VertexPC(glm::vec3(1,1,1), glm::vec4(0.0f, 0.0f, 1.0f, 1.0f));
-	vertices[3] = VertexPC(glm::vec3(-1,1,1), glm::vec4(1.0f, 1.0f, 0.0f, 1.0f));
-	vertices[4] = VertexPC(glm::vec3(-1,-1,-1), glm::vec4(1.0f, 1.0f, 0.0f, 1.0f));
-	vertices[5] = VertexPC(glm::vec3(1,-1,-1), glm::vec4(0.0f, 0.0f, 1.0f, 1.0f));
-	vertices[6] = VertexPC(glm::vec3(1,1,-1), glm::vec4(0.0f, 1.0f, 0.0f, 1.0f));
-	vertices[7] = VertexPC(glm::vec3(-1,1,-1), glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
+	vertices[0] = VertexPN(glm::vec3(-1,-1,1), glm::vec3(0,0,1));
+	vertices[1] = VertexPN(glm::vec3(1,-1,1), glm::vec3(1,0,0));
+	vertices[2] = VertexPN(glm::vec3(1,1,1), glm::vec3(1,0,0));
+	vertices[3] = VertexPN(glm::vec3(-1,1,1), glm::vec3(0,1,0));
+	vertices[4] = VertexPN(glm::vec3(-1,-1,-1), glm::vec3(0,0,-1));
+	vertices[5] = VertexPN(glm::vec3(1,-1,-1), glm::vec3(0,-1,0));
+	vertices[6] = VertexPN(glm::vec3(1,1,-1), glm::vec3(0,1,0));
+	vertices[7] = VertexPN(glm::vec3(-1,1,-1), glm::vec3(0,1,0));
 
 	// Index data ( 6 faces = 12 triangles = 36 indices )
 
@@ -42,22 +42,25 @@ GLCube::GLCube()
 	SetScale(glm::vec3(1,1,1));
 	SetRotation(glm::vec3(0,1,0), 45.0f);
 
+	// set default object color
+	m_color = glm::vec4(0.8f, 0.8f, 0.8f, 1.0f);
+
 	// Wireframe?
 	m_bWireframe = false;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
-GLCube::GLCube(const glm::vec4& color)
+GLCubeNormal::GLCubeNormal(const glm::vec4& color)
 {
 	// Vertex Data
-	vertices[0] = VertexPC(glm::vec3(-1,-1,1), color);
-	vertices[1] = VertexPC(glm::vec3(1,-1,1), color);
-	vertices[2] = VertexPC(glm::vec3(1,1,1), color);
-	vertices[3] = VertexPC(glm::vec3(-1,1,1), color);
-	vertices[4] = VertexPC(glm::vec3(-1,-1,-1), color);
-	vertices[5] = VertexPC(glm::vec3(1,-1,-1), color);
-	vertices[6] = VertexPC(glm::vec3(1,1,-1), color);
-	vertices[7] = VertexPC(glm::vec3(-1,1,-1), color);
+	vertices[0] = VertexPN(glm::vec3(-1,-1,1), glm::vec3(0,0,1));
+	vertices[1] = VertexPN(glm::vec3(1,-1,1), glm::vec3(1,0,0));
+	vertices[2] = VertexPN(glm::vec3(1,1,1), glm::vec3(1,0,0));
+	vertices[3] = VertexPN(glm::vec3(-1,1,1), glm::vec3(0,1,0));
+	vertices[4] = VertexPN(glm::vec3(-1,-1,-1), glm::vec3(0,0,-1));
+	vertices[5] = VertexPN(glm::vec3(1,-1,-1), glm::vec3(0,-1,0));
+	vertices[6] = VertexPN(glm::vec3(1,1,-1), glm::vec3(0,1,0));
+	vertices[7] = VertexPN(glm::vec3(-1,1,-1), glm::vec3(0,1,0));
 
 	// Index data ( 6 faces = 12 triangles = 36 indices )
 
@@ -84,48 +87,53 @@ GLCube::GLCube(const glm::vec4& color)
 	SetScale(glm::vec3(1,1,1));
 	SetRotation(glm::vec3(0,1,0), 45.0f);
 
+	// set object color
+	m_color = color;
+
 	// Wireframe?
 	m_bWireframe = false;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
-GLCube::~GLCube()
+GLCubeNormal::~GLCubeNormal()
 {
 
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
-void GLCube::SetupViewProjMatrix()
+void GLCubeNormal::SetupViewProjMatrix()
 {
 	hWorld = glGetUniformLocation(shader, "matWorld");
 	hView = glGetUniformLocation(shader, "matView");
 	hProj = glGetUniformLocation(shader, "matProj");
+	hLightDir = glGetUniformLocation(shader, "lightDir");
+	hObjectColor = glGetUniformLocation(shader, "objectColor");
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
-void GLCube::SetPosition(const glm::vec3& loc)
+void GLCubeNormal::SetPosition(const glm::vec3& loc)
 {
 	vecPosition = loc;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
-void GLCube::SetScale(const glm::vec3& sc)
+void GLCubeNormal::SetScale(const glm::vec3& sc)
 {
 	vecScale = sc;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
-void GLCube::SetRotation( const glm::vec3& ax, float angle )
+void GLCubeNormal::SetRotation( const glm::vec3& ax, float angle )
 {
 	vecRotationAxis = ax;
 	m_fAngle = angle;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
-void GLCube::Init()
+void GLCubeNormal::Init()
 {
 	// Create shader object
-	shader = GLSLParser::getInstance().LoadShader("Shaders/vs.glsl", "Shaders/ps.glsl");
+	shader = GLSLParser::getInstance().LoadShader("Shaders/vsLighting.glsl", "Shaders/psLighting.glsl");
 
 	// create vao
 	glGenVertexArrays(1, &vao);
@@ -134,7 +142,7 @@ void GLCube::Init()
 	// create vbo
 	glGenBuffers(1, &vbo);
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
-	glBufferData(GL_ARRAY_BUFFER, 8 * sizeof(VertexPC), vertices, GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, 8 * sizeof(VertexPN), vertices, GL_STATIC_DRAW);
 
 	// create ibo
 	glGenBuffers(1, &ibo);
@@ -143,17 +151,16 @@ void GLCube::Init()
 
 	posAttrib = glGetAttribLocation(shader, "in_Position");
 	glEnableVertexAttribArray(posAttrib);
-	glVertexAttribPointer(posAttrib, 3, GL_FLOAT, false, sizeof(VertexPC), (void*)0);
+	glVertexAttribPointer(posAttrib, 3, GL_FLOAT, false, sizeof(VertexPN), (void*)0);
 
-	colAttrib = glGetAttribLocation(shader, "in_Color");
+	colAttrib = glGetAttribLocation(shader, "in_Normal");
 	glEnableVertexAttribArray(colAttrib);
-	glVertexAttribPointer(colAttrib, 4, GL_FLOAT, false, sizeof(VertexPC), (void*)sizeof(glm::vec3));
-
-	SetupViewProjMatrix();
+	glVertexAttribPointer(colAttrib, 3, GL_FLOAT, false, sizeof(VertexPN), (void*)sizeof(glm::vec3));
 
 	glEnableVertexAttribArray(0);
 	glBindVertexArray(0); 
 
+	SetupViewProjMatrix();
 
 	glEnable(GL_DEPTH_TEST);
 	
@@ -163,7 +170,7 @@ void GLCube::Init()
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
-void GLCube::Update(float dt)
+void GLCubeNormal::Update(float dt)
 {
 	static float angle = 0.0f;
 	angle += dt;
@@ -188,7 +195,7 @@ void GLCube::Update(float dt)
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
-void GLCube::Render()
+void GLCubeNormal::Render()
 {
 	glUseProgram(shader);
 	glBindVertexArray(vao);
@@ -196,6 +203,8 @@ void GLCube::Render()
 	glUniformMatrix4fv(hWorld, 1, GL_FALSE, glm::value_ptr(matWorld));
 	glUniformMatrix4fv(hView, 1, GL_FALSE, glm::value_ptr(matView));
 	glUniformMatrix4fv(hProj, 1, GL_FALSE, glm::value_ptr(matProj));
+	glUniform3fv(hLightDir, 1, glm::value_ptr(glm::vec3(1,1,1)));
+	glUniform4fv(hObjectColor, 1, glm::value_ptr(m_color));
 
 	// know more about the last element!
 	// http://stackoverflow.com/questions/17191258/no-display-from-gldrawelements
@@ -205,7 +214,7 @@ void GLCube::Render()
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
-void GLCube::Kill()
+void GLCubeNormal::Kill()
 {
 	glDeleteProgram(shader);
 	glDeleteBuffers(1, &vbo);

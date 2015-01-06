@@ -72,7 +72,7 @@ GLuint GLSLParser::LoadShader(const std::string& vShader, const std::string& fSh
 	glCompileShader(vertexShaderID);
 
 	// Check for shader compilation errors...
-	if(!IsShaderCompiled(vertexShaderID))
+	if(!IsShaderCompiled(vertexShaderID, vShader))
 		return 0;
 
 	/// Compile pixel shader...
@@ -81,7 +81,7 @@ GLuint GLSLParser::LoadShader(const std::string& vShader, const std::string& fSh
 	glCompileShader(fragmentShaderID);
 
 	// Check for shader compilation errors...
-	if(!IsShaderCompiled(fragmentShaderID))
+	if(!IsShaderCompiled(fragmentShaderID, fShader))
 		return 0;
 
 	// Create shader program
@@ -102,7 +102,7 @@ GLuint GLSLParser::LoadShader(const std::string& vShader, const std::string& fSh
  * @param[in] GLuint shaderID
  * @return GLboolean status flag
  */
-bool GLSLParser::IsShaderCompiled(GLuint shaderID)
+bool GLSLParser::IsShaderCompiled(GLuint shaderID, const std::string& name)
 {
 	GLint result = GL_FALSE;
 	int infoLogLength;
@@ -114,7 +114,7 @@ bool GLSLParser::IsShaderCompiled(GLuint shaderID)
 	if(!result)
 	{
 		glGetShaderInfoLog(shaderID, infoLogLength, NULL, infoLog);
-		std::cout << "Error compiling shader :" << infoLog;
+		std::cout << "Error compiling shader " << name.c_str() << " : " << infoLog;
 		return false;
 	}
 
