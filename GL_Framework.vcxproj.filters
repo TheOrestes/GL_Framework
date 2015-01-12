@@ -43,10 +43,7 @@
     <ClCompile Include="Renderables\GLCubeNormal.cpp">
       <Filter>Renderables</Filter>
     </ClCompile>
-    <ClCompile Include="Renderables\GLMesh.cpp">
-      <Filter>Renderables</Filter>
-    </ClCompile>
-    <ClCompile Include="Helpers\AssimpLoader.cpp">
+    <ClCompile Include="Texture.cpp">
       <Filter>Helpers</Filter>
     </ClCompile>
   </ItemGroup>
@@ -78,10 +75,13 @@
     <ClInclude Include="Renderables\GLCubeNormal.h">
       <Filter>Renderables</Filter>
     </ClInclude>
-    <ClInclude Include="Renderables\GLMesh.h">
+    <ClInclude Include="Model.h">
       <Filter>Renderables</Filter>
     </ClInclude>
-    <ClInclude Include="Helpers\AssimpLoader.h">
+    <ClInclude Include="AssimpLoader.h">
+      <Filter>Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="Texture.h">
       <Filter>Helpers</Filter>
     </ClInclude>
   </ItemGroup>

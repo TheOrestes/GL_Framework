@@ -175,7 +175,7 @@ void GLCube::Update(float dt)
 	// https://www.youtube.com/watch?v=U_RtSchYYec
 
 	glm::mat4 T   = glm::translate(glm::mat4(1), vecPosition);
-	glm::mat4 TR  = glm::rotate(T, angle, glm::vec3(0.0f, 1.0f, 0.0f));
+	glm::mat4 TR  = glm::rotate(T, 0.0f, glm::vec3(0.0f, 1.0f, 0.0f));
 	glm::mat4 TRS = glm::scale(TR, glm::vec3(vecScale.x, vecScale.y, vecScale.z));
 	
 	// Set final World transformation matrix...

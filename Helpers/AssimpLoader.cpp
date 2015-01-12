@@ -1,11 +1,17 @@
 
 #include <iostream>
 #include "AssimpLoader.h"
+#include "Helper.h"
+#include "VertexStructures.h"
+#include "Texture.h"
+#include "../ShaderEngine/GLSLParser.h"
+
 
 //////////////////////////////////////////////////////////////////////////////////////////
 AssimpLoader::AssimpLoader()
 {
-
+	models.clear();
+	shaderID = -1;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -15,86 +21,80 @@ AssimpLoader::~AssimpLoader()
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
-bool	AssimpLoader::LoadAssimpMesh(const std::string& path, GLMesh** mesh)
+bool	AssimpLoader::LoadAssimpMesh(const std::string& fileName)
 {
-	Assimp::Importer importer;
-	const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcessPreset_TargetRealtime_Quality);
+	// Create a shader
+	shaderID = GLSLParser::getInstance().LoadShader("Data/vsLighting.glsl", "Data/psLighting.glsl");
 
-	if(!scene)
+	Assimp::Importer importer;
+	const aiScene* scene = importer.ReadFile(fileName, aiProcess_Triangulate | aiProcess_FlipUVs);
+
+	if (!scene)
 	{
-		std::cout << "============== AssimpLoader::LoadAssimpMesh() ==============" << std::endl;
-		std::cout << "invalid aiScene* ptr value" << std::endl;
-		return false; 
+		std::cout << "ASSIMP::ERROR = " << importer.GetErrorString() << std::endl;
+		return false;
 	}
 
-	// if assimp scene has scene information
+	// if assimp scene has mesh information
 	if (scene->HasMeshes())
 	{
-		// for each mesh, extract material information
-		for (unsigned int i = 0 ; i<scene->mNumMeshes ; ++i)
+		for (unsigned int i = 0 ; i<scene->mNumMeshes ; i++)
 		{
-			aiMesh* tmpMesh = scene->mMeshes[i];
+			// create temporary model object as a container...
+			Model* tmpModel;
 
-			if(!tmpMesh)
+			aiMesh* mesh = scene->mMeshes[i];
+			if (!mesh)
 			{
-				std::cout << "============== AssimpLoader::LoadAssimpMesh() ==============" << std::endl;
-				std::cout << "invalid aiMesh* ptr value" << std::endl;
+				std::cout << "ASSIMP::ERROR = " << i << " index mesh problem!" << std::endl;
 				return false;
 			}
 
-			// Material loading..
+			// Extract texture information per mesh...
+			aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
 
-			// Vertex loading...;
-			// map vertex position, normals & texture co-ordinates
-			unsigned int nextVertex = 0;
-			for (unsigned int i = 0 ; i<tmpMesh->mNumVertices ; ++i)
+			// Create diffuse texture
+			if (material && material->GetTextureCount(aiTextureType_DIFFUSE) > 0)
 			{
-				VertexPN* tempVertex = new VertexPN(glm::vec3(tmpMesh->mVertices[i].x, tmpMesh->mVertices[i].y, tmpMesh->mVertices[i].z), 
-													glm::vec3(tmpMesh->mNormals[i].x, tmpMesh->mNormals[i].y, tmpMesh->mNormals[i].z));
-	
+				aiString diffuseTextureName;
+				material->GetTexture(aiTextureType_DIFFUSE, 0, &diffuseTextureName);
 
+				// generate absolute path before texture loading...
+				std::string directoryPath = Helper::ExtractDirectory(fileName);
+				std::string absolutePath = directoryPath.append(diffuseTextureName.data);
 
-				/*if (tmpMesh->HasTextureCoords(0))
+				// create temporary texture...
+				Texture tex(GL_TEXTURE_2D, absolutePath);
+				if(!tex.Load())
 				{
-					tmpVertex[nextVertex].texcoord = glm::vec2(tmpMesh->mTextureCoords[i]->x, tmpMesh->mTextureCoords[i]->y);
+					std::cout << "ASSIMP::ERROR = " << diffuseTextureName.C_Str() << " loading FAILED!" << std::endl;
+				}
+
+				// push this texture object into the list of texture objects...
+				tmpModel->AddTexture(tex);
+
+			}
+
+			// Extract Vertex information per mesh...
+			for (unsigned int j = 0 ; j < mesh->mNumVertices ; j++)
+			{
+				VertexPNT vertex;
+
+				vertex.position =	glm::vec3(mesh->mVertices[j].x, mesh->mVertices[j].y, mesh->mVertices[j].z);
+				vertex.normal	=	glm::vec3(mesh->mNormals[j].x, mesh->mNormals[j].y, mesh->mNormals[j].z);
+
+				if(mesh->HasTextureCoords(0))
+				{
+					vertex.texcoord = glm::vec2(mesh->mTextureCoords[0][j].x, mesh->mTextureCoords[0][j].y);
 				}
 				else
 				{
-					tmpVertex[nextVertex].texcoord = glm::vec2(0,0);
-				}*/
+					vertex.texcoord = glm::vec2(0,0);
+				}
 
-				// push data to vector of vertices before moving onto next vertex
-				m_vecVertices.push_back(*tempVertex);
-
-				delete tempVertex;
-
-				nextVertex++;
-			}
-
-			/// Just like Vertex buffer, we use mNumFaces variable from aiMesh to create the
-			/// index buffer. We extract indices from the mesh & store them to our newly 
-			/// created index buffer.
-			GLuint nextIndex = 0;
-			for (unsigned int j = 0 ; j<tmpMesh->mNumFaces ; ++j)
-			{
-				GLuint index1 = tmpMesh->mFaces[j].mIndices[0];
-				m_vecIndices.push_back(index1);
-				nextIndex++;
-
-				GLuint index2 = tmpMesh->mFaces[j].mIndices[1];
-				m_vecIndices.push_back(index2);
-				nextIndex++;
-
-				GLuint index3 = tmpMesh->mFaces[j].mIndices[2];
-				m_vecIndices.push_back(index3);
-				nextIndex++;
+				// push this vertex into the list of vertices...
+				tmpModel->AddVertex(vertex);
 			}
 		}
 	}
-
-	// Now feed the gathered data to GLMesh component
-	(*mesh)->vertices = m_vecVertices;
-	(*mesh)->indices = m_vecIndices;
-
-	return true;
 }

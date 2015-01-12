@@ -29,10 +29,11 @@ void	Scene::Init()
 	m_pCube3->Init();
 	m_pCube3->SetPosition(glm::vec3(4,0,-4));
 
-	bool status = AssimpLoader::getInstance().LoadAssimpMesh("Data/teapot.dae", &m_pMesh);
+	bool status = AssimpLoader::getInstance().LoadAssimpMesh("Data/Sphere.dae", &m_pMesh);
 	if(status)
 	{
 		m_pMesh->Init();
+		m_pMesh->SetScale(glm::vec3(100,100,100));
 	}
 }
 

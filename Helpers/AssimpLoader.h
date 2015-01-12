@@ -1,33 +1,31 @@
 
 #pragma once
 
+#include "GL/glew.h"
+
 #include "assimp/Importer.hpp"
-#include "assimp/postprocess.h"
 #include "assimp/scene.h"
+#include "assimp/postprocess.h"
 
 #include <vector>
 
-#include "../Renderables/GLMesh.h"
+struct Model;
 
 class AssimpLoader
 {
 public:
-	static AssimpLoader& getInstance()
+	static AssimpLoader* getInstance()
 	{
 		static AssimpLoader loader;
-		return loader;
+		return &loader;
 	}
 
 	~AssimpLoader();
-
-	bool				LoadAssimpMesh(const std::string& path, GLMesh** mesh);
+	bool					LoadAssimpMesh(const std::string& fileName);
 
 private:
 	AssimpLoader();
 
-	// Data structures to hold values for our GLMesh
-	std::vector<VertexPN>	m_vecVertices;
-	std::vector<GLuint>		m_vecIndices;
-	//std::vector<Texture>	m_vecTextures;
+	GLuint					shaderID;
+	std::vector<Model>		models;
 };
-
