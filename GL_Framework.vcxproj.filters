@@ -27,9 +27,6 @@
     <ClCompile Include="Camera\Camera.cpp">
       <Filter>Camera</Filter>
     </ClCompile>
-    <ClCompile Include="ShaderEngine\GLSLParser.cpp">
-      <Filter>ShaderEngine</Filter>
-    </ClCompile>
     <ClCompile Include="Renderables\GLCube.cpp">
       <Filter>Renderables</Filter>
     </ClCompile>
@@ -43,16 +40,19 @@
     <ClCompile Include="Renderables\GLCubeNormal.cpp">
       <Filter>Renderables</Filter>
     </ClCompile>
-    <ClCompile Include="Texture.cpp">
-      <Filter>Helpers</Filter>
+    <ClCompile Include="ShaderEngine\GLSLShader.cpp">
+      <Filter>ShaderEngine</Filter>
+    </ClCompile>
+    <ClCompile Include="Renderables\Mesh.cpp">
+      <Filter>Renderables</Filter>
+    </ClCompile>
+    <ClCompile Include="Renderables\Model.cpp">
+      <Filter>Renderables</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera\Camera.h">
       <Filter>Camera</Filter>
-    </ClInclude>
-    <ClInclude Include="ShaderEngine\GLSLParser.h">
-      <Filter>ShaderEngine</Filter>
     </ClInclude>
     <ClInclude Include="Renderables\GLCube.h">
       <Filter>Renderables</Filter>
@@ -75,14 +75,17 @@
     <ClInclude Include="Renderables\GLCubeNormal.h">
       <Filter>Renderables</Filter>
     </ClInclude>
-    <ClInclude Include="Model.h">
+    <ClInclude Include="Helpers\Helper.h">
+      <Filter>Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="Renderables\Mesh.h">
       <Filter>Renderables</Filter>
     </ClInclude>
-    <ClInclude Include="AssimpLoader.h">
-      <Filter>Helpers</Filter>
+    <ClInclude Include="ShaderEngine\GLSLShader.h">
+      <Filter>ShaderEngine</Filter>
     </ClInclude>
-    <ClInclude Include="Texture.h">
-      <Filter>Helpers</Filter>
+    <ClInclude Include="Renderables\Model.h">
+      <Filter>Renderables</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -96,6 +99,12 @@
       <Filter>Shaders</Filter>
     </None>
     <None Include="Shaders\vsLighting.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\vsAmbient.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\psAmbient.glsl">
       <Filter>Shaders</Filter>
     </None>
   </ItemGroup>

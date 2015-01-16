@@ -1,6 +1,6 @@
 
 #include "GLCubeNormal.h"
-#include "..\ShaderEngine\GLSLParser.h"
+#include "..\ShaderEngine\GLSLShader.h"
 #include "..\Camera\Camera.h"
 #include "..\Helpers\VertexStructures.h"
 
@@ -103,6 +103,8 @@ GLCubeNormal::~GLCubeNormal()
 //////////////////////////////////////////////////////////////////////////////////////////
 void GLCubeNormal::SetupViewProjMatrix()
 {
+	GLuint shader = m_pShader->GetShaderID();
+
 	hWorld = glGetUniformLocation(shader, "matWorld");
 	hView = glGetUniformLocation(shader, "matView");
 	hProj = glGetUniformLocation(shader, "matProj");
@@ -133,7 +135,7 @@ void GLCubeNormal::SetRotation( const glm::vec3& ax, float angle )
 void GLCubeNormal::Init()
 {
 	// Create shader object
-	shader = GLSLParser::getInstance().LoadShader("Shaders/vsLighting.glsl", "Shaders/psLighting.glsl");
+	m_pShader = new GLSLShader("Shaders/vs.glsl", "Shaders/ps.glsl");
 
 	// create vao
 	glGenVertexArrays(1, &vao);
@@ -148,6 +150,8 @@ void GLCubeNormal::Init()
 	glGenBuffers(1, &ibo);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
+	GLuint shader = m_pShader->GetShaderID();
 
 	posAttrib = glGetAttribLocation(shader, "in_Position");
 	glEnableVertexAttribArray(posAttrib);
@@ -197,8 +201,9 @@ void GLCubeNormal::Update(float dt)
 //////////////////////////////////////////////////////////////////////////////////////////
 void GLCubeNormal::Render()
 {
-	glUseProgram(shader);
 	glBindVertexArray(vao);
+
+	m_pShader->Use();
 
 	glUniformMatrix4fv(hWorld, 1, GL_FALSE, glm::value_ptr(matWorld));
 	glUniformMatrix4fv(hView, 1, GL_FALSE, glm::value_ptr(matView));
@@ -216,7 +221,8 @@ void GLCubeNormal::Render()
 //////////////////////////////////////////////////////////////////////////////////////////
 void GLCubeNormal::Kill()
 {
-	glDeleteProgram(shader);
+	delete m_pShader;
+
 	glDeleteBuffers(1, &vbo);
 	glDeleteBuffers(1, &ibo);
 	glDeleteVertexArrays(1, &vao);

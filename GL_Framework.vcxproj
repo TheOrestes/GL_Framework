@@ -147,28 +147,31 @@
     <ClCompile Include="Renderables\GLCube.cpp" />
     <ClCompile Include="Renderables\GLCubeNormal.cpp" />
     <ClCompile Include="Renderables\GLGrid.cpp" />
+    <ClCompile Include="Renderables\Mesh.cpp" />
+    <ClCompile Include="Renderables\Model.cpp" />
     <ClCompile Include="Scene\Scene.cpp" />
-    <ClCompile Include="ShaderEngine\GLSLParser.cpp" />
-    <ClCompile Include="Texture.cpp" />
+    <ClCompile Include="ShaderEngine\GLSLShader.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="AssimpLoader.h" />
     <ClInclude Include="Camera\Camera.h" />
+    <ClInclude Include="Helpers\Helper.h" />
     <ClInclude Include="Helpers\VertexStructures.h" />
-    <ClInclude Include="Model.h" />
     <ClInclude Include="ObjectSystem\GameObject.h" />
     <ClInclude Include="ObjectSystem\IObject.h" />
     <ClInclude Include="Renderables\GLCube.h" />
     <ClInclude Include="Renderables\GLCubeNormal.h" />
     <ClInclude Include="Renderables\GLGrid.h" />
+    <ClInclude Include="Renderables\Mesh.h" />
+    <ClInclude Include="Renderables\Model.h" />
     <ClInclude Include="Scene\Scene.h" />
-    <ClInclude Include="ShaderEngine\GLSLParser.h" />
-    <ClInclude Include="Texture.h" />
+    <ClInclude Include="ShaderEngine\GLSLShader.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\ps.glsl" />
+    <None Include="Shaders\vsAmbient.glsl" />
     <None Include="Shaders\psLighting.glsl" />
     <None Include="Shaders\vs.glsl" />
+    <None Include="Shaders\psAmbient.glsl" />
     <None Include="Shaders\vsLighting.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

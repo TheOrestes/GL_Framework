@@ -5,7 +5,6 @@
 #include "glfw3.h"
 
 #include "Camera/Camera.h"
-#include "ShaderEngine/GLSLParser.h"
 #include "Scene/Scene.h"
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -74,7 +73,7 @@ void GameLoop()
 {
 	glfwPollEvents();
 
-	glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
+	glClearColor(0.8f, 0.8f, 0.8f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	//cube.Update(tick);

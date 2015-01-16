@@ -1,40 +1,26 @@
 
-#include "GLSLParser.h"
+#include "GLSLShader.h"
+#include <iostream>
+#include <fstream>
 
-// ---------------------------------------------------------------------------------------
-/**
- * @brief  Constructor
- */
-GLSLParser::GLSLParser()
+//////////////////////////////////////////////////////////////////////////////////////////
+GLSLShader::GLSLShader(const std::string& vertShader, const std::string& fragShader)
 {
-	vertShader.empty();
-	fragShader.empty();
+	shaderID = LoadShader(vertShader, fragShader);
 }
 
-// ---------------------------------------------------------------------------------------
-/**
- * @brief Destructor
- */
-GLSLParser::~GLSLParser()
+//////////////////////////////////////////////////////////////////////////////////////////
+GLSLShader::~GLSLShader()
 {
-
+	glDeleteProgram(shaderID);
 }
 
-// ---------------------------------------------------------------------------------------
-/**
- * @brief Load shader & return shader program id
- *
- * This function reads shader code from the input string, compile the shader & create shader
- * program from it.
- * @param[in] vertex shader filename
- * @param[in] fragment shader filename
- * @param[]out GLuint shader program id
- * @return*/
-GLuint GLSLParser::LoadShader(const std::string& vShader, const std::string& fShader)
+//////////////////////////////////////////////////////////////////////////////////////////
+GLuint	GLSLShader::LoadShader(const std::string& vertShader, const std::string& fragShader)
 {
 	/// Read vertex shader code from the file...
 	std::string vertexShaderSrc;
-	std::ifstream vsStream(vShader.c_str(), std::ios::in);
+	std::ifstream vsStream(vertShader.c_str(), std::ios::in);
 
 	if(vsStream.is_open())
 	{
@@ -49,7 +35,7 @@ GLuint GLSLParser::LoadShader(const std::string& vShader, const std::string& fSh
 
 	/// Read pixel shader code from the file...
 	std::string pixelShaderSrc;
-	std::ifstream psStream(fShader.c_str(), std::ios::in);
+	std::ifstream psStream(fragShader.c_str(), std::ios::in);
 
 	if(psStream.is_open())
 	{
@@ -72,7 +58,7 @@ GLuint GLSLParser::LoadShader(const std::string& vShader, const std::string& fSh
 	glCompileShader(vertexShaderID);
 
 	// Check for shader compilation errors...
-	if(!IsShaderCompiled(vertexShaderID, vShader))
+	if(!IsShaderCompiled(vertexShaderID, vertShader))
 		return 0;
 
 	/// Compile pixel shader...
@@ -81,7 +67,7 @@ GLuint GLSLParser::LoadShader(const std::string& vShader, const std::string& fSh
 	glCompileShader(fragmentShaderID);
 
 	// Check for shader compilation errors...
-	if(!IsShaderCompiled(fragmentShaderID, fShader))
+	if(!IsShaderCompiled(fragmentShaderID, fragShader))
 		return 0;
 
 	// Create shader program
@@ -96,13 +82,8 @@ GLuint GLSLParser::LoadShader(const std::string& vShader, const std::string& fSh
 	return shaderProgramID;
 }
 
-// ---------------------------------------------------------------------------------------
-/**
- * @brief Check if shader compilation succeeded or failed?
- * @param[in] GLuint shaderID
- * @return GLboolean status flag
- */
-bool GLSLParser::IsShaderCompiled(GLuint shaderID, const std::string& name)
+//////////////////////////////////////////////////////////////////////////////////////////
+bool GLSLShader::IsShaderCompiled( GLuint shaderID, const std::string& name )
 {
 	GLint result = GL_FALSE;
 	int infoLogLength;
@@ -120,3 +101,11 @@ bool GLSLParser::IsShaderCompiled(GLuint shaderID, const std::string& name)
 
 	return true;
 }
+
+//////////////////////////////////////////////////////////////////////////////////////////
+void	GLSLShader::Use()
+{
+	glUseProgram(shaderID);
+}
+
+

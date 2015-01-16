@@ -1,8 +1,14 @@
 
 #pragma once
 
+#include "GL/glew.h"
 #include <string>
 #include "glm/glm.hpp"
+
+#include "assimp/Importer.hpp"
+#include "assimp/postprocess.h"
+#include "assimp/scene.h"
+
 
 //////////////////////////////////////////////////////////////////////////////////////////
 struct VertexP
@@ -77,5 +83,13 @@ struct VertexPNT
 	glm::vec3	position;
 	glm::vec3	normal;
 	glm::vec2	texcoord;
+};
+
+//////////////////////////////////////////////////////////////////////////////////////////
+struct Texture
+{
+	GLuint		id;
+	std::string name;
+	aiString	path;
 };
 

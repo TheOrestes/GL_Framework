@@ -1,6 +1,13 @@
 
 #include "Scene.h"
-#include "../Helpers/AssimpLoader.h"
+
+#include "../Renderables/Model.h"
+#include "../ShaderEngine/GLSLShader.h"
+#include "../Camera/Camera.h"
+
+//////////////////////////////////////////////////////////////////////////////////////////
+GLSLShader* shader;
+Model* gameModel; 
 
 //////////////////////////////////////////////////////////////////////////////////////////
 Scene::Scene()
@@ -8,7 +15,6 @@ Scene::Scene()
 	m_pCube1 = new GLCube(glm::vec4(1,0,0,0));
 	m_pCube2 = new GLCube(glm::vec4(0,1,0,0));
 	m_pCube3 = new GLCube(glm::vec4(0,0,1,0));
-	m_pMesh = new GLMesh();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -29,12 +35,8 @@ void	Scene::Init()
 	m_pCube3->Init();
 	m_pCube3->SetPosition(glm::vec3(4,0,-4));
 
-	bool status = AssimpLoader::getInstance().LoadAssimpMesh("Data/Sphere.dae", &m_pMesh);
-	if(status)
-	{
-		m_pMesh->Init();
-		m_pMesh->SetScale(glm::vec3(100,100,100));
-	}
+	shader = new GLSLShader("Shaders/vsAmbient.glsl", "Shaders/psAmbient.glsl");
+	gameModel = new Model("Data/nanosuit/nanosuit.obj");
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -43,18 +45,31 @@ void	Scene::Update(float dt)
 	m_pCube1->Update(dt);
 	m_pCube2->Update(dt);
 	m_pCube3->Update(dt);
-
-	m_pMesh->Update(dt);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
 void	Scene::Render()
 {
 	//m_pCube1->Render();
-	m_pCube2->Render();
+	//m_pCube2->Render();
 	//m_pCube3->Render();
 
-	m_pMesh->Render();
+	shader->Use();
+	GLuint shaderID = shader->GetShaderID();
+
+	// Transformation matrices
+	glm::mat4 projection = Camera::getInstance().getProjectionMatrix();
+	glm::mat4 view = Camera::getInstance().getViewMatrix();
+
+	glUniformMatrix4fv(glGetUniformLocation(shaderID, "matProj"), 1, GL_FALSE, glm::value_ptr(projection));
+	glUniformMatrix4fv(glGetUniformLocation(shaderID, "matView"), 1, GL_FALSE, glm::value_ptr(view));
+
+	// Draw the loaded model
+	glm::mat4 model;
+	model = glm::translate(model, glm::vec3(0.0f, 0, 0.0f)); // Translate it down a bit so it's at the center of the scene
+	model = glm::scale(model, glm::vec3(1,1,1));	// It's a bit too big for our scene, so scale it down
+	glUniformMatrix4fv(glGetUniformLocation(shaderID, "matWorld"), 1, GL_FALSE, glm::value_ptr(model));
+	gameModel->Render(*shader);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -76,11 +91,5 @@ void	Scene::Kill()
 	{
 		delete m_pCube3;
 		m_pCube3 = nullptr;
-	}
-	
-	if (m_pMesh)
-	{
-		delete m_pMesh;
-		m_pMesh = nullptr;
 	}
 }

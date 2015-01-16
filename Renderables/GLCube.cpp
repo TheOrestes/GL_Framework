@@ -1,6 +1,6 @@
 
 #include "GLCube.h"
-#include "..\ShaderEngine\GLSLParser.h"
+#include "..\ShaderEngine\GLSLShader.h"
 #include "..\Camera\Camera.h"
 #include "..\Helpers\VertexStructures.h"
 
@@ -97,6 +97,8 @@ GLCube::~GLCube()
 //////////////////////////////////////////////////////////////////////////////////////////
 void GLCube::SetupViewProjMatrix()
 {
+	GLuint shader = m_pShader->GetShaderID();
+
 	hWorld = glGetUniformLocation(shader, "matWorld");
 	hView = glGetUniformLocation(shader, "matView");
 	hProj = glGetUniformLocation(shader, "matProj");
@@ -125,7 +127,8 @@ void GLCube::SetRotation( const glm::vec3& ax, float angle )
 void GLCube::Init()
 {
 	// Create shader object
-	shader = GLSLParser::getInstance().LoadShader("Shaders/vs.glsl", "Shaders/ps.glsl");
+	// shader
+	m_pShader = new GLSLShader("Shaders/vs.glsl", "Shaders/ps.glsl");
 
 	// create vao
 	glGenVertexArrays(1, &vao);
@@ -141,6 +144,7 @@ void GLCube::Init()
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
+	GLuint shader = m_pShader->GetShaderID();
 	posAttrib = glGetAttribLocation(shader, "in_Position");
 	glEnableVertexAttribArray(posAttrib);
 	glVertexAttribPointer(posAttrib, 3, GL_FLOAT, false, sizeof(VertexPC), (void*)0);
@@ -175,7 +179,7 @@ void GLCube::Update(float dt)
 	// https://www.youtube.com/watch?v=U_RtSchYYec
 
 	glm::mat4 T   = glm::translate(glm::mat4(1), vecPosition);
-	glm::mat4 TR  = glm::rotate(T, 0.0f, glm::vec3(0.0f, 1.0f, 0.0f));
+	glm::mat4 TR  = glm::rotate(T, angle, glm::vec3(0.0f, 1.0f, 0.0f));
 	glm::mat4 TRS = glm::scale(TR, glm::vec3(vecScale.x, vecScale.y, vecScale.z));
 	
 	// Set final World transformation matrix...
@@ -190,8 +194,9 @@ void GLCube::Update(float dt)
 //////////////////////////////////////////////////////////////////////////////////////////
 void GLCube::Render()
 {
-	glUseProgram(shader);
 	glBindVertexArray(vao);
+
+	m_pShader->Use();
 
 	glUniformMatrix4fv(hWorld, 1, GL_FALSE, glm::value_ptr(matWorld));
 	glUniformMatrix4fv(hView, 1, GL_FALSE, glm::value_ptr(matView));
@@ -207,7 +212,8 @@ void GLCube::Render()
 //////////////////////////////////////////////////////////////////////////////////////////
 void GLCube::Kill()
 {
-	glDeleteProgram(shader);
+	delete m_pShader;
+
 	glDeleteBuffers(1, &vbo);
 	glDeleteBuffers(1, &ibo);
 	glDeleteVertexArrays(1, &vao);

@@ -4,6 +4,8 @@
 #include "GL\glew.h"
 #include "..\Helpers\VertexStructures.h"
 
+class GLSLShader;
+
 class GLCubeNormal
 {
 public:
@@ -29,7 +31,6 @@ private:
 
 	GLuint		vbo;				// vertex buffer object
 	GLuint		ibo;				// index buffer object
-	GLuint		shader;				// shader object
 
 	GLuint		vao;				// vertex array object
 
@@ -52,6 +53,8 @@ private:
 	glm::vec4	m_color;
 
 	bool		m_bWireframe;		// wire-frame rendering flag
+
+	GLSLShader*	m_pShader;			// Ptr to shader object
 
 	glm::mat4   matWorld;
 	glm::mat4	matView;
