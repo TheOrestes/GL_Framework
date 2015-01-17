@@ -144,6 +144,7 @@
   <ItemGroup>
     <ClCompile Include="Camera\Camera.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="ObjectSystem\GameObject.cpp" />
     <ClCompile Include="Renderables\GLCube.cpp" />
     <ClCompile Include="Renderables\GLCubeNormal.cpp" />
     <ClCompile Include="Renderables\GLGrid.cpp" />

@@ -3,7 +3,7 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////
 Camera::Camera() : 
-	m_vecPosition(0,0,5),
+	m_vecPosition(0,5,5),
 	m_vecDirection(0,0,1),
 	m_vecRight(1,0,0),
 	m_vecUp(0,1,0),
@@ -112,6 +112,6 @@ glm::mat4x4 Camera::getViewMatrix()
 //////////////////////////////////////////////////////////////////////////////////////////
 glm::mat4x4 Camera::getProjectionMatrix()
 {
-	return glm::perspective(m_fZoom, 1.3333f, 0.1f, 1000.0f);
+	return glm::perspective(m_fZoom, 1.6f, 0.1f, 1000.0f);
 }
 

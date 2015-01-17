@@ -9,9 +9,11 @@ class IObject
 {
 public:
 	IObject();
-	~IObject();
+	virtual ~IObject();
 
-	virtual void Init() = 0;
-	virtual void Kill() = 0;
+	virtual void	Init() = 0;
+	virtual void	Kill() = 0;
+	virtual void	Update(float dt) = 0;
+	virtual void	Render() = 0;
 };
 

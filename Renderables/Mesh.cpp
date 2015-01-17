@@ -1,6 +1,7 @@
 
 #include <sstream>
 #include "Mesh.h"
+#include "../Camera/Camera.h"
 #include "../Helpers/VertexStructures.h"
 #include "../ShaderEngine/GLSLShader.h"
 
@@ -55,7 +56,7 @@ void	Mesh::SetupMesh()
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
-void	Mesh::Render(GLSLShader shader)
+void	Mesh::Render(GLSLShader* shader, const glm::mat4& world)
 {
 	GLuint diffuseNr = 1;
 	GLuint specularNr = 1;
@@ -80,7 +81,7 @@ void	Mesh::Render(GLSLShader shader)
 		number = ss.str();
 
 		// set sampler to the correct texture
-		GLint hVar = glGetUniformLocation(shader.GetShaderID(), (name + number).c_str());
+		GLint hVar = glGetUniformLocation(shader->GetShaderID(), (name + number).c_str());
 		glUniform1f(hVar, i);
 
 		// bind the texture
@@ -88,7 +89,25 @@ void	Mesh::Render(GLSLShader shader)
 	}
 
 	// Draw mesh
+	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); 
+	glEnable(GL_DEPTH_TEST);
+
 	glBindVertexArray(vao);
+
+	// transformation
+	GLuint shaderID = shader->GetShaderID();
+
+	shader->Use();
+
+	//--- Transformation matrices
+	glm::mat4 projection = Camera::getInstance().getProjectionMatrix();
+	glm::mat4 view = Camera::getInstance().getViewMatrix();
+
+	glUniformMatrix4fv(glGetUniformLocation(shaderID, "matProj"), 1, GL_FALSE, glm::value_ptr(projection));
+	glUniformMatrix4fv(glGetUniformLocation(shaderID, "matView"), 1, GL_FALSE, glm::value_ptr(view));
+	glUniformMatrix4fv(glGetUniformLocation(shaderID, "matWorld"), 1, GL_FALSE, glm::value_ptr(world));
+	//---
+
 	glDrawElements(GL_TRIANGLES, m_indices.size(), GL_UNSIGNED_INT, 0);
 	glBindVertexArray(0);
 

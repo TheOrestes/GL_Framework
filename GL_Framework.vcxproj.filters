@@ -49,6 +49,9 @@
     <ClCompile Include="Renderables\Model.cpp">
       <Filter>Renderables</Filter>
     </ClCompile>
+    <ClCompile Include="ObjectSystem\GameObject.cpp">
+      <Filter>ObjectSystem</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera\Camera.h">

@@ -10,18 +10,39 @@
 
 #include <string>
 #include "IObject.h"
+#include "glm/glm.hpp"
 
-class GameObject : public IObject
+class Model;
+class GLSLShader;
+
+class GameObject// : public IObject
 {
 public:
-	GameObject();
-	~GameObject();
+	GameObject(int id, const std::string& name, const std::string& path);
+	virtual ~GameObject();
 
-	virtual void	Init();
-	virtual void	Kill();
-	virtual void	Update(float dt);
+	virtual void			Init();
+	virtual void			Kill();
+	virtual void			Update(float dt);
+	virtual void			Render();
+
+	// Setter functions
+	void					SetPosition(const glm::vec3& pos);
+	void					SetRotation(const glm::vec3& axis, float angle);
+	void					SetScale(const glm::vec3& sc);
 
 private:
-	int				m_iID;
-	std::string		m_strName;
+
+	int						m_iID;
+	std::string				m_strName;
+	std::string				m_strPath;
+
+	GLSLShader*				m_pShader;
+	Model*					m_pModel;
+
+	// Transformation
+	glm::vec3				m_vecPosition;
+	glm::vec3				m_vecRotation;
+	float					m_fAngle;
+	glm::vec3				m_vecScale;
 };

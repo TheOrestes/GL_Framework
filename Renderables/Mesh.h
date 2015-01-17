@@ -2,6 +2,7 @@
 #pragma once
 
 #include "GL/glew.h"
+#include "glm/glm.hpp"
 #include <vector>
 
 struct VertexPNT;
@@ -18,7 +19,7 @@ public:
 	std::vector<GLuint>		m_indices;
 	std::vector<Texture>	m_textures;
 
-	void		Render(GLSLShader shader);
+	void		Render(GLSLShader* shader, const glm::mat4& world);
 
 private:
 	GLuint		vao;

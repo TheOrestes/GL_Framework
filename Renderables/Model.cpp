@@ -194,10 +194,10 @@ void	Model::ProcessNode(aiNode* node, const aiScene* scene)
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
-void	Model::Render(GLSLShader shader)
+void	Model::Render(GLSLShader* shader, const glm::mat4& world)
 {
 	for (GLuint i = 0 ; i<m_Meshes.size() ; i++)
 	{
-		m_Meshes[i].Render(shader);
+		m_Meshes[i].Render(shader, world);
 	}
 }

@@ -18,7 +18,7 @@ public:
 	Model(const std::string& path);
 	~Model();
 	
-	void					Render(GLSLShader shader);
+	void					Render(GLSLShader* shader, const glm::mat4& world);
 
 private:
 	std::vector<Mesh>		m_Meshes;

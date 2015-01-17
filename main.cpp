@@ -13,8 +13,8 @@ Scene		gScene;
 
 //GLCube		cube;
 
-const float gScreenWidth	=	800.0f;
-const float gScreenHeight	=	600.0f;
+const float gScreenWidth	=	1280.0f;
+const float gScreenHeight	=	800.0f;
 
 const float tick			=	0.016667f;
 bool  bFirstMouse			=	true;
@@ -29,22 +29,22 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 		glfwSetWindowShouldClose(window, true);
 	}
 
-	if (key == GLFW_KEY_W && action == GLFW_REPEAT)
+	if (key == GLFW_KEY_W && (action == GLFW_REPEAT || GLFW_PRESS))
 	{
 		Camera::getInstance().ProcessKeyboard(CameraMovement::FORWARD, tick);	
 	}
 
-	if (key == GLFW_KEY_S && action == GLFW_REPEAT)
+	if (key == GLFW_KEY_S && (action == GLFW_REPEAT || GLFW_PRESS))
 	{
 		Camera::getInstance().ProcessKeyboard(CameraMovement::BACK, tick);	
 	}
 
-	if (key == GLFW_KEY_A && action == GLFW_REPEAT)
+	if (key == GLFW_KEY_A && (action == GLFW_REPEAT || GLFW_PRESS))
 	{
 		Camera::getInstance().ProcessKeyboard(CameraMovement::LEFT, tick);	
 	}
 
-	if (key == GLFW_KEY_D && action == GLFW_REPEAT)
+	if (key == GLFW_KEY_D && (action == GLFW_REPEAT || GLFW_PRESS))
 	{
 		Camera::getInstance().ProcessKeyboard(CameraMovement::RIGHT, tick);	
 	}
@@ -69,11 +69,11 @@ void Mouse_Callback(GLFWwindow* window, double xPos, double yPos)
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
-void GameLoop()
+void GameLoop(float tick)
 {
 	glfwPollEvents();
 
-	glClearColor(0.8f, 0.8f, 0.8f, 1.0f);
+	glClearColor(0.3f, 0.3f, 0.3f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	//cube.Update(tick);
@@ -108,6 +108,7 @@ int main(void)
 	glfwMakeContextCurrent(window);
 
 	/// Key callback
+	
 	glfwSetKeyCallback(window, key_callback);
 
 	/// Mouse 
@@ -122,10 +123,16 @@ int main(void)
 	// Initialize Scene
 	InitializeScene();
 
+	//double lastFrameTime = glfwGetTime();
+
 	/// Message Loop!
 	while (!glfwWindowShouldClose(window))
 	{
-		GameLoop();
+		/*double currFrameTime = glfwGetTime();
+		float delta = (float)(currFrameTime - lastFrameTime);
+		lastFrameTime = currFrameTime;*/
+
+		GameLoop(tick);
 		
 		glfwSwapBuffers(window);
 	}
