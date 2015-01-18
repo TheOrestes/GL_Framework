@@ -28,7 +28,7 @@ GameObject::~GameObject()
 void	GameObject::Init()
 {
 	// initialize shader
-	m_pShader = new GLSLShader("Shaders/vsAmbient.glsl", "Shaders/psAmbient.glsl");
+	m_pShader = new GLSLShader("Shaders/vsDiffuse.glsl", "Shaders/psDiffuse.glsl");
 
 	// initialize model
 	m_pModel = new Model(m_strPath);

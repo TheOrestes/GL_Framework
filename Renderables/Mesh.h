@@ -3,6 +3,7 @@
 
 #include "GL/glew.h"
 #include "glm/glm.hpp"
+#include "glm/gtc/matrix_inverse.hpp"
 #include <vector>
 
 struct VertexPNT;

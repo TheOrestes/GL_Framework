@@ -110,5 +110,11 @@
     <None Include="Shaders\psAmbient.glsl">
       <Filter>Shaders</Filter>
     </None>
+    <None Include="Shaders\psDiffuse.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\vsDiffuse.glsl">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

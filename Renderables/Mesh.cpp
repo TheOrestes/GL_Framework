@@ -89,7 +89,7 @@ void	Mesh::Render(GLSLShader* shader, const glm::mat4& world)
 	}
 
 	// Draw mesh
-	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); 
+	// glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); 
 	glEnable(GL_DEPTH_TEST);
 
 	glBindVertexArray(vao);
@@ -103,9 +103,12 @@ void	Mesh::Render(GLSLShader* shader, const glm::mat4& world)
 	glm::mat4 projection = Camera::getInstance().getProjectionMatrix();
 	glm::mat4 view = Camera::getInstance().getViewMatrix();
 
+	glm::mat4 InvWorld = glm::inverse(world);
+
 	glUniformMatrix4fv(glGetUniformLocation(shaderID, "matProj"), 1, GL_FALSE, glm::value_ptr(projection));
 	glUniformMatrix4fv(glGetUniformLocation(shaderID, "matView"), 1, GL_FALSE, glm::value_ptr(view));
 	glUniformMatrix4fv(glGetUniformLocation(shaderID, "matWorld"), 1, GL_FALSE, glm::value_ptr(world));
+	glUniformMatrix4fv(glGetUniformLocation(shaderID, "matWorldInv"), 1, GL_FALSE, glm::value_ptr(InvWorld));
 	//---
 
 	glDrawElements(GL_TRIANGLES, m_indices.size(), GL_UNSIGNED_INT, 0);
