@@ -116,5 +116,11 @@
     <None Include="Shaders\vsDiffuse.glsl">
       <Filter>Shaders</Filter>
     </None>
+    <None Include="Shaders\psUberShader.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\vsUberShader.glsl">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

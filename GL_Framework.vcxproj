@@ -170,12 +170,14 @@
   <ItemGroup>
     <None Include="Shaders\ps.glsl" />
     <None Include="Shaders\psDiffuse.glsl" />
+    <None Include="Shaders\psUberShader.glsl" />
     <None Include="Shaders\vsAmbient.glsl" />
     <None Include="Shaders\psLighting.glsl" />
     <None Include="Shaders\vs.glsl" />
     <None Include="Shaders\psAmbient.glsl" />
     <None Include="Shaders\vsDiffuse.glsl" />
     <None Include="Shaders\vsLighting.glsl" />
+    <None Include="Shaders\vsUberShader.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

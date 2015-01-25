@@ -31,8 +31,10 @@ public:
 	void			ProcessMouseMovement(float xOffset, float yOffset, bool bConstraintPitch = true);
 	void			ProcessMouseScroll(float offset);
 
-	glm::mat4x4		getViewMatrix();
-	glm::mat4x4		getProjectionMatrix();
+	glm::mat4x4				getViewMatrix();
+	glm::mat4x4				getProjectionMatrix();
+	inline glm::vec3		getCameraPosition(){ return m_vecPosition; }
+	inline glm::vec3		getCameraLookVector() { return m_vecDirection; }
 
 private:
 	Camera();

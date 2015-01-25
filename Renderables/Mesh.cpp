@@ -63,6 +63,7 @@ void	Mesh::Render(GLSLShader* shader, const glm::mat4& world)
 
 	for (GLuint i = 0 ; i < m_textures.size() ; i++)
 	{
+
 		glActiveTexture(GL_TEXTURE0 + i);
 
 		std::stringstream ss;
@@ -82,14 +83,14 @@ void	Mesh::Render(GLSLShader* shader, const glm::mat4& world)
 
 		// set sampler to the correct texture
 		GLint hVar = glGetUniformLocation(shader->GetShaderID(), (name + number).c_str());
-		glUniform1f(hVar, i);
+		glUniform1i(hVar, i);
 
 		// bind the texture
 		glBindTexture(GL_TEXTURE_2D, m_textures[i].id);
 	}
 
 	// Draw mesh
-	// glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); 
+	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); 
 	glEnable(GL_DEPTH_TEST);
 
 	glBindVertexArray(vao);
@@ -104,11 +105,13 @@ void	Mesh::Render(GLSLShader* shader, const glm::mat4& world)
 	glm::mat4 view = Camera::getInstance().getViewMatrix();
 
 	glm::mat4 InvWorld = glm::inverse(world);
+	glm::vec3 CamPosition = Camera::getInstance().getCameraPosition();
 
 	glUniformMatrix4fv(glGetUniformLocation(shaderID, "matProj"), 1, GL_FALSE, glm::value_ptr(projection));
 	glUniformMatrix4fv(glGetUniformLocation(shaderID, "matView"), 1, GL_FALSE, glm::value_ptr(view));
 	glUniformMatrix4fv(glGetUniformLocation(shaderID, "matWorld"), 1, GL_FALSE, glm::value_ptr(world));
 	glUniformMatrix4fv(glGetUniformLocation(shaderID, "matWorldInv"), 1, GL_FALSE, glm::value_ptr(InvWorld));
+	glUniform3fv(glGetUniformLocation(shaderID, "camPosition"), 1, glm::value_ptr(CamPosition));
 	//---
 
 	glDrawElements(GL_TRIANGLES, m_indices.size(), GL_UNSIGNED_INT, 0);

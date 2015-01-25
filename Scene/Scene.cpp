@@ -12,9 +12,10 @@ Scene::Scene()
 	m_pCube2 = new GLCube(glm::vec4(0,1,0,0));
 	m_pCube3 = new GLCube(glm::vec4(0,0,1,0));*/
 
-	m_pObj1 = new GameObject(1, "Deer", "Data/nanosuit/nanosuit.obj");
-	m_pObj2 = new GameObject(2, "Nanosuit","Data/nanosuit/nanosuit.obj");
-	m_pObj3 = new GameObject(3, "Spirit", "Data/nanosuit/nanosuit.obj");
+	//m_pObj1 = new GameObject(1, "Spirit", "Data/SpiritBreaker/SpiritBreaker.dae");
+	m_pObj1 = new GameObject(1, "Spirit","Data/SpiritBreaker/SpiritBreaker.fbx");
+	//m_pObj2 = new GameObject(2, "Crate","Data/UnitTorus.fbx");
+	//m_pObj3 = new GameObject(3, "Sphere", "Data/duck.dae");
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -37,13 +38,15 @@ void	Scene::Init()
 
 	m_pObj1->Init();
 	m_pObj1->SetPosition(glm::vec3(0,0,0));
-	m_pObj1->SetScale(glm::vec3(0.5f, 0.5f, 0.5f));
+	m_pObj1->SetScale(glm::vec3(0.05f, 0.05f, 0.05f));
 
-	m_pObj2->Init();
-	m_pObj2->SetPosition(glm::vec3(5,0,0));
+	/*m_pObj2->Init();
+	m_pObj2->SetPosition(glm::vec3(10,0,0));
+	m_pObj2->SetScale(glm::vec3(0.05f, 0.05f, 0.05f));
 
 	m_pObj3->Init();
-	m_pObj3->SetPosition(glm::vec3(-5,0,0));
+	m_pObj3->SetPosition(glm::vec3(-15,0,0));
+	m_pObj3->SetScale(glm::vec3(0.5f, 0.5f, 0.5f));*/
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -54,8 +57,8 @@ void	Scene::Update(float dt)
 	m_pCube3->Update(dt);*/
 
 	m_pObj1->Update(dt);
-	m_pObj2->Update(dt);
-	m_pObj3->Update(dt);
+	//m_pObj2->Update(dt);
+	//m_pObj3->Update(dt);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -66,8 +69,8 @@ void	Scene::Render()
 	m_pCube3->Render();*/
 
 	m_pObj1->Render();
-	m_pObj2->Render();
-	m_pObj3->Render();
+	//m_pObj2->Render();
+	//m_pObj3->Render();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
