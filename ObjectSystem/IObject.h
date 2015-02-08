@@ -8,8 +8,7 @@
 class IObject
 {
 public:
-	IObject();
-	virtual ~IObject();
+	virtual ~IObject(){};
 
 	virtual void	Init() = 0;
 	virtual void	Kill() = 0;

@@ -1,6 +1,7 @@
 
 #include "Scene.h"
-#include "../ObjectSystem/GameObject.h"
+#include "../ObjectSystem/PointLightObject.h"
+#include "../ObjectSystem/StaticObject.h"
 #include "../ShaderEngine/GLSLShader.h"
 #include "../Camera/Camera.h"
 
@@ -12,8 +13,10 @@ Scene::Scene()
 	m_pCube2 = new GLCube(glm::vec4(0,1,0,0));
 	m_pCube3 = new GLCube(glm::vec4(0,0,1,0));*/
 
-	//m_pObj1 = new GameObject(1, "Spirit", "Data/SpiritBreaker/SpiritBreaker.dae");
-	m_pObj1 = new GameObject(1, "Spirit","Data/SpiritBreaker/SpiritBreaker.fbx");
+	m_pOmni1 = new PointLightObject();
+
+	m_pObj1 = new StaticObject("Data/UnitTorus.fbx", "UberShader");
+	//m_pObj1 = new GameObject(1, "Spirit","Data/UnitTorus.fbx");
 	//m_pObj2 = new GameObject(2, "Crate","Data/UnitTorus.fbx");
 	//m_pObj3 = new GameObject(3, "Sphere", "Data/duck.dae");
 }
@@ -36,6 +39,8 @@ void	Scene::Init()
 	m_pCube3->Init();
 	m_pCube3->SetPosition(glm::vec3(-5,0,0));*/
 
+	m_pOmni1->Init();
+
 	m_pObj1->Init();
 	m_pObj1->SetPosition(glm::vec3(0,0,0));
 	m_pObj1->SetScale(glm::vec3(0.05f, 0.05f, 0.05f));
@@ -56,6 +61,7 @@ void	Scene::Update(float dt)
 	m_pCube2->Update(dt);
 	m_pCube3->Update(dt);*/
 
+	m_pOmni1->Update(dt);
 	m_pObj1->Update(dt);
 	//m_pObj2->Update(dt);
 	//m_pObj3->Update(dt);
@@ -68,6 +74,7 @@ void	Scene::Render()
 	m_pCube2->Render();
 	m_pCube3->Render();*/
 
+	m_pOmni1->Render();
 	m_pObj1->Render();
 	//m_pObj2->Render();
 	//m_pObj3->Render();
@@ -94,7 +101,9 @@ void	Scene::Kill()
 		m_pCube3 = nullptr;
 	}*/
 
+	delete m_pOmni1;
+
 	delete m_pObj1;
-	delete m_pObj2;
-	delete m_pObj3;
+	//delete m_pObj2;
+	//delete m_pObj3;
 }

@@ -1,77 +1,77 @@
 
-#include "GameObject.h"
-#include "../Camera/Camera.h"
-#include "../ShaderEngine/GLSLShader.h"
-#include "../Renderables/Model.h"
+#include "PointLightObject.h"
+
 
 //////////////////////////////////////////////////////////////////////////////////////////
-GameObject::GameObject()
+PointLightObject::PointLightObject()
 {
-	m_iID = 0;
-	m_strName.clear();
+	m_vecLightPosition = GameObject::m_vecPosition;
+	m_vecLightColor = glm::vec4(1);
+	m_fIntensity = 1.0f;
+	m_fRadius = 10.0f;
+	m_iAttenuation = 1;
 
-	m_vecPosition = glm::vec3(0);
-	m_vecRotation = glm::vec3(0,1,0);
-	m_fAngle	  = 0.0f;
-	m_vecScale    = glm::vec3(1);
+	m_pLightMesh = nullptr;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
-GameObject::~GameObject()
+PointLightObject::~PointLightObject()
 {
-	
+	Kill();	
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
-void	GameObject::Init()
+void PointLightObject::Init()
 {
-	
+	m_pLightMesh = new GLLight();
+	m_pLightMesh->Init();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
-void	GameObject::Kill()
+void PointLightObject::Kill()
 {
-	
+	delete m_pLightMesh;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
-void	GameObject::Update(float dt)
+void PointLightObject::Update( float dt )
 {
-	
+	m_pLightMesh->Update(dt);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
-void	GameObject::Render()
+void PointLightObject::Render()
 {
-
+	m_pLightMesh->Render();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
-void GameObject::SetPosition( const glm::vec3& pos )
-{
-
+void PointLightObject::SetLightPosition(const glm::vec3& pos)
+{ 
+	m_vecLightPosition = pos; 
+	//m_pLightMesh->SetPosition(pos);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
-void GameObject::SetRotation( const glm::vec3& axis, float angle )
-{
-	
+void PointLightObject::SetLightColor(const glm::vec4& col)
+{ 
+	m_vecLightColor = col; 
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
-void GameObject::SetScale( const glm::vec3& sc )
-{
-
+void PointLightObject::SetLightIntensity(float intensity)
+{ 
+	m_fIntensity = intensity; 
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
-void GameObject::SetID( int id )
-{
-	m_iID = id;
+void PointLightObject::SetLightRadius(float radius)
+{ 
+	m_fRadius = radius; 
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
-void GameObject::SetName( const std::string& name )
-{
-	m_strName = name;
+void PointLightObject::SetLightAttenuation(int atten)
+{ 
+	m_iAttenuation = atten; 
 }

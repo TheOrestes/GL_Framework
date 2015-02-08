@@ -15,10 +15,10 @@
 class Model;
 class GLSLShader;
 
-class GameObject// : public IObject
+class GameObject : public IObject
 {
 public:
-	GameObject(int id, const std::string& name, const std::string& path);
+	GameObject();
 	virtual ~GameObject();
 
 	virtual void			Init();
@@ -27,20 +27,19 @@ public:
 	virtual void			Render();
 
 	// Setter functions
-	void					SetPosition(const glm::vec3& pos);
-	void					SetRotation(const glm::vec3& axis, float angle);
-	void					SetScale(const glm::vec3& sc);
+	virtual void			SetPosition(const glm::vec3& pos);
+	virtual void			SetRotation(const glm::vec3& axis, float angle);
+	virtual void			SetScale(const glm::vec3& sc);
+
+	void					SetID(int id);
+	void					SetName(const std::string& name);
 
 private:
 
 	int						m_iID;
 	std::string				m_strName;
-	std::string				m_strPath;
 
-	GLSLShader*				m_pShader;
-	Model*					m_pModel;
-
-	// Transformation
+protected:
 	glm::vec3				m_vecPosition;
 	glm::vec3				m_vecRotation;
 	float					m_fAngle;

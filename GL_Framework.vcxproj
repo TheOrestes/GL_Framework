@@ -145,9 +145,11 @@
     <ClCompile Include="Camera\Camera.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="ObjectSystem\GameObject.cpp" />
-    <ClCompile Include="Renderables\GLCube.cpp" />
+    <ClCompile Include="ObjectSystem\PointLightObject.cpp" />
+    <ClCompile Include="ObjectSystem\StaticObject.cpp" />
     <ClCompile Include="Renderables\GLCubeNormal.cpp" />
     <ClCompile Include="Renderables\GLGrid.cpp" />
+    <ClCompile Include="Renderables\GLLight.cpp" />
     <ClCompile Include="Renderables\Mesh.cpp" />
     <ClCompile Include="Renderables\Model.cpp" />
     <ClCompile Include="Scene\Scene.cpp" />
@@ -159,9 +161,13 @@
     <ClInclude Include="Helpers\VertexStructures.h" />
     <ClInclude Include="ObjectSystem\GameObject.h" />
     <ClInclude Include="ObjectSystem\IObject.h" />
+    <ClInclude Include="ObjectSystem\PointLightObject.h" />
+    <ClInclude Include="ObjectSystem\StaticObject.h" />
     <ClInclude Include="Renderables\GLCube.h" />
     <ClInclude Include="Renderables\GLCubeNormal.h" />
     <ClInclude Include="Renderables\GLGrid.h" />
+    <ClInclude Include="Renderables\GLLight.h" />
+    <ClInclude Include="Renderables\GLPointLight.h" />
     <ClInclude Include="Renderables\Mesh.h" />
     <ClInclude Include="Renderables\Model.h" />
     <ClInclude Include="Scene\Scene.h" />

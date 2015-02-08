@@ -107,16 +107,19 @@ void	Mesh::Render(GLSLShader* shader, const glm::mat4& world)
 	glm::mat4 InvWorld = glm::inverse(world);
 	glm::vec3 CamPosition = Camera::getInstance().getCameraPosition();
 
+	glm::vec3 LightPosition = glm::vec3(0.0f, 0.0f, 25.0f);
+
 	glUniformMatrix4fv(glGetUniformLocation(shaderID, "matProj"), 1, GL_FALSE, glm::value_ptr(projection));
 	glUniformMatrix4fv(glGetUniformLocation(shaderID, "matView"), 1, GL_FALSE, glm::value_ptr(view));
 	glUniformMatrix4fv(glGetUniformLocation(shaderID, "matWorld"), 1, GL_FALSE, glm::value_ptr(world));
 	glUniformMatrix4fv(glGetUniformLocation(shaderID, "matWorldInv"), 1, GL_FALSE, glm::value_ptr(InvWorld));
 	glUniform3fv(glGetUniformLocation(shaderID, "camPosition"), 1, glm::value_ptr(CamPosition));
+	glUniform3fv(glGetUniformLocation(shaderID, "LightPosition"), 1, glm::value_ptr(LightPosition));
 	//---
 
 	glDrawElements(GL_TRIANGLES, m_indices.size(), GL_UNSIGNED_INT, 0);
 	glBindVertexArray(0);
-
+	
 	// set everything back to default
 	for (GLuint i = 0; i < m_textures.size(); i++)
 	{

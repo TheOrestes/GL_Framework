@@ -27,9 +27,6 @@
     <ClCompile Include="Camera\Camera.cpp">
       <Filter>Camera</Filter>
     </ClCompile>
-    <ClCompile Include="Renderables\GLCube.cpp">
-      <Filter>Renderables</Filter>
-    </ClCompile>
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Renderables\GLGrid.cpp">
       <Filter>Renderables</Filter>
@@ -50,6 +47,15 @@
       <Filter>Renderables</Filter>
     </ClCompile>
     <ClCompile Include="ObjectSystem\GameObject.cpp">
+      <Filter>ObjectSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="Renderables\GLLight.cpp">
+      <Filter>Renderables</Filter>
+    </ClCompile>
+    <ClCompile Include="ObjectSystem\StaticObject.cpp">
+      <Filter>ObjectSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="ObjectSystem\PointLightObject.cpp">
       <Filter>ObjectSystem</Filter>
     </ClCompile>
   </ItemGroup>
@@ -89,6 +95,18 @@
     </ClInclude>
     <ClInclude Include="Renderables\Model.h">
       <Filter>Renderables</Filter>
+    </ClInclude>
+    <ClInclude Include="Renderables\GLPointLight.h">
+      <Filter>Renderables</Filter>
+    </ClInclude>
+    <ClInclude Include="Renderables\GLLight.h">
+      <Filter>Renderables</Filter>
+    </ClInclude>
+    <ClInclude Include="ObjectSystem\StaticObject.h">
+      <Filter>ObjectSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="ObjectSystem\PointLightObject.h">
+      <Filter>ObjectSystem</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
