@@ -108,7 +108,7 @@ std::vector<Texture>	Model::LoadMaterialTextures(aiMaterial* material, aiTexture
 	if( material->GetTextureCount(aiTextureType_DIFFUSE) == 0 )
 	{
 		Texture texture;
-		texture.id = TextureFromFile("Default1.png", m_Directory);
+		texture.id = TextureFromFile("UV_mapper.jpg", m_Directory);
 		texture.name = typeName;
 		texture.path = "Default1.png";
 

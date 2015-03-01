@@ -145,8 +145,10 @@
     <ClCompile Include="Camera\Camera.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="ObjectSystem\GameObject.cpp" />
+    <ClCompile Include="ObjectSystem\LightsManager.cpp" />
     <ClCompile Include="ObjectSystem\PointLightObject.cpp" />
     <ClCompile Include="ObjectSystem\StaticObject.cpp" />
+    <ClCompile Include="Renderables\GLCube.cpp" />
     <ClCompile Include="Renderables\GLCubeNormal.cpp" />
     <ClCompile Include="Renderables\GLGrid.cpp" />
     <ClCompile Include="Renderables\GLLight.cpp" />
@@ -161,6 +163,7 @@
     <ClInclude Include="Helpers\VertexStructures.h" />
     <ClInclude Include="ObjectSystem\GameObject.h" />
     <ClInclude Include="ObjectSystem\IObject.h" />
+    <ClInclude Include="ObjectSystem\LightsManager.h" />
     <ClInclude Include="ObjectSystem\PointLightObject.h" />
     <ClInclude Include="ObjectSystem\StaticObject.h" />
     <ClInclude Include="Renderables\GLCube.h" />
@@ -174,6 +177,7 @@
     <ClInclude Include="ShaderEngine\GLSLShader.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="ClassDiagram.cd" />
     <None Include="Shaders\ps.glsl" />
     <None Include="Shaders\psDiffuse.glsl" />
     <None Include="Shaders\psUberShader.glsl" />

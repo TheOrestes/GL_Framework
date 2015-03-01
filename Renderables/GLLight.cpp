@@ -136,10 +136,11 @@ void GLLight::Update(float dt)
 	// multiply with the first argument.
 	// https://www.youtube.com/watch?v=U_RtSchYYec
 
-	glm::mat4 T   = glm::translate(glm::mat4(1), glm::vec3(0,0,0));
+	glm::mat4 T   = glm::translate(glm::mat4(1), position);
+	glm::mat4 TS = glm::scale(T, glm::vec3(0.2f, 0.2f, 0.2f));
 
 	// Set final World transformation matrix...
-	matWorld = T;
+	matWorld = TS;
 
 	// Create composite ViewProjection matrix
 	//matWorld = glm::rotate(matWorld, 0.1f*dt, glm::vec3(0.0f, 1.0f, 0.0f));

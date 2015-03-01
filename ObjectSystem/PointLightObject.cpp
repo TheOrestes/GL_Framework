@@ -9,7 +9,17 @@ PointLightObject::PointLightObject()
 	m_vecLightColor = glm::vec4(1);
 	m_fIntensity = 1.0f;
 	m_fRadius = 10.0f;
-	m_iAttenuation = 1;
+
+	m_pLightMesh = nullptr;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+PointLightObject::PointLightObject(const glm::vec4& color)
+{
+	m_vecLightPosition = GameObject::m_vecPosition;
+	m_vecLightColor = color;
+	m_fIntensity = 1.0f;
+	m_fRadius = 10.0f;
 
 	m_pLightMesh = nullptr;
 }
@@ -23,7 +33,7 @@ PointLightObject::~PointLightObject()
 //////////////////////////////////////////////////////////////////////////////////////////
 void PointLightObject::Init()
 {
-	m_pLightMesh = new GLLight();
+	m_pLightMesh = new GLLight(m_vecLightColor);
 	m_pLightMesh->Init();
 }
 
@@ -49,13 +59,14 @@ void PointLightObject::Render()
 void PointLightObject::SetLightPosition(const glm::vec3& pos)
 { 
 	m_vecLightPosition = pos; 
-	//m_pLightMesh->SetPosition(pos);
+	m_pLightMesh->SetPosition(pos);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
 void PointLightObject::SetLightColor(const glm::vec4& col)
 { 
 	m_vecLightColor = col; 
+
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -70,8 +81,3 @@ void PointLightObject::SetLightRadius(float radius)
 	m_fRadius = radius; 
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////
-void PointLightObject::SetLightAttenuation(int atten)
-{ 
-	m_iAttenuation = atten; 
-}

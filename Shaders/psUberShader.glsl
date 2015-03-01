@@ -1,14 +1,29 @@
 
 #version 400
 
+
 in vec2 vs_outTex;
 in vec3 vs_outNormal;
-in vec4 vs_outObjColor;
 in vec3 vs_outPosition;
-in vec3 vs_outEye;
-in vec3 vs_outLightDir;
 
 out vec4 outColor;
+
+uniform int			numPointLights;		// number of point lights in the scene
+struct PointLight
+{
+	float radius;
+	float intensity;
+	vec3 position;
+	vec4 color;
+};
+
+#define MAX_POINT_LIGHTS 8
+uniform PointLight pointLights[MAX_POINT_LIGHTS];
+
+uniform vec3		camPosition;
+uniform vec3		LightPosition;		// light position  
+uniform vec3		Kd;					// Diffuse reflectivity
+uniform vec3		Ld;					// light source intensity
 
 uniform sampler2D	texture_diffuse1;
 uniform sampler2D	texture_specular1;
@@ -91,33 +106,54 @@ void main()
 {
 	vec4 baseColor = vec4(texture(texture_diffuse1, vs_outTex));		// base Map color
 	vec4 specColor = vec4(texture(texture_specular1, vs_outTex));	// specular map color
-		
-	float NdotL = max(dot(vs_outNormal, -vs_outLightDir), 0);
+
+	// calculate camera eye vector in world space
+	vec3 Eye = normalize(vs_outPosition - camPosition);
 
 	// calculate view vector
-	vec3 view = -vs_outEye;
-
-	// half vector
-	vec3 half = normalize(-vs_outLightDir + view);
+	vec3 view = -Eye;
 
 	// reflection vector
-	vec3 refl = normalize(reflect(vs_outLightDir, vs_outNormal));
+	// vec3 refl = normalize(reflect(LightDir, vs_outNormal));
 
+	// Diffuse & Specular accumulators for Point lights
+	vec4 DiffusePoint = vec4(0,0,0,1);
+	vec4 SpecularPoint = vec4(0,0,0,1);
+	vec3 LightDir = vec3(0,0,0);
+	vec3 half = vec3(0,0,0);
+	float NdotL = 0.0f;
+	float Spec = 0.0f;
+	float atten = 0.0f;
+
+	//--- Point Light contribution 
+	for(int i = 0 ; i < numPointLights ; ++i)
+	{
+		LightDir = normalize(vs_outPosition - pointLights[i].position);
+		float dist = length(LightDir);
+		float r = pointLights[i].radius;
+
+		// ref : https://imdoingitwrong.wordpress.com/2011/01/31/light-attenuation/
+		atten = 1 / (1 + ((2/r)*dist) + ((1/r*r)*(dist*dist)));
+		
+		// diffuse
+		NdotL = max(dot(vs_outNormal, -LightDir), 0);
+
+		// specular
+		half = normalize(-LightDir + view);
+
+		if(NdotL > 0)
+			Spec = BlinnBRDF(vs_outNormal, view, half);
+
+		// accumulate...
+		DiffusePoint += pointLights[i].color * atten * NdotL * pointLights[i].intensity;
+		SpecularPoint += pointLights[i].color * atten * Spec * pointLights[i].intensity;
+	}
 
 	// Final Color components...
 	vec4 Emissive			= baseColor;
 	vec4 Ambient			= vec4(0.4, 0.4, 0.4, 1);
-	vec4 DiffuseDirect		= vec4(NdotL, NdotL, NdotL, 1);
-	vec4 SpecularDirect = vec4(0); 
-	
-	if(NdotL > 0.0)
-	{
-		SpecularDirect += PhongBRDF(vs_outNormal, view, refl);
-		//SpecularDirect += BlinnBRDF(vs_outNormal, view, half);
-	    //SpecularDirect += CookTorranceBRDF(vs_outNormal, view, normalize(-vs_outLightDir), half);
-	}
+	vec4 DiffuseDirect		= DiffusePoint;
+	vec4 SpecularDirect		= SpecularPoint; 
 
-	//outColor = Emissive * (Ambient + DiffuseDirect) + specColor * SpecularDirect; 
-
-	outColor = baseColor * vs_outObjColor;
+	outColor = Emissive * (Ambient + DiffuseDirect) + specColor * SpecularDirect; 
 }

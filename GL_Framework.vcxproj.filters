@@ -58,6 +58,12 @@
     <ClCompile Include="ObjectSystem\PointLightObject.cpp">
       <Filter>ObjectSystem</Filter>
     </ClCompile>
+    <ClCompile Include="ObjectSystem\LightsManager.cpp">
+      <Filter>ObjectSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="Renderables\GLCube.cpp">
+      <Filter>Renderables</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera\Camera.h">
@@ -108,6 +114,9 @@
     <ClInclude Include="ObjectSystem\PointLightObject.h">
       <Filter>ObjectSystem</Filter>
     </ClInclude>
+    <ClInclude Include="ObjectSystem\LightsManager.h">
+      <Filter>ObjectSystem</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\ps.glsl">
@@ -140,5 +149,6 @@
     <None Include="Shaders\vsUberShader.glsl">
       <Filter>Shaders</Filter>
     </None>
+    <None Include="ClassDiagram.cd" />
   </ItemGroup>
 </Project>

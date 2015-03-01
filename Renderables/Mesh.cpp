@@ -4,7 +4,8 @@
 #include "../Camera/Camera.h"
 #include "../Helpers/VertexStructures.h"
 #include "../ShaderEngine/GLSLShader.h"
-
+#include "../ObjectSystem/LightsManager.h"
+#include "../ObjectSystem/PointLightObject.h"
 
 //////////////////////////////////////////////////////////////////////////////////////////
 Mesh::Mesh(std::vector<VertexPNT> vertices, std::vector<GLuint> indices, std::vector<Texture> textures)
@@ -56,6 +57,56 @@ void	Mesh::SetupMesh()
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
+void Mesh::PointLightIlluminance(int shaderID)
+{
+	int numPointLights = LightsManager::getInstance()->GetPointlightsCount();
+	glUniform1i(glGetUniformLocation(shaderID, "numPointLights"), numPointLights);
+
+	for (GLuint i = 0 ; i<numPointLights ; ++i)
+	{
+		PointLightObject* light = LightsManager::getInstance()->GetPointLight(i);
+		
+		glm::vec3 position = light->GetLightPosition();
+		glm::vec4 color    = light->GetLightColor();
+		float intensity    = light->GetLightIntensity();
+		float radius       = light->GetLightRadius();
+
+		// form a string out of point light Ids
+		std::string pointLightPosStr = "pointLights["+ std::to_string(i) + "].position";
+		std::string pointLightColStr = "pointLights["+ std::to_string(i) + "].color";
+		std::string pointLightIntStr = "pointLights["+ std::to_string(i) + "].intensity";
+		std::string pointLightRadStr = "pointLights["+ std::to_string(i) + "].radius";
+
+		glUniform3fv(glGetUniformLocation(shaderID, pointLightPosStr.c_str()), 1, glm::value_ptr(position));
+		glUniform4fv(glGetUniformLocation(shaderID,  pointLightColStr.c_str()), 1, glm::value_ptr(color));
+		glUniform1f(glGetUniformLocation(shaderID, pointLightIntStr.c_str()), intensity);
+		glUniform1f(glGetUniformLocation(shaderID, pointLightRadStr.c_str()), radius);
+	}
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+void Mesh::SetShaderVariables( int shaderID, const glm::mat4& world)
+{
+	//--- Transformation matrices
+	glm::mat4 projection = Camera::getInstance().getProjectionMatrix();
+	glm::mat4 view = Camera::getInstance().getViewMatrix();
+
+	glm::mat4 InvWorld = glm::inverse(world);
+	glm::vec3 CamPosition = Camera::getInstance().getCameraPosition();
+
+	glm::vec3 LightPosition = glm::vec3(0,5,5);
+
+	glUniformMatrix4fv(glGetUniformLocation(shaderID, "matProj"), 1, GL_FALSE, glm::value_ptr(projection));
+	glUniformMatrix4fv(glGetUniformLocation(shaderID, "matView"), 1, GL_FALSE, glm::value_ptr(view));
+	glUniformMatrix4fv(glGetUniformLocation(shaderID, "matWorld"), 1, GL_FALSE, glm::value_ptr(world));
+	glUniformMatrix4fv(glGetUniformLocation(shaderID, "matWorldInv"), 1, GL_FALSE, glm::value_ptr(InvWorld));
+	glUniform3fv(glGetUniformLocation(shaderID, "camPosition"), 1, glm::value_ptr(CamPosition));
+
+	// Set Point light related shader variables...
+	PointLightIlluminance(shaderID);
+}	
+
+//////////////////////////////////////////////////////////////////////////////////////////
 void	Mesh::Render(GLSLShader* shader, const glm::mat4& world)
 {
 	GLuint diffuseNr = 1;
@@ -100,22 +151,8 @@ void	Mesh::Render(GLSLShader* shader, const glm::mat4& world)
 
 	shader->Use();
 
-	//--- Transformation matrices
-	glm::mat4 projection = Camera::getInstance().getProjectionMatrix();
-	glm::mat4 view = Camera::getInstance().getViewMatrix();
-
-	glm::mat4 InvWorld = glm::inverse(world);
-	glm::vec3 CamPosition = Camera::getInstance().getCameraPosition();
-
-	glm::vec3 LightPosition = glm::vec3(0.0f, 0.0f, 25.0f);
-
-	glUniformMatrix4fv(glGetUniformLocation(shaderID, "matProj"), 1, GL_FALSE, glm::value_ptr(projection));
-	glUniformMatrix4fv(glGetUniformLocation(shaderID, "matView"), 1, GL_FALSE, glm::value_ptr(view));
-	glUniformMatrix4fv(glGetUniformLocation(shaderID, "matWorld"), 1, GL_FALSE, glm::value_ptr(world));
-	glUniformMatrix4fv(glGetUniformLocation(shaderID, "matWorldInv"), 1, GL_FALSE, glm::value_ptr(InvWorld));
-	glUniform3fv(glGetUniformLocation(shaderID, "camPosition"), 1, glm::value_ptr(CamPosition));
-	glUniform3fv(glGetUniformLocation(shaderID, "LightPosition"), 1, glm::value_ptr(LightPosition));
-	//---
+	// Set all Shader variables...
+	SetShaderVariables(shaderID, world);
 
 	glDrawElements(GL_TRIANGLES, m_indices.size(), GL_UNSIGNED_INT, 0);
 	glBindVertexArray(0);
@@ -127,4 +164,7 @@ void	Mesh::Render(GLSLShader* shader, const glm::mat4& world)
 		glBindTexture(GL_TEXTURE_2D, 0);
 	}
 }
+
+//////////////////////////////////////////////////////////////////////////////////////////
+
 

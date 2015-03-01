@@ -17,6 +17,9 @@ public:
 	virtual void		Update(float dt);
 	virtual void		Render();
 	virtual void		Kill();
+
+	inline  void		SetPosition(const glm::vec3& pos){ position = pos; }
+	inline  glm::vec3	GetPosition(){ return position; }
 	
 private:
 	GLLight(const GLLight&);
@@ -33,6 +36,8 @@ private:
 	GLint		colAttrib;			// color attribute id
 	VertexPC	vertices[8];		// vertices of a cube
 	GLuint		indices[36];		// indices of a cube
+
+	glm::vec3	position;			// light mesh position
 
 	GLint		hWorld;				// handle to World matrix
 	GLint		hView;				// handle to View matrix

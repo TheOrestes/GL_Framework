@@ -12,6 +12,7 @@ class PointLightObject : public GameObject
 {
 public:
 	PointLightObject();
+	PointLightObject(const glm::vec4& color);
 	virtual ~PointLightObject();
 
 	virtual void		Init();
@@ -24,14 +25,12 @@ public:
 	inline glm::vec4	GetLightColor(){ return m_vecLightColor; }
 	inline float		GetLightIntensity(){ return m_fIntensity; }
 	inline float		GetLightRadius(){ return m_fRadius; }
-	inline int			GetLightAttenuation(){ return m_iAttenuation; }
 
 	// Setter
 	void				SetLightPosition(const glm::vec3& pos);
 	void				SetLightColor(const glm::vec4& col);
 	void				SetLightIntensity(float intensity);
 	void				SetLightRadius(float radius);
-	void				SetLightAttenuation(int atten);
 
 private:
 	GLLight*			m_pLightMesh;
@@ -40,5 +39,4 @@ private:
 	glm::vec4			m_vecLightColor;
 	float				m_fIntensity;
 	float				m_fRadius;
-	int					m_iAttenuation;
 };
