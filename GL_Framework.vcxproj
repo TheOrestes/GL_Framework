@@ -144,6 +144,7 @@
   <ItemGroup>
     <ClCompile Include="Camera\Camera.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="ObjectSystem\DirectionalLightObject.cpp" />
     <ClCompile Include="ObjectSystem\GameObject.cpp" />
     <ClCompile Include="ObjectSystem\LightsManager.cpp" />
     <ClCompile Include="ObjectSystem\PointLightObject.cpp" />
@@ -161,6 +162,7 @@
     <ClInclude Include="Camera\Camera.h" />
     <ClInclude Include="Helpers\Helper.h" />
     <ClInclude Include="Helpers\VertexStructures.h" />
+    <ClInclude Include="ObjectSystem\DirectionalLightObject.h" />
     <ClInclude Include="ObjectSystem\GameObject.h" />
     <ClInclude Include="ObjectSystem\IObject.h" />
     <ClInclude Include="ObjectSystem\LightsManager.h" />

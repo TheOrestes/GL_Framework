@@ -8,6 +8,11 @@ in vec3 vs_outPosition;
 
 out vec4 outColor;
 
+//---------------------------------------------------------------------------------------
+// Point Lights
+//---------------------------------------------------------------------------------------
+#define MAX_POINT_LIGHTS 8
+
 uniform int			numPointLights;		// number of point lights in the scene
 struct PointLight
 {
@@ -17,9 +22,26 @@ struct PointLight
 	vec4 color;
 };
 
-#define MAX_POINT_LIGHTS 8
 uniform PointLight pointLights[MAX_POINT_LIGHTS];
 
+//---------------------------------------------------------------------------------------
+// Directional Lights
+//---------------------------------------------------------------------------------------
+#define MAX_DIR_LIGHTS 8
+
+uniform int			numDirLights;		// number of point lights in the scene
+struct DirectionalLight
+{
+	float intensity;
+	vec3 direction;
+	vec4 color;
+};
+
+uniform DirectionalLight dirLights[MAX_DIR_LIGHTS];
+
+//---------------------------------------------------------------------------------------
+// Other Uniforms
+//---------------------------------------------------------------------------------------
 uniform vec3		camPosition;
 uniform vec3		LightPosition;		// light position  
 uniform vec3		Kd;					// Diffuse reflectivity
@@ -113,16 +135,37 @@ void main()
 	// calculate view vector
 	vec3 view = -Eye;
 
-	// reflection vector
-	// vec3 refl = normalize(reflect(LightDir, vs_outNormal));
+	// ------------------------ Directional Illuminance -------------------
+	vec4 DiffuseDir = vec4(0,0,0,1);
+	vec4 SpecularDir = vec4(0,0,0,1);
+	vec3 halfDir = vec3(0,0,0);
+	float NdotLDir = 0.0f;
+	float SpecDir = 0.0f;
 
+	for(int i = 0 ; i < numDirLights ; ++i)
+	{
+		// diffuse
+		NdotLDir = max(dot(vs_outNormal, -dirLights[i].direction), 0);
+
+		// specular
+		halfDir = normalize(-dirLights[i].direction + view);
+
+		if(NdotLDir > 0)
+			SpecDir = BlinnBRDF(vs_outNormal, view, halfDir);
+
+		// accumulate...
+		DiffuseDir += dirLights[i].color * NdotLDir * dirLights[i].intensity;
+		SpecularDir += dirLights[i].color * SpecDir * dirLights[i].intensity;
+	}
+
+	// ------------------------ Point Light Illuminance ------------------- 
 	// Diffuse & Specular accumulators for Point lights
 	vec4 DiffusePoint = vec4(0,0,0,1);
 	vec4 SpecularPoint = vec4(0,0,0,1);
 	vec3 LightDir = vec3(0,0,0);
-	vec3 half = vec3(0,0,0);
-	float NdotL = 0.0f;
-	float Spec = 0.0f;
+	vec3 halfPoint = vec3(0,0,0);
+	float NdotLPoint = 0.0f;
+	float SpecPoint = 0.0f;
 	float atten = 0.0f;
 
 	//--- Point Light contribution 
@@ -136,24 +179,24 @@ void main()
 		atten = 1 / (1 + ((2/r)*dist) + ((1/r*r)*(dist*dist)));
 		
 		// diffuse
-		NdotL = max(dot(vs_outNormal, -LightDir), 0);
+		NdotLPoint = max(dot(vs_outNormal, -LightDir), 0);
 
 		// specular
-		half = normalize(-LightDir + view);
+		halfPoint = normalize(-LightDir + view);
 
-		if(NdotL > 0)
-			Spec = BlinnBRDF(vs_outNormal, view, half);
+		if(NdotLPoint > 0)
+			SpecPoint = BlinnBRDF(vs_outNormal, view, halfPoint);
 
 		// accumulate...
-		DiffusePoint += pointLights[i].color * atten * NdotL * pointLights[i].intensity;
-		SpecularPoint += pointLights[i].color * atten * Spec * pointLights[i].intensity;
+		DiffusePoint += pointLights[i].color * atten * NdotLPoint * pointLights[i].intensity;
+		SpecularPoint += pointLights[i].color * atten * SpecPoint * pointLights[i].intensity;
 	}
 
 	// Final Color components...
 	vec4 Emissive			= baseColor;
 	vec4 Ambient			= vec4(0.4, 0.4, 0.4, 1);
-	vec4 DiffuseDirect		= DiffusePoint;
-	vec4 SpecularDirect		= SpecularPoint; 
+	vec4 DiffuseDirect		= DiffuseDir + DiffusePoint;
+	vec4 SpecularDirect		= SpecularDir + SpecularPoint; 
 
 	outColor = Emissive * (Ambient + DiffuseDirect) + specColor * SpecularDirect; 
 }

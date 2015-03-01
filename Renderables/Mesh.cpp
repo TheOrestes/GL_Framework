@@ -5,6 +5,7 @@
 #include "../Helpers/VertexStructures.h"
 #include "../ShaderEngine/GLSLShader.h"
 #include "../ObjectSystem/LightsManager.h"
+#include "../ObjectSystem/DirectionalLightObject.h"
 #include "../ObjectSystem/PointLightObject.h"
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -85,6 +86,31 @@ void Mesh::PointLightIlluminance(int shaderID)
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
+void Mesh::DirectionalLightIlluminance( int shaderID )
+{
+	int numDirLights = LightsManager::getInstance()->GetDirectionalLightsCount();
+	glUniform1i(glGetUniformLocation(shaderID, "numDirLights"), numDirLights);
+
+	for (GLuint i = 0 ; i<numDirLights ; ++i)
+	{
+		DirectionalLightObject* light = LightsManager::getInstance()->GetDirectionalLight(i);
+
+		glm::vec3 dir	   = light->GetLightDirection();
+		glm::vec4 color    = light->GetLightColor();
+		float intensity    = light->GetLightIntensity();
+
+		// form a string out of point light Ids
+		std::string dirLightPosStr = "dirLights["+ std::to_string(i) + "].direction";
+		std::string dirLightColStr = "dirLights["+ std::to_string(i) + "].color";
+		std::string dirLightIntStr = "dirLights["+ std::to_string(i) + "].intensity";
+
+		glUniform3fv(glGetUniformLocation(shaderID, dirLightPosStr.c_str()), 1, glm::value_ptr(dir));
+		glUniform4fv(glGetUniformLocation(shaderID,  dirLightColStr.c_str()), 1, glm::value_ptr(color));
+		glUniform1f(glGetUniformLocation(shaderID, dirLightIntStr.c_str()), intensity);
+	}
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
 void Mesh::SetShaderVariables( int shaderID, const glm::mat4& world)
 {
 	//--- Transformation matrices
@@ -101,6 +127,9 @@ void Mesh::SetShaderVariables( int shaderID, const glm::mat4& world)
 	glUniformMatrix4fv(glGetUniformLocation(shaderID, "matWorld"), 1, GL_FALSE, glm::value_ptr(world));
 	glUniformMatrix4fv(glGetUniformLocation(shaderID, "matWorldInv"), 1, GL_FALSE, glm::value_ptr(InvWorld));
 	glUniform3fv(glGetUniformLocation(shaderID, "camPosition"), 1, glm::value_ptr(CamPosition));
+
+	// Set Directional light related shader variables...
+	DirectionalLightIlluminance(shaderID);
 
 	// Set Point light related shader variables...
 	PointLightIlluminance(shaderID);

@@ -3,6 +3,7 @@
 
 #include <vector>
 
+class DirectionalLightObject;
 class PointLightObject;
 class StaticObject;
 
@@ -28,4 +29,6 @@ private:
 	StaticObject*			m_pObj1;
 	StaticObject*			m_pObj2;
 	StaticObject*			m_pObj3;
+
+	DirectionalLightObject*	m_pGlobalDirectional;
 };

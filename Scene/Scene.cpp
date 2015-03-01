@@ -1,5 +1,6 @@
 
 #include "Scene.h"
+#include "../ObjectSystem/DirectionalLightObject.h"
 #include "../ObjectSystem/PointLightObject.h"
 #include "../ObjectSystem/StaticObject.h"
 #include "../ShaderEngine/GLSLShader.h"
@@ -21,6 +22,8 @@ Scene::Scene()
 	m_pObj1 = new StaticObject("Data/BadFatGuy.fbx", "UberShader");
 	m_pObj2 = new StaticObject("Data/UnitCube.fbx", "UberShader");
 	//m_pObj3 = new GameObject(3, "Sphere", "Data/duck.dae");
+
+	m_pGlobalDirectional = new DirectionalLightObject(glm::vec4(1,1,1,1));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -55,6 +58,11 @@ void	Scene::Init()
 	m_pOmni3->SetLightIntensity(2);
 	m_pOmni3->SetLightRadius(1);
 	LightsManager::getInstance()->GatherPointLights(static_cast<GameObject*>(m_pOmni3));
+
+	m_pGlobalDirectional->SetLightDirection(glm::vec3(0,-1,-1));
+	m_pGlobalDirectional->SetLightColor(glm::vec4(1,1,0,1));
+	m_pGlobalDirectional->SetLightIntensity(0.5);
+	LightsManager::getInstance()->GatherDirectionalLights(static_cast<GameObject*>(m_pGlobalDirectional));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -113,6 +121,8 @@ void	Scene::Kill()
 	delete m_pOmni1;
 	delete m_pOmni2;
 	delete m_pOmni3;
+
+	delete m_pGlobalDirectional;
 
 	delete m_pObj1;
 	delete m_pObj2;

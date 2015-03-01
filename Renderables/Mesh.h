@@ -21,6 +21,8 @@ public:
 	std::vector<Texture>	m_textures;
 
 	void		PointLightIlluminance(int shaderID);
+	void		DirectionalLightIlluminance(int shaderID);
+
 	void		SetShaderVariables(int shaderID, const glm::mat4& world);
 	void		Render(GLSLShader* shader, const glm::mat4& world);
 

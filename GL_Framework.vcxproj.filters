@@ -64,6 +64,9 @@
     <ClCompile Include="Renderables\GLCube.cpp">
       <Filter>Renderables</Filter>
     </ClCompile>
+    <ClCompile Include="ObjectSystem\DirectionalLightObject.cpp">
+      <Filter>ObjectSystem</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera\Camera.h">
@@ -115,6 +118,9 @@
       <Filter>ObjectSystem</Filter>
     </ClInclude>
     <ClInclude Include="ObjectSystem\LightsManager.h">
+      <Filter>ObjectSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="ObjectSystem\DirectionalLightObject.h">
       <Filter>ObjectSystem</Filter>
     </ClInclude>
   </ItemGroup>
