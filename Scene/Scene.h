@@ -14,6 +14,7 @@ public:
 	~Scene();
 
 	void			Init();
+	void			StencilRender();
 	void			Render();
 	void			Update(float dt);
 	void			Kill();
@@ -28,7 +29,7 @@ private:
 
 	StaticObject*			m_pObj1;
 	StaticObject*			m_pObj2;
-	StaticObject*			m_pObj3;
+	StaticObject*			m_pReflection;
 
 	DirectionalLightObject*	m_pGlobalDirectional;
 };

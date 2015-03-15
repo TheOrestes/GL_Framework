@@ -199,4 +199,13 @@ void main()
 	vec4 SpecularDirect		= SpecularDir + SpecularPoint; 
 
 	outColor = Emissive * (Ambient + DiffuseDirect) + specColor * SpecularDirect; 
+	
+	// linear depth
+	/*float near = 0.1f;
+	float far = 100.0f;
+
+	float z = gl_FragCoord.z * 2 - 1;
+	float depth = (2 * near) / (far + near - z * (far-near));
+
+	outColor = vec4(vec3(1- depth), 1);*/
 }

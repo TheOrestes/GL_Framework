@@ -32,11 +32,11 @@ StaticObject::~StaticObject()
 void StaticObject::Init()
 {
 	// initialize shader
-	if(m_strShader.empty())
+	/*if(m_strShader.empty())
 	{
 		m_pShader = new GLSLShader("Shaders/vsUberShader.glsl", "Shaders/psUberShader.glsl");
 	}
-	else
+	else*/
 	{
 		std::string vertShaderPath;
 		vertShaderPath = "Shaders/vs" + m_strShader + ".glsl";
@@ -62,7 +62,7 @@ void StaticObject::Kill()
 void StaticObject::Update( float dt )
 {
 	static float angle = 0;
-	angle += 0.2 * dt;
+	angle += dt;
 
 	m_fAngle = angle;
 }

@@ -156,5 +156,11 @@
       <Filter>Shaders</Filter>
     </None>
     <None Include="ClassDiagram.cd" />
+    <None Include="Shaders\psOutline.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\vsOutline.glsl">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

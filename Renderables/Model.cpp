@@ -4,7 +4,7 @@
 #include "Mesh.h"
 #include "../Helpers/VertexStructures.h"
 #include "../ShaderEngine/GLSLShader.h"
-#include "SOIL.h"
+#include "FreeImage.h"
 
 //////////////////////////////////////////////////////////////////////////////////////////
 GLint TextureFromFile(const char* path, const std::string& dir)
@@ -16,12 +16,46 @@ GLint TextureFromFile(const char* path, const std::string& dir)
 	GLuint textureID;
 	glGenTextures(1, &textureID);
 
-	int width,height,channel;
-	unsigned char* image = SOIL_load_image(filename.c_str(), &width, &height, &channel, SOIL_LOAD_RGB);
+	// FreeImage library for loading textures...
+	FREE_IMAGE_FORMAT format = FreeImage_GetFileType(filename.c_str());
+	if(format == -1)
+	{
+		std::cout << "FreeImage::Image loading FAILED!" << std::endl;
+		return -1;
+	}
+
+	// if image is found, but the format is unknown...
+	if(format == FIF_UNKNOWN)
+	{
+		format = FreeImage_GetFIFFromFilename(filename.c_str());
+		if(!FreeImage_FIFSupportsReading(format))
+		{
+			std::cout << "FreeImage::Detected Image format cannot be read!" << std::endl;
+			return -1;
+		}
+	}
+
+	// known image format
+	FIBITMAP* bitmap = FreeImage_Load(format, filename.c_str());
+	int bitsPerPixel = FreeImage_GetBPP(bitmap);
+
+	FIBITMAP* bitmap32;
+	if (bitsPerPixel  == 32)
+	{
+		bitmap32 = bitmap;
+	}
+	else
+	{
+		bitmap32 = FreeImage_ConvertTo32Bits(bitmap);
+	}
+
+	// grab image width & height
+	int width = FreeImage_GetWidth(bitmap32);
+	int height = FreeImage_GetHeight(bitmap32);
 
 	// Assign texture to ID
 	glBindTexture(GL_TEXTURE_2D, textureID);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_BGRA, GL_UNSIGNED_BYTE, (void*)FreeImage_GetBits(bitmap32));
 	glGenerateMipmap(GL_TEXTURE_2D);
 
 	// Parameters
@@ -31,7 +65,15 @@ GLint TextureFromFile(const char* path, const std::string& dir)
 	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
 	glBindTexture(GL_TEXTURE_2D, 0);
-	SOIL_free_image_data(image);
+	
+	FreeImage_Unload(bitmap32);
+
+	// bitmap32 & bitmap point at the same data & that data is already free'd,
+	// so don't free it again!
+	if (bitsPerPixel != 32)
+	{
+		FreeImage_Unload(bitmap);
+	}
 
 	return textureID;
 }
@@ -39,13 +81,15 @@ GLint TextureFromFile(const char* path, const std::string& dir)
 //////////////////////////////////////////////////////////////////////////////////////////
 Model::Model(const std::string& path)
 {
+	FreeImage_Initialise();
+
 	LoadModel(path);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
 Model::~Model()
 {
-
+	FreeImage_DeInitialise();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -53,7 +97,7 @@ void	Model::LoadModel(const std::string& path)
 {
 	Assimp::Importer importer;
 
-	const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs);
+	const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate);
 
 	if(!scene || scene->mFlags == AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
 	{

@@ -19,6 +19,7 @@ Global
 		{217FA649-1BC2-4687-9AB7-0DE10F4562AD}.Release|Win32.Build.0 = Release|Win32
 		{217FA649-1BC2-4687-9AB7-0DE10F4562AD}.Release|x64.ActiveCfg = Release|x64
 		{217FA649-1BC2-4687-9AB7-0DE10F4562AD}.Release|x64.Build.0 = Release|x64
+		{217FA649-1BC2-4687-9AB7-0DE10F4562AD}.Release|x64.Deploy.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
