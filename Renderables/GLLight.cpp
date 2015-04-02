@@ -151,9 +151,9 @@ void GLLight::Update(float dt)
 //////////////////////////////////////////////////////////////////////////////////////////
 void GLLight::Render()
 {
-	glBindVertexArray(vao);
-
 	m_pShader->Use();
+	
+	glBindVertexArray(vao);
 
 	glUniformMatrix4fv(hWorld, 1, GL_FALSE, glm::value_ptr(matWorld));
 	glUniformMatrix4fv(hView, 1, GL_FALSE, glm::value_ptr(matView));

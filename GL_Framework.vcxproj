@@ -149,6 +149,7 @@
     <ClCompile Include="ObjectSystem\LightsManager.cpp" />
     <ClCompile Include="ObjectSystem\PointLightObject.cpp" />
     <ClCompile Include="ObjectSystem\StaticObject.cpp" />
+    <ClCompile Include="Renderables\Framebuffer.cpp" />
     <ClCompile Include="Renderables\GLCube.cpp" />
     <ClCompile Include="Renderables\GLCubeNormal.cpp" />
     <ClCompile Include="Renderables\GLGrid.cpp" />
@@ -168,6 +169,7 @@
     <ClInclude Include="ObjectSystem\LightsManager.h" />
     <ClInclude Include="ObjectSystem\PointLightObject.h" />
     <ClInclude Include="ObjectSystem\StaticObject.h" />
+    <ClInclude Include="Renderables\FrameBuffer.h" />
     <ClInclude Include="Renderables\GLCube.h" />
     <ClInclude Include="Renderables\GLCubeNormal.h" />
     <ClInclude Include="Renderables\GLGrid.h" />
@@ -182,6 +184,7 @@
     <None Include="ClassDiagram.cd" />
     <None Include="Shaders\ps.glsl" />
     <None Include="Shaders\psDiffuse.glsl" />
+    <None Include="Shaders\psFramebuffer.glsl" />
     <None Include="Shaders\psOutline.glsl" />
     <None Include="Shaders\psUberShader.glsl" />
     <None Include="Shaders\vsAmbient.glsl" />
@@ -189,6 +192,7 @@
     <None Include="Shaders\vs.glsl" />
     <None Include="Shaders\psAmbient.glsl" />
     <None Include="Shaders\vsDiffuse.glsl" />
+    <None Include="Shaders\vsFramebuffer.glsl" />
     <None Include="Shaders\vsLighting.glsl" />
     <None Include="Shaders\vsOutline.glsl" />
     <None Include="Shaders\vsUberShader.glsl" />

@@ -20,6 +20,21 @@ struct VertexP
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
+struct VertexPT
+{
+	VertexPT() : 
+		position(0.0f),
+		uv(0.0f){}
+
+	VertexPT(const glm::vec3& _p, const glm::vec2& _uv ) :
+		position(_p),
+		uv(_uv){}
+
+	glm::vec3 position;
+	glm::vec2 uv;
+};
+
+//////////////////////////////////////////////////////////////////////////////////////////
 struct VertexPC
 {
 	VertexPC() : 

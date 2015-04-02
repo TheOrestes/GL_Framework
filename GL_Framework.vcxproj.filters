@@ -67,6 +67,9 @@
     <ClCompile Include="ObjectSystem\DirectionalLightObject.cpp">
       <Filter>ObjectSystem</Filter>
     </ClCompile>
+    <ClCompile Include="Renderables\Framebuffer.cpp">
+      <Filter>Renderables</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera\Camera.h">
@@ -123,6 +126,9 @@
     <ClInclude Include="ObjectSystem\DirectionalLightObject.h">
       <Filter>ObjectSystem</Filter>
     </ClInclude>
+    <ClInclude Include="Renderables\FrameBuffer.h">
+      <Filter>Renderables</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\ps.glsl">
@@ -160,6 +166,12 @@
       <Filter>Shaders</Filter>
     </None>
     <None Include="Shaders\vsOutline.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\psFramebuffer.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\vsFramebuffer.glsl">
       <Filter>Shaders</Filter>
     </None>
   </ItemGroup>
