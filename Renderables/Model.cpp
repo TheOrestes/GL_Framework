@@ -149,7 +149,8 @@ std::vector<Texture>	Model::LoadMaterialTextures(aiMaterial* material, aiTexture
 	}
 
 	// If there is no texture on the model, load the default chequered texture!
-	if( material->GetTextureCount(aiTextureType_DIFFUSE) == 0 )
+	// second if condition is added so that default texture is loaded only for the diffuse part & not specular!
+	if( material->GetTextureCount(aiTextureType_DIFFUSE) == 0 && type == aiTextureType_DIFFUSE)
 	{
 		Texture texture;
 		texture.id = TextureFromFile("UV_mapper.jpg", m_Directory);

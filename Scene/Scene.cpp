@@ -19,7 +19,7 @@ Scene::Scene()
 	m_pOmni2 = new PointLightObject(glm::vec4(0,1,1,1));
 	m_pOmni3 = new PointLightObject(glm::vec4(0,1,0,1));
 
-	m_pObj1 = new StaticObject("Data/ponyBadGuy.fbx", "UberShader");
+	m_pObj1 = new StaticObject("Data/BadFatGuy.fbx", "UberShader");
 	m_pObj2 = new StaticObject("Data/Plane.fbx", "Diffuse");
 	m_pReflection = new StaticObject("Data/ponyBadGuy.fbx", "Outline");
 
