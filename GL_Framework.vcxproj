@@ -143,6 +143,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Camera\Camera.cpp" />
+    <ClCompile Include="Helpers\TextureManager.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="ObjectSystem\DirectionalLightObject.cpp" />
     <ClCompile Include="ObjectSystem\GameObject.cpp" />
@@ -154,6 +155,7 @@
     <ClCompile Include="Renderables\GLCubeNormal.cpp" />
     <ClCompile Include="Renderables\GLGrid.cpp" />
     <ClCompile Include="Renderables\GLLight.cpp" />
+    <ClCompile Include="Renderables\GLSkybox.cpp" />
     <ClCompile Include="Renderables\Mesh.cpp" />
     <ClCompile Include="Renderables\Model.cpp" />
     <ClCompile Include="Scene\Scene.cpp" />
@@ -162,6 +164,7 @@
   <ItemGroup>
     <ClInclude Include="Camera\Camera.h" />
     <ClInclude Include="Helpers\Helper.h" />
+    <ClInclude Include="Helpers\TextureManager.h" />
     <ClInclude Include="Helpers\VertexStructures.h" />
     <ClInclude Include="ObjectSystem\DirectionalLightObject.h" />
     <ClInclude Include="ObjectSystem\GameObject.h" />
@@ -175,6 +178,7 @@
     <ClInclude Include="Renderables\GLGrid.h" />
     <ClInclude Include="Renderables\GLLight.h" />
     <ClInclude Include="Renderables\GLPointLight.h" />
+    <ClInclude Include="Renderables\GLSkybox.h" />
     <ClInclude Include="Renderables\Mesh.h" />
     <ClInclude Include="Renderables\Model.h" />
     <ClInclude Include="Scene\Scene.h" />
@@ -186,6 +190,7 @@
     <None Include="Shaders\psDiffuse.glsl" />
     <None Include="Shaders\psFramebuffer.glsl" />
     <None Include="Shaders\psOutline.glsl" />
+    <None Include="Shaders\psSkybox.glsl" />
     <None Include="Shaders\psUberShader.glsl" />
     <None Include="Shaders\vsAmbient.glsl" />
     <None Include="Shaders\psLighting.glsl" />
@@ -195,6 +200,7 @@
     <None Include="Shaders\vsFramebuffer.glsl" />
     <None Include="Shaders\vsLighting.glsl" />
     <None Include="Shaders\vsOutline.glsl" />
+    <None Include="Shaders\vsSkybox.glsl" />
     <None Include="Shaders\vsUberShader.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

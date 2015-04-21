@@ -120,7 +120,6 @@ void GLLight::Init()
 
 	SetupViewProjMatrix();
 
-	glEnableVertexAttribArray(0);
 	glBindVertexArray(0); 
 
 

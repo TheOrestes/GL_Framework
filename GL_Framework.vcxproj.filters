@@ -70,6 +70,12 @@
     <ClCompile Include="Renderables\Framebuffer.cpp">
       <Filter>Renderables</Filter>
     </ClCompile>
+    <ClCompile Include="Helpers\TextureManager.cpp">
+      <Filter>Helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="Renderables\GLSkybox.cpp">
+      <Filter>Renderables</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera\Camera.h">
@@ -129,6 +135,12 @@
     <ClInclude Include="Renderables\FrameBuffer.h">
       <Filter>Renderables</Filter>
     </ClInclude>
+    <ClInclude Include="Helpers\TextureManager.h">
+      <Filter>Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="Renderables\GLSkybox.h">
+      <Filter>Renderables</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\ps.glsl">
@@ -172,6 +184,12 @@
       <Filter>Shaders</Filter>
     </None>
     <None Include="Shaders\vsFramebuffer.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\vsSkybox.glsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\psSkybox.glsl">
       <Filter>Shaders</Filter>
     </None>
   </ItemGroup>

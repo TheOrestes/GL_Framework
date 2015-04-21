@@ -49,6 +49,7 @@ uniform vec3		Ld;					// light source intensity
 
 uniform sampler2D	texture_diffuse1;
 uniform sampler2D	texture_specular1;
+uniform samplerCube texture_cubeMap;
 
 //---------------------------------------------------------------------------------------
 // Phong Specular
@@ -135,6 +136,10 @@ void main()
 	// calculate view vector
 	vec3 view = -Eye;
 
+	// calculate reflection vector for environment mapping..
+	vec3 R = reflect(Eye, normalize(vs_outNormal));
+	vec4 reflectionColor = vec4(texture(texture_cubeMap, R));
+
 	// ------------------------ Directional Illuminance -------------------
 	vec4 DiffuseDir = vec4(0,0,0,1);
 	vec4 SpecularDir = vec4(0,0,0,1);
@@ -198,7 +203,7 @@ void main()
 	vec4 DiffuseDirect		= DiffuseDir + DiffusePoint;
 	vec4 SpecularDirect		= SpecularDir + SpecularPoint; 
 
-	outColor = Emissive * (Ambient + DiffuseDirect) + specColor * SpecularDirect; 
+	outColor = Emissive * (Ambient + DiffuseDirect) + specColor * SpecularDirect + 0.2 * reflectionColor; // Emissive * (Ambient + DiffuseDirect) + specColor * SpecularDirect; 
 	
 	// linear depth
 	/*float near = 0.1f;

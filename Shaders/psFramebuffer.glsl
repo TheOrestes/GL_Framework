@@ -107,6 +107,6 @@ void main()
 		pixSample[i] = vec3(texture(screenTexture, vs_outTexCoord.st + offsets[i]));
 	}
 
-	//outColor = EmbossFilter(pixSample);
+	//outColor = SharpenFilter(pixSample);
 	outColor = vec4(texture(screenTexture, vs_outTexCoord));
 }

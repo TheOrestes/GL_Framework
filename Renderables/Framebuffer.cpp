@@ -7,10 +7,6 @@
 //////////////////////////////////////////////////////////////////////////////////////////
 Framebuffer::Framebuffer()
 {
-	fbo = -1;
-	rbo = -1;
-	tbo = -1;
-
 	m_pShader = nullptr;
 
 	// Screen aligned Quad setup

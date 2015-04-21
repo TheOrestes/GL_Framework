@@ -146,16 +146,16 @@ void GLCube::Init()
 
 	GLuint shader = m_pShader->GetShaderID();
 	posAttrib = glGetAttribLocation(shader, "in_Position");
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, false, sizeof(VertexPC), (void*)0);
+	glEnableVertexAttribArray(posAttrib);
+	glVertexAttribPointer(posAttrib, 3, GL_FLOAT, false, sizeof(VertexPC), (void*)0);
 
 	colAttrib = glGetAttribLocation(shader, "in_Color");
-	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 4, GL_FLOAT, false, sizeof(VertexPC), (void*)offsetof(VertexPC, color));
+	glEnableVertexAttribArray(colAttrib);
+	glVertexAttribPointer(colAttrib, 4, GL_FLOAT, false, sizeof(VertexPC), (void*)offsetof(VertexPC, color));
 
 	SetupViewProjMatrix();
 
-	glEnableVertexAttribArray(0);
+	//glEnableVertexAttribArray(0);
 	glBindVertexArray(0); 
 
 

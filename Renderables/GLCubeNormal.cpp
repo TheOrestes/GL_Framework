@@ -161,7 +161,7 @@ void GLCubeNormal::Init()
 	glEnableVertexAttribArray(colAttrib);
 	glVertexAttribPointer(colAttrib, 3, GL_FLOAT, false, sizeof(VertexPN), (void*)sizeof(glm::vec3));
 
-	glEnableVertexAttribArray(0);
+	//glEnableVertexAttribArray(0);
 	glBindVertexArray(0); 
 
 	SetupViewProjMatrix();

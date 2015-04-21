@@ -7,6 +7,7 @@
 #include "../ObjectSystem/LightsManager.h"
 #include "../ObjectSystem/DirectionalLightObject.h"
 #include "../ObjectSystem/PointLightObject.h"
+#include "GLSkybox.h"
 
 //////////////////////////////////////////////////////////////////////////////////////////
 Mesh::Mesh(std::vector<VertexPNT> vertices, std::vector<GLuint> indices, std::vector<Texture> textures)
@@ -141,9 +142,10 @@ void	Mesh::Render(GLSLShader* shader, const glm::mat4& world)
 	GLuint diffuseNr = 1;
 	GLuint specularNr = 1;
 
+	shader->Use();
+
 	for (GLuint i = 0 ; i < m_textures.size() ; i++)
 	{
-
 		glActiveTexture(GL_TEXTURE0 + i);
 
 		std::stringstream ss;
@@ -162,26 +164,34 @@ void	Mesh::Render(GLSLShader* shader, const glm::mat4& world)
 		number = ss.str();
 
 		// set sampler to the correct texture
-		GLint hVar = glGetUniformLocation(shader->GetShaderID(), (name + number).c_str());
+		GLuint shaderID = shader->GetShaderID();
+		GLint hVar = glGetUniformLocation(shaderID, (name + number).c_str());
 		glUniform1i(hVar, i);
 
 		// bind the texture
 		glBindTexture(GL_TEXTURE_2D, m_textures[i].id);
 	}
 
+
+	GLuint shaderID = shader->GetShaderID();
+
+	// bind cubemap
+	glActiveTexture(GL_TEXTURE2);
+	GLint hCubeMap = glGetUniformLocation(shaderID, "texture_cubeMap");
+	glUniform1i(hCubeMap, 2);
+	GLSkybox::getInstance().BindCubemap();
+	
+
 	// Draw mesh
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); 
 	glEnable(GL_DEPTH_TEST);
 
-	glBindVertexArray(vao);
-
-	// transformation
-	GLuint shaderID = shader->GetShaderID();
-
-	shader->Use();
+	
 
 	// Set all Shader variables...
 	SetShaderVariables(shaderID, world);
+
+	glBindVertexArray(vao);
 
 	glDrawElements(GL_TRIANGLES, m_indices.size(), GL_UNSIGNED_INT, 0);
 	glBindVertexArray(0);
@@ -192,6 +202,8 @@ void	Mesh::Render(GLSLShader* shader, const glm::mat4& world)
 		glActiveTexture(GL_TEXTURE0 + i);
 		glBindTexture(GL_TEXTURE_2D, 0);
 	}
+
+	GLSkybox::getInstance().UnbindCubemap();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////

@@ -4,85 +4,11 @@
 #include "Mesh.h"
 #include "../Helpers/VertexStructures.h"
 #include "../ShaderEngine/GLSLShader.h"
-#include "FreeImage.h"
-
-//////////////////////////////////////////////////////////////////////////////////////////
-GLint TextureFromFile(const char* path, const std::string& dir)
-{
-	//Generate texture ID and load texture data 
-	std::string filename = std::string(path);
-	filename = dir + '/' + filename;
-
-	GLuint textureID;
-	glGenTextures(1, &textureID);
-
-	// FreeImage library for loading textures...
-	FREE_IMAGE_FORMAT format = FreeImage_GetFileType(filename.c_str());
-	if(format == -1)
-	{
-		std::cout << "FreeImage::Image loading FAILED!" << std::endl;
-		return -1;
-	}
-
-	// if image is found, but the format is unknown...
-	if(format == FIF_UNKNOWN)
-	{
-		format = FreeImage_GetFIFFromFilename(filename.c_str());
-		if(!FreeImage_FIFSupportsReading(format))
-		{
-			std::cout << "FreeImage::Detected Image format cannot be read!" << std::endl;
-			return -1;
-		}
-	}
-
-	// known image format
-	FIBITMAP* bitmap = FreeImage_Load(format, filename.c_str());
-	int bitsPerPixel = FreeImage_GetBPP(bitmap);
-
-	FIBITMAP* bitmap32;
-	if (bitsPerPixel  == 32)
-	{
-		bitmap32 = bitmap;
-	}
-	else
-	{
-		bitmap32 = FreeImage_ConvertTo32Bits(bitmap);
-	}
-
-	// grab image width & height
-	int width = FreeImage_GetWidth(bitmap32);
-	int height = FreeImage_GetHeight(bitmap32);
-
-	// Assign texture to ID
-	glBindTexture(GL_TEXTURE_2D, textureID);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_BGRA, GL_UNSIGNED_BYTE, (void*)FreeImage_GetBits(bitmap32));
-	glGenerateMipmap(GL_TEXTURE_2D);
-
-	// Parameters
-	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
-	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
-	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR );
-	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-	glBindTexture(GL_TEXTURE_2D, 0);
-	
-	FreeImage_Unload(bitmap32);
-
-	// bitmap32 & bitmap point at the same data & that data is already free'd,
-	// so don't free it again!
-	if (bitsPerPixel != 32)
-	{
-		FreeImage_Unload(bitmap);
-	}
-
-	return textureID;
-}
+#include "../Helpers/TextureManager.h"
 
 //////////////////////////////////////////////////////////////////////////////////////////
 Model::Model(const std::string& path)
 {
-	FreeImage_Initialise();
-
 	LoadModel(path);
 }
 
@@ -139,7 +65,7 @@ std::vector<Texture>	Model::LoadMaterialTextures(aiMaterial* material, aiTexture
 		{
 			// if texture is not loaded, load it now.
 			Texture texture;
-			texture.id = TextureFromFile(str.C_Str(), m_Directory);
+			texture.id = TextureManager::getInstannce().Load2DTextureFromFile(str.C_Str(), m_Directory); //TextureFromFile(str.C_Str(), m_Directory);
 			texture.name = typeName;
 			texture.path = str;
 
@@ -153,7 +79,7 @@ std::vector<Texture>	Model::LoadMaterialTextures(aiMaterial* material, aiTexture
 	if( material->GetTextureCount(aiTextureType_DIFFUSE) == 0 && type == aiTextureType_DIFFUSE)
 	{
 		Texture texture;
-		texture.id = TextureFromFile("UV_mapper.jpg", m_Directory);
+		texture.id = TextureManager::getInstannce().Load2DTextureFromFile("UV_mapper.jpg", m_Directory); //TextureFromFile("UV_mapper.jpg", m_Directory);
 		texture.name = typeName;
 		texture.path = "Default1.png";
 

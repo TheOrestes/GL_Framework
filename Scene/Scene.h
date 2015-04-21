@@ -6,6 +6,7 @@
 class DirectionalLightObject;
 class PointLightObject;
 class StaticObject;
+class GLSkybox;
 
 class Scene
 {
@@ -14,7 +15,7 @@ public:
 	~Scene();
 
 	void			Init();
-	void			StencilRender();
+	//void			StencilRender();
 	void			Render();
 	void			Update(float dt);
 	void			Kill();
@@ -28,8 +29,6 @@ private:
 	PointLightObject*		m_pOmni3;
 
 	StaticObject*			m_pObj1;
-	StaticObject*			m_pObj2;
-	StaticObject*			m_pReflection;
 
 	DirectionalLightObject*	m_pGlobalDirectional;
 };
