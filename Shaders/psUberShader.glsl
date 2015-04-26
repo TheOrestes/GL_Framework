@@ -145,7 +145,7 @@ void main()
 	vec4 SpecularDir = vec4(0,0,0,1);
 	vec3 halfDir = vec3(0,0,0);
 	float NdotLDir = 0.0f;
-	float SpecDir = 0.0f;
+	vec4 SpecDir = vec4(0,0,0,1);
 
 	for(int i = 0 ; i < numDirLights ; ++i)
 	{
@@ -170,7 +170,7 @@ void main()
 	vec3 LightDir = vec3(0,0,0);
 	vec3 halfPoint = vec3(0,0,0);
 	float NdotLPoint = 0.0f;
-	float SpecPoint = 0.0f;
+	vec4 SpecPoint = vec4(0,0,0,1);
 	float atten = 0.0f;
 
 	//--- Point Light contribution 
@@ -198,7 +198,7 @@ void main()
 	}
 
 	// Final Color components...
-	vec4 Emissive			= baseColor;
+	vec4 Emissive			= baseColor; //vec4(0.0, 0.0, 0.8, 1.0);
 	vec4 Ambient			= vec4(0.4, 0.4, 0.4, 1);
 	vec4 DiffuseDirect		= DiffuseDir + DiffusePoint;
 	vec4 SpecularDirect		= SpecularDir + SpecularPoint; 

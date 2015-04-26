@@ -15,9 +15,9 @@ Scene::Scene()
 	m_pOmni2 = new PointLightObject(glm::vec4(0,1,1,1));
 	m_pOmni3 = new PointLightObject(glm::vec4(0,1,0,1));
 
-	m_pObj1 = new StaticObject("Data/BadFatGuy.fbx", "UberShader");
+	m_pObj1 = new StaticObject("Data/Incredible.fbx", "UberShader");
 
-	m_pGlobalDirectional = new DirectionalLightObject(glm::vec4(1,1,1,1));
+	m_pGlobalDirectional = new DirectionalLightObject(glm::vec4(0,1,0,1));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -34,23 +34,23 @@ void	Scene::Init()
 	m_pObj1->SetScale(glm::vec3(0.1));
 
 	m_pOmni1->Init();
-	m_pOmni1->SetLightPosition(glm::vec3(7,3,0));
-	m_pOmni1->SetLightIntensity(5);
+	m_pOmni1->SetLightPosition(glm::vec3(6,5,0));
+	m_pOmni1->SetLightIntensity(15);
 	LightsManager::getInstance()->GatherPointLights(static_cast<GameObject*>(m_pOmni1));
 
 	m_pOmni2->Init();
-	m_pOmni2->SetLightPosition(glm::vec3(-7,3,0));
-	m_pOmni2->SetLightIntensity(2);
+	m_pOmni2->SetLightPosition(glm::vec3(-6,5,0));
+	m_pOmni2->SetLightIntensity(5);
 	LightsManager::getInstance()->GatherPointLights(static_cast<GameObject*>(m_pOmni2));
 
 	m_pOmni3->Init();
-	m_pOmni3->SetLightPosition(glm::vec3(0,5,7));
-	m_pOmni3->SetLightIntensity(2);
+	m_pOmni3->SetLightPosition(glm::vec3(0,6,6));
+	m_pOmni3->SetLightIntensity(5);
 	m_pOmni3->SetLightRadius(1);
 	LightsManager::getInstance()->GatherPointLights(static_cast<GameObject*>(m_pOmni3));
 
 	m_pGlobalDirectional->SetLightDirection(glm::vec3(0,-1,-1));
-	m_pGlobalDirectional->SetLightColor(glm::vec4(1,1,0,1));
+	m_pGlobalDirectional->SetLightColor(glm::vec4(1,1,1,1));
 	m_pGlobalDirectional->SetLightIntensity(0.5);
 	LightsManager::getInstance()->GatherDirectionalLights(static_cast<GameObject*>(m_pGlobalDirectional));
 

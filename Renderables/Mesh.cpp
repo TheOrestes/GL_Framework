@@ -186,7 +186,6 @@ void	Mesh::Render(GLSLShader* shader, const glm::mat4& world)
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); 
 	glEnable(GL_DEPTH_TEST);
 
-	
 
 	// Set all Shader variables...
 	SetShaderVariables(shaderID, world);

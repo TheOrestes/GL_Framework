@@ -81,7 +81,7 @@ std::vector<Texture>	Model::LoadMaterialTextures(aiMaterial* material, aiTexture
 		Texture texture;
 		texture.id = TextureManager::getInstannce().Load2DTextureFromFile("UV_mapper.jpg", m_Directory); //TextureFromFile("UV_mapper.jpg", m_Directory);
 		texture.name = typeName;
-		texture.path = "Default1.png";
+		texture.path = "UV_mapper.jpg";
 
 		textures.push_back(texture);
 		m_textures_loaded.push_back(texture);
