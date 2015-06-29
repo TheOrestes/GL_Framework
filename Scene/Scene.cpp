@@ -11,11 +11,13 @@
 //////////////////////////////////////////////////////////////////////////////////////////
 Scene::Scene()
 {
-	m_pOmni1 = new PointLightObject(glm::vec4(1,0,0,1));
-	m_pOmni2 = new PointLightObject(glm::vec4(0,1,1,1));
+	m_pWhiteOmni1 = new PointLightObject(glm::vec4(1,1,1,1));
+	m_pOmni2 = new PointLightObject(glm::vec4(1,0,0,1));
 	m_pOmni3 = new PointLightObject(glm::vec4(0,1,0,1));
 
-	m_pObj1 = new StaticObject("Data/Incredible.fbx", "UberShader");
+	m_pObj1 = new StaticObject("Data/Chesterfield/Chesterfield.fbx", "UberShader");
+
+	//m_pObj1 = new StaticObject("Data/Chesterfield/Chesterfield.fbx", "UberShader");
 
 	m_pGlobalDirectional = new DirectionalLightObject(glm::vec4(0,1,0,1));
 }
@@ -31,23 +33,23 @@ void	Scene::Init()
 {
 	m_pObj1->Init();
 	m_pObj1->SetPosition(glm::vec3(0,0,0));
-	m_pObj1->SetScale(glm::vec3(0.1));
+	m_pObj1->SetScale(glm::vec3(1));
 
-	m_pOmni1->Init();
-	m_pOmni1->SetLightPosition(glm::vec3(6,5,0));
-	m_pOmni1->SetLightIntensity(15);
-	LightsManager::getInstance()->GatherPointLights(static_cast<GameObject*>(m_pOmni1));
-
+	m_pWhiteOmni1->Init();
+	m_pWhiteOmni1->SetLightPosition(glm::vec3(12,10,0));
+	m_pWhiteOmni1->SetLightIntensity(1);
+	LightsManager::getInstance()->GatherPointLights(static_cast<GameObject*>(m_pWhiteOmni1));
+	
 	m_pOmni2->Init();
-	m_pOmni2->SetLightPosition(glm::vec3(-6,5,0));
-	m_pOmni2->SetLightIntensity(5);
+	m_pOmni2->SetLightPosition(glm::vec3(-3,0,0));
+	m_pOmni2->SetLightIntensity(1);
 	LightsManager::getInstance()->GatherPointLights(static_cast<GameObject*>(m_pOmni2));
-
-	m_pOmni3->Init();
-	m_pOmni3->SetLightPosition(glm::vec3(0,6,6));
-	m_pOmni3->SetLightIntensity(5);
-	m_pOmni3->SetLightRadius(1);
-	LightsManager::getInstance()->GatherPointLights(static_cast<GameObject*>(m_pOmni3));
+	//
+	//m_pOmni3->Init();
+	//m_pOmni3->SetLightPosition(glm::vec3(0,10,12));
+	//m_pOmni3->SetLightIntensity(5);
+	//m_pOmni3->SetLightRadius(1);
+	//LightsManager::getInstance()->GatherPointLights(static_cast<GameObject*>(m_pOmni3));
 
 	m_pGlobalDirectional->SetLightDirection(glm::vec3(0,-1,-1));
 	m_pGlobalDirectional->SetLightColor(glm::vec4(1,1,1,1));
@@ -61,9 +63,9 @@ void	Scene::Init()
 //////////////////////////////////////////////////////////////////////////////////////////
 void	Scene::Update(float dt)
 {
-	m_pOmni1->Update(dt);
+	m_pWhiteOmni1->Update(dt);
 	m_pOmni2->Update(dt);
-	m_pOmni3->Update(dt);
+	//m_pOmni3->Update(dt);
 
 	m_pObj1->Update(dt);
 	
@@ -73,9 +75,9 @@ void	Scene::Update(float dt)
 //////////////////////////////////////////////////////////////////////////////////////////
 void	Scene::Render()
 {
-	m_pOmni1->Render();
+	m_pWhiteOmni1->Render();
 	m_pOmni2->Render();
-	m_pOmni3->Render();
+	//m_pOmni3->Render();
 
 	m_pObj1->Render();
 
@@ -135,7 +137,7 @@ void	Scene::Render()
 //////////////////////////////////////////////////////////////////////////////////////////
 void	Scene::Kill()
 {
-	delete m_pOmni1;
+	delete m_pWhiteOmni1;
 	delete m_pOmni2;
 	delete m_pOmni3;
 

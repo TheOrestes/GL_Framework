@@ -8,6 +8,7 @@
 #include "GameObject.h"
 
 class Model;
+struct Material;
 class GLSLShader;
 
 class StaticObject : public GameObject
@@ -35,5 +36,6 @@ private:
 
 	GLSLShader*				m_pShader;
 	Model*					m_pModel;
+	Material*				m_pMaterial;
 };
 

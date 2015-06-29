@@ -22,6 +22,9 @@
     <Filter Include="Scene">
       <UniqueIdentifier>{a6d838d3-fb73-4ed7-845d-a646eccc1a2c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="MaterialSystem">
+      <UniqueIdentifier>{d6a52450-3843-46a5-bd29-b5ba1cce6c9c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Camera\Camera.cpp">
@@ -140,6 +143,9 @@
     </ClInclude>
     <ClInclude Include="Renderables\GLSkybox.h">
       <Filter>Renderables</Filter>
+    </ClInclude>
+    <ClInclude Include="MaterialSystem\Material.h">
+      <Filter>MaterialSystem</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -4,6 +4,7 @@
 #include "Mesh.h"
 #include "../Helpers/VertexStructures.h"
 #include "../ShaderEngine/GLSLShader.h"
+#include "../MaterialSystem/Material.h"
 #include "../Helpers/TextureManager.h"
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -23,7 +24,7 @@ void	Model::LoadModel(const std::string& path)
 {
 	Assimp::Importer importer;
 
-	const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate);
+	const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
 
 	if(!scene || scene->mFlags == AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
 	{
@@ -93,16 +94,18 @@ std::vector<Texture>	Model::LoadMaterialTextures(aiMaterial* material, aiTexture
 //////////////////////////////////////////////////////////////////////////////////////////
 Mesh	Model::ProcessMesh(aiMesh* mesh, const aiScene* scene)
 {
-	std::vector<VertexPNT>	vertices;
-	std::vector<GLuint>		indices;
-	std::vector<Texture>	textures;
+	std::vector<VertexPNTBT>	vertices;
+	std::vector<GLuint>			indices;
+	std::vector<Texture>		textures;
 
 	// loop through each vertex
 	for (GLuint i = 0 ; i<mesh->mNumVertices ; i++)
 	{
-		VertexPNT vertex;
+		VertexPNTBT vertex;
 		vertex.position = glm::vec3(mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z);
 		vertex.normal = glm::vec3(mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z);
+		vertex.tangent = glm::vec3(mesh->mTangents[i].x, mesh->mTangents[i].y, mesh->mTangents[i].z);
+		vertex.binormal = glm::vec3(mesh->mBitangents[i].x, mesh->mBitangents[i].y, mesh->mBitangents[i].z);
 
 		if(mesh->mTextureCoords[0])
 		{
@@ -132,6 +135,11 @@ Mesh	Model::ProcessMesh(aiMesh* mesh, const aiScene* scene)
 	if (mesh->mMaterialIndex >= 0)
 	{
 		aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
+
+		unsigned int nDiff = material->GetTextureCount(aiTextureType_DIFFUSE);
+		unsigned int nHeight = material->GetTextureCount(aiTextureType_HEIGHT);
+		unsigned int nNormal = material->GetTextureCount(aiTextureType_NORMALS);
+		
 		
 		// diffuse maps
 		std::vector<Texture> diffuseMaps = LoadMaterialTextures(material, aiTextureType_DIFFUSE, "texture_diffuse");
@@ -140,6 +148,11 @@ Mesh	Model::ProcessMesh(aiMesh* mesh, const aiScene* scene)
 		// specular maps
 		std::vector<Texture> specularMaps = LoadMaterialTextures(material, aiTextureType_SPECULAR, "texture_specular");
 		textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
+
+		// normal maps
+		std::vector<Texture> normalMaps = LoadMaterialTextures(material, aiTextureType_NORMALS, "texture_normal");
+		textures.insert(textures.end(), normalMaps.begin(), normalMaps.end());
+
 	}
 
 	// return  a mesh object created from the extracted mesh data
@@ -165,10 +178,10 @@ void	Model::ProcessNode(aiNode* node, const aiScene* scene)
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
-void	Model::Render(GLSLShader* shader, const glm::mat4& world)
+void	Model::Render(GLSLShader* shader, const glm::mat4& world, Material* mat)
 {
 	for (GLuint i = 0 ; i<m_Meshes.size() ; i++)
 	{
-		m_Meshes[i].Render(shader, world);
+		m_Meshes[i].Render(shader, world, mat);
 	}
 }

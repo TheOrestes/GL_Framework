@@ -2,6 +2,7 @@
 #include "StaticObject.h"
 #include "../ShaderEngine/GLSLShader.h"
 #include "../Renderables/Model.h"
+#include "../MaterialSystem/Material.h"
 
 //////////////////////////////////////////////////////////////////////////////////////////
 StaticObject::StaticObject()
@@ -11,6 +12,7 @@ StaticObject::StaticObject()
 
 	m_pShader = nullptr;
 	m_pModel = nullptr;
+	m_pMaterial = nullptr;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -49,6 +51,9 @@ void StaticObject::Init()
 
 	// initialize model
 	m_pModel = new Model(m_strPath);
+
+	// initialize material
+	m_pMaterial = new Material();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -56,6 +61,7 @@ void StaticObject::Kill()
 {
 	delete m_pShader;
 	delete m_pModel;
+	delete m_pMaterial;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -75,7 +81,7 @@ void StaticObject::Render()
 	model = glm::rotate(model, m_fAngle, m_vecRotation);
 	model = glm::scale(model, m_vecScale);	
 
-	m_pModel->Render(m_pShader, model);
+	m_pModel->Render(m_pShader, model, m_pMaterial);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////

@@ -24,7 +24,7 @@ public:
 
 private:
 
-	PointLightObject*		m_pOmni1;
+	PointLightObject*		m_pWhiteOmni1;
 	PointLightObject*		m_pOmni2;
 	PointLightObject*		m_pOmni3;
 

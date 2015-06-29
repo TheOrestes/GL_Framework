@@ -4,13 +4,14 @@
 #include "../Camera/Camera.h"
 #include "../Helpers/VertexStructures.h"
 #include "../ShaderEngine/GLSLShader.h"
+#include "../MaterialSystem/Material.h"
 #include "../ObjectSystem/LightsManager.h"
 #include "../ObjectSystem/DirectionalLightObject.h"
 #include "../ObjectSystem/PointLightObject.h"
 #include "GLSkybox.h"
 
 //////////////////////////////////////////////////////////////////////////////////////////
-Mesh::Mesh(std::vector<VertexPNT> vertices, std::vector<GLuint> indices, std::vector<Texture> textures)
+Mesh::Mesh(std::vector<VertexPNTBT> vertices, std::vector<GLuint> indices, std::vector<Texture> textures)
 {
 	m_vertices = vertices;
 	m_indices = indices;
@@ -37,7 +38,7 @@ void	Mesh::SetupMesh()
 
 	// vertex buffer
 	glBindBuffer(GL_ARRAY_BUFFER, vbo);
-	glBufferData(GL_ARRAY_BUFFER, m_vertices.size() * sizeof(VertexPNT), &m_vertices[0], GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, m_vertices.size() * sizeof(VertexPNTBT), &m_vertices[0], GL_STATIC_DRAW);
 
 	// index buffer
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
@@ -45,15 +46,23 @@ void	Mesh::SetupMesh()
 
 	// vertex position
 	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(VertexPNT), (void*)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(VertexPNTBT), (void*)0);
 
 	// normal 
 	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(VertexPNT), (void*)(offsetof(VertexPNT, normal)));
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(VertexPNTBT), (void*)(offsetof(VertexPNTBT, normal)));
+
+	// tangent
+	glEnableVertexAttribArray(2);
+	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(VertexPNTBT), (void*)(offsetof(VertexPNTBT, tangent)));
+
+	// binormal
+	glEnableVertexAttribArray(3);
+	glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(VertexPNTBT), (void*)(offsetof(VertexPNTBT, binormal)));
 
 	// texture
-	glEnableVertexAttribArray(2);
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(VertexPNT), (void*)(offsetof(VertexPNT, texcoord)));
+	glEnableVertexAttribArray(4);
+	glVertexAttribPointer(4, 2, GL_FLOAT, GL_FALSE, sizeof(VertexPNTBT), (void*)(offsetof(VertexPNTBT, texcoord)));
 
 	glBindVertexArray(0);
 }
@@ -112,7 +121,17 @@ void Mesh::DirectionalLightIlluminance( int shaderID )
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
-void Mesh::SetShaderVariables( int shaderID, const glm::mat4& world)
+void Mesh::SetMaterialProperties(int shaderID, Material* mat)
+{
+	glUniform4fv(glGetUniformLocation(shaderID, "material.Color"), 1, glm::value_ptr(mat->m_color));
+	glUniform4fv(glGetUniformLocation(shaderID, "material.specularColor"), 1, glm::value_ptr(mat->m_colSpecular));
+	glUniform4fv(glGetUniformLocation(shaderID, "material.roughnessColor"), 1, glm::value_ptr(mat->m_colRoughness));
+	glUniform4fv(glGetUniformLocation(shaderID, "material.reflectionColor"), 1, glm::value_ptr(mat->m_colReflection));
+	glUniform1f(glGetUniformLocation(shaderID, "material.metallic"), mat->m_fMetallic);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+void Mesh::SetShaderVariables( int shaderID, const glm::mat4& world, Material* mat)
 {
 	//--- Transformation matrices
 	glm::mat4 projection = Camera::getInstance().getProjectionMatrix();
@@ -129,6 +148,9 @@ void Mesh::SetShaderVariables( int shaderID, const glm::mat4& world)
 	glUniformMatrix4fv(glGetUniformLocation(shaderID, "matWorldInv"), 1, GL_FALSE, glm::value_ptr(InvWorld));
 	glUniform3fv(glGetUniformLocation(shaderID, "camPosition"), 1, glm::value_ptr(CamPosition));
 
+	// set material properties associated with this mesh...
+	SetMaterialProperties(shaderID, mat);
+
 	// Set Directional light related shader variables...
 	DirectionalLightIlluminance(shaderID);
 
@@ -137,10 +159,11 @@ void Mesh::SetShaderVariables( int shaderID, const glm::mat4& world)
 }	
 
 //////////////////////////////////////////////////////////////////////////////////////////
-void	Mesh::Render(GLSLShader* shader, const glm::mat4& world)
+void	Mesh::Render(GLSLShader* shader, const glm::mat4& world, Material* mat)
 {
 	GLuint diffuseNr = 1;
 	GLuint specularNr = 1;
+	GLuint normalNr = 1;
 
 	shader->Use();
 
@@ -160,6 +183,11 @@ void	Mesh::Render(GLSLShader* shader, const glm::mat4& world)
 		{
 			ss << specularNr++;
 		}
+		else if (name == "texture_normal")
+		{
+			ss << normalNr++;
+		}
+
 
 		number = ss.str();
 
@@ -176,9 +204,9 @@ void	Mesh::Render(GLSLShader* shader, const glm::mat4& world)
 	GLuint shaderID = shader->GetShaderID();
 
 	// bind cubemap
-	glActiveTexture(GL_TEXTURE2);
+	glActiveTexture(GL_TEXTURE3);
 	GLint hCubeMap = glGetUniformLocation(shaderID, "texture_cubeMap");
-	glUniform1i(hCubeMap, 2);
+	glUniform1i(hCubeMap, 3);
 	GLSkybox::getInstance().BindCubemap();
 	
 
@@ -188,7 +216,7 @@ void	Mesh::Render(GLSLShader* shader, const glm::mat4& world)
 
 
 	// Set all Shader variables...
-	SetShaderVariables(shaderID, world);
+	SetShaderVariables(shaderID, world, mat);
 
 	glBindVertexArray(vao);
 

@@ -11,6 +11,7 @@
 
 class Mesh;
 class GLSLShader;
+struct Material;
 
 class Model
 {
@@ -18,7 +19,7 @@ public:
 	Model(const std::string& path);
 	~Model();
 	
-	void					Render(GLSLShader* shader, const glm::mat4& world);
+	void					Render(GLSLShader* shader, const glm::mat4& world, Material* mat);
 
 private:
 	std::vector<Mesh>		m_Meshes;

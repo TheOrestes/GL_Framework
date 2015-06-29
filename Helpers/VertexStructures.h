@@ -101,6 +101,30 @@ struct VertexPNT
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
+struct VertexPNTBT
+{
+	VertexPNTBT() :
+		position(0.0f),
+		normal(1.0f),
+		tangent(0.0f),
+		binormal(0.0f),
+		texcoord(0.0f){}
+
+	VertexPNTBT(const glm::vec3& _p, const glm::vec3& _n, const glm::vec3& _t, const glm::vec3& _b, const glm::vec3& _uv) :
+		position(_p),
+		normal(_n),
+		tangent(_t),
+		binormal(_b),
+		texcoord(_uv){}
+
+	glm::vec3	position;
+	glm::vec3	normal;
+	glm::vec3   tangent;
+	glm::vec3   binormal;
+	glm::vec2	texcoord;
+};
+
+//////////////////////////////////////////////////////////////////////////////////////////
 struct Texture
 {
 	GLuint		id;
