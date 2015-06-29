@@ -22,11 +22,6 @@ FIBITMAP* TextureManager::LoadTextureFromFreeImage( const std::string filepath)
 {
 	// FreeImage library for loading textures...
 	FREE_IMAGE_FORMAT format = FreeImage_GetFileType(filepath.c_str());
-	if(format == -1)
-	{
-		std::cout << "FreeImage::Image loading FAILED!" << std::endl;
-		//return nullptr;
-	}
 
 	// if image is found, but the format is unknown...
 	if(format == FIF_UNKNOWN)
@@ -65,7 +60,7 @@ GLint TextureManager::Load2DTextureFromFile(const std::string& path, const std::
 
 		// Assign texture to ID
 		glBindTexture(GL_TEXTURE_2D, textureID);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_BGRA, GL_UNSIGNED_BYTE, (void*)FreeImage_GetBits(bitmap32));
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_SRGB_ALPHA, width, height, 0, GL_BGRA, GL_UNSIGNED_BYTE, (void*)FreeImage_GetBits(bitmap32));
 		glGenerateMipmap(GL_TEXTURE_2D);
 
 		// Parameters
@@ -109,16 +104,17 @@ GLint TextureManager::LoadCubemapFromFile(const std::string& dir)
 			FIBITMAP* bitmap = LoadTextureFromFreeImage(vecCubemapTextures[i]);
 			if (bitmap)
 			{
-				glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGBA, FreeImage_GetWidth(bitmap), FreeImage_GetHeight(bitmap), 0, GL_BGRA, GL_UNSIGNED_BYTE, (void*)FreeImage_GetBits(bitmap));
+				glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_SRGB_ALPHA, FreeImage_GetWidth(bitmap), FreeImage_GetHeight(bitmap), 0, GL_BGRA, GL_UNSIGNED_BYTE, (void*)FreeImage_GetBits(bitmap));
 				FreeImage_Unload(bitmap);
 			}
 		}
 
 		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+		glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
 
 	glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
 

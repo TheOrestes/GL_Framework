@@ -63,6 +63,24 @@ vec4 SharpenFilter(vec3 inSample[9])
 	return vec4(color,1);
 }
 
+//////////////////////////////////////////// Blur /////////////////////////////////////////////////
+vec4 BlurFilter(vec3 inSample[9])
+{
+	float kernel[9] = float[] (
+								1, 2, 1,
+								2, 4, 2,
+								1, 2, 1							  );
+
+	vec3 color;
+	for (int i = 0; i < 9; i++)
+	{
+		color += inSample[i] * (kernel[i]/16);
+	}
+
+	return vec4(color,1);
+}
+
+
 //////////////////////////////////////////// Laplace /////////////////////////////////////////////////
 vec4 LaplaceFilter(vec3 inSample[9])
 {
@@ -107,6 +125,13 @@ void main()
 		pixSample[i] = vec3(texture(screenTexture, vs_outTexCoord.st + offsets[i]));
 	}
 
-	//outColor = SharpenFilter(pixSample);
+	//outColor = EdgeDetectionFilter(pixSample);
+	//outColor = BlackWhiteFilter();
+
+
 	outColor = vec4(texture(screenTexture, vs_outTexCoord));
+
+	// Gamma correction!
+	float gamma = 2.2f;
+	outColor.rgb = pow(outColor.rgb, vec3(1/gamma));
 }
