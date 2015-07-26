@@ -30,6 +30,7 @@ public:
 	virtual void			SetPosition(const glm::vec3& pos);
 	virtual void			SetRotation(const glm::vec3& axis, float angle);
 	virtual void			SetScale(const glm::vec3& sc);
+	virtual void			SetCentroid(const glm::vec3& center);
 
 	void					SetID(int id);
 	void					SetName(const std::string& name);
@@ -44,4 +45,8 @@ protected:
 	glm::vec3				m_vecRotation;
 	float					m_fAngle;
 	glm::vec3				m_vecScale;
+	glm::mat4				m_matWorld;
+	glm::vec3				m_vecCentroid;
+
+	bool					m_bShowBBox;
 };

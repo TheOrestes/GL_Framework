@@ -24,11 +24,16 @@ public:
 
 private:
 
-	PointLightObject*		m_pWhiteOmni1;
+	PointLightObject*		m_pOmni1;
 	PointLightObject*		m_pOmni2;
 	PointLightObject*		m_pOmni3;
 
-	StaticObject*			m_pObj1;
+	StaticObject*			m_pSphere;
+	StaticObject*			m_pCube;
+	StaticObject*			m_pCylinder;
+	StaticObject*			m_pTorus;
+	StaticObject*			m_pPlane;
+	StaticObject*			m_pAxis;
 
 	DirectionalLightObject*	m_pGlobalDirectional;
 };

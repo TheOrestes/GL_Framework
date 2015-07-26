@@ -117,6 +117,9 @@ Mesh	Model::ProcessMesh(aiMesh* mesh, const aiScene* scene)
 		}
 
 		vertices.push_back(vertex);
+		
+		// Fill up data for bounding box calculations
+		m_bbVertices.push_back(vertex.position);
 	}
 
 	// loop through each face to fetch indices
@@ -184,4 +187,9 @@ void	Model::Render(GLSLShader* shader, const glm::mat4& world, Material* mat)
 	{
 		m_Meshes[i].Render(shader, world, mat);
 	}
+}
+
+std::vector<glm::vec3> Model::GetVertexPositions()
+{
+	return m_bbVertices;
 }

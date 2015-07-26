@@ -132,3 +132,53 @@ struct Texture
 	aiString	path;
 };
 
+//////////////////////////////////////////////////////////////////////////////////////////
+struct BBox
+{
+	// logical stuff...
+	float min_x;
+	float max_x;
+	float min_y;
+	float max_y;
+	float min_z;
+	float max_z;
+
+	glm::vec3 bbSize;
+	glm::vec3 bbCenter;
+
+	// Rendering stuff...
+	GLuint vbo;
+	GLuint ibo;
+	GLuint vao;
+
+	VertexP bbVertices[8];
+	GLuint  bbIndices[16];
+};
+
+//////////////////////////////////////////////////////////////////////////////////////////
+struct StaticObjectData
+{
+	StaticObjectData()
+	{
+		path.clear();
+		shader.clear();
+
+		position  = glm::vec3(0);
+		rotation  = glm::vec3(0,1,0);
+		angle	  = 0.0f;
+		scale     = glm::vec3(1);
+
+		showBBox  = false;
+	}
+
+	std::string path;
+	std::string shader;
+
+	glm::vec3	position;
+	glm::vec3	rotation;
+	float		angle;
+	glm::vec3	scale;
+
+	bool		showBBox;
+};
+

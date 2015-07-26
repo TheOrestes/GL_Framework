@@ -14,6 +14,8 @@ GameObject::GameObject()
 	m_vecRotation = glm::vec3(0,1,0);
 	m_fAngle	  = 0.0f;
 	m_vecScale    = glm::vec3(1);
+	m_matWorld    = glm::mat4(1);
+	m_vecCentroid = glm::vec3(0);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -60,6 +62,12 @@ void GameObject::SetRotation( const glm::vec3& axis, float angle )
 
 //////////////////////////////////////////////////////////////////////////////////////////
 void GameObject::SetScale( const glm::vec3& sc )
+{
+
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+void GameObject::SetCentroid(const glm::vec3& center)
 {
 
 }
