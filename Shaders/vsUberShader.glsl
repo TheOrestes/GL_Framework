@@ -26,10 +26,12 @@ void main()
 {	
 	mat4 WVP = matProj * matView * matWorld;
 	gl_Position = WVP * vec4(in_Position, 1.0);
-	
-	vs_outPosition = in_Position;
-	vs_outTangent = in_Tangent;
-	vs_outBinormal = in_Binormal;
-	vs_outNormal = in_Normal;
+
+	// world space position
+	vs_outPosition = (matWorld * vec4(in_Position, 1.0)).xyz;
+
+	// normals in world space
+	vs_outNormal = normalize((matWorld * vec4(in_Normal,0)).xyz);
+
 	vs_outTex = in_Tex;
 }
