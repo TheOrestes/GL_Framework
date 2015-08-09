@@ -179,90 +179,44 @@ void main()
 	vec3 shadingNormal = vec3(0);
 	vec3 envMapNormal = vec3(0);
 	vec3 objSpaceNormal = vec3(0);
-
-	// calculate TBN matrix
-	mat3 TBN = mat3(vs_outTangent,vs_outBinormal,vs_outNormal);
-	mat3 TangentToObject = TBN;
-	mat3 ObjectToTangent = transpose(TBN);
+	vec4 baseColor = material.Color;
+	vec4 specColor = material.specularColor;
 
 	// BaseMap color aka Albedo
-	vec4 baseMapColor = vec4(texture(texture_diffuse1, vs_outTex));
+	baseColor = vec4(texture(texture_diffuse1, vs_outTex));
 	// Specular Map color
-	vec4 specMapColor = vec4(texture(texture_specular1, vs_outTex));
+	specColor = vec4(texture(texture_specular1, vs_outTex));
 	// Normal map
 	vec3 normalMap = texture(texture_normal1, vs_outTex).rgb;
-
-	if(bNormalMapping)
-	{
-		shadingNormal = normalize(normalMap * 2.0 - 1.0);				// tangent space normal!
-		envMapNormal = normalize(TangentToObject * shadingNormal);	
-		//envMapNormal = normalize((matWorld * vec4(envMapNormal, 0)).xyz);
-		//objSpaceNormal = normalize(inverse(matWorld) * vec4(envMapNormal,1)).xyz;
-
-	}
-	else
-	{
-		shadingNormal = normalize(vs_outNormal);	// object space normal!
-		//envMapNormal = shadingNormal;
-	}
 
 	// calculate camera eye vector in world space
 	vec3 Eye = normalize(vs_outPosition - camPosition);
 
-	// calculate object space view vector
-	vec3 view = vec3(0,0,0);
-	vec3 ObjectSpaceView = normalize((matWorldInv * vec4(-Eye, 0)).xyz);
+	// calculate view vector
+	vec3 view = -Eye;
 
-	if(bNormalMapping)
-	{
-		view = ObjectToTangent * ObjectSpaceView;
-	}
-	else
-	{
-		view = -ObjectSpaceView;		// Object Space!
-	}
-	
+	// calculate reflection vector for environment mapping..
+	vec3 R = reflect(Eye, normalize(vs_outNormal));
+	vec4 reflectionColor = vec4(texture(texture_cubeMap, R));
 
 	// ------------------------ Directional Illuminance -------------------
-	vec3 LightDir = vec3(0,0,0);
 	vec4 DiffuseDir = vec4(0,0,0,1);
 	vec4 SpecularDir = vec4(0,0,0,1);
 	vec3 halfDir = vec3(0,0,0);
-	vec3 lightRefl = vec3(0,0,0);
 	float NdotLDir = 0.0f;
 	vec4 SpecDir = vec4(0,0,0,1);
 
-	vec3 ObjectSpaceLightDir = vec3(0,0,0);
-
 	for(int i = 0 ; i < numDirLights ; ++i)
 	{
-		ObjectSpaceLightDir = normalize((matWorldInv * vec4(dirLights[i].direction, 0)).xyz);
 		// diffuse
-		if(bNormalMapping)
-		{
-			LightDir = ObjectToTangent * ObjectSpaceLightDir;
-		}
-		else
-		{
-			LightDir = ObjectSpaceLightDir;
-		}
-		
+		NdotLDir = max(dot(vs_outNormal, -dirLights[i].direction), 0);
 
-		NdotLDir = max(dot(shadingNormal, -LightDir), 0);
+		// specular
+		halfDir = normalize(-dirLights[i].direction + view);
 
-		// phong specular
-		lightRefl = normalize(reflect(LightDir, shadingNormal));
-		
-		// blinn specular
-		halfDir = normalize(-LightDir + view);
+		if(NdotLDir > 0)
+			SpecDir = BlinnBRDF(vs_outNormal, halfDir);
 
-		// Instead of an If condition, it is sensible to mulitply specular term with cosine term
-		// Ref : Natty Hoffman : SIGGRAPH 2010 ( Physically based shading ) 
-		//if(NdotLDir > 0)
-		//SpecDir = PhongBRDF(view, lightRefl);
-		//SpecDir = CookTorranceBRDF(shadingNormal, view, -dirLights[i].direction, halfDir) * NdotLDir;  // 
-		SpecDir = BlinnBRDF(shadingNormal, halfDir) * NdotLDir;
-		
 		// accumulate...
 		DiffuseDir += dirLights[i].color * NdotLDir * dirLights[i].intensity;
 		SpecularDir += dirLights[i].color * SpecDir * dirLights[i].intensity;
@@ -272,6 +226,7 @@ void main()
 	// Diffuse & Specular accumulators for Point lights
 	vec4 DiffusePoint = vec4(0,0,0,1);
 	vec4 SpecularPoint = vec4(0,0,0,1);
+	vec3 LightDir = vec3(0,0,0);
 	vec3 halfPoint = vec3(0,0,0);
 	float NdotLPoint = 0.0f;
 	vec4 SpecPoint = vec4(0,0,0,1);
@@ -280,54 +235,35 @@ void main()
 	//--- Point Light contribution 
 	for(int i = 0 ; i < numPointLights ; ++i)
 	{
-		// Object space light position
-		vec3 ObjectSpacePosition = normalize((matWorldInv * vec4(pointLights[i].position, 0)).xyz);
-
-		if(bNormalMapping)
-		{
-			LightDir = ObjectToTangent * normalize(vs_outPosition - ObjectSpacePosition);
-		}
-		else
-		{
-			LightDir = normalize(vs_outPosition - ObjectSpacePosition);
-		}
-		
+		LightDir = normalize(vs_outPosition - pointLights[i].position);
 		float dist = length(LightDir);
 		float r = pointLights[i].radius;
 
 		// ref : https://imdoingitwrong.wordpress.com/2011/01/31/light-attenuation/
-		atten = 1/dist; //1 / (1 + ((2/r)*dist) + ((1/r*r)*(dist*dist)));
+		atten = 1 / dist; //(1 + ((2/r)*dist) + ((1/r*r)*(dist*dist)));
 		
 		// diffuse
-		NdotLPoint = max(dot(shadingNormal, -LightDir), 0);
+		NdotLPoint = max(dot(vs_outNormal, -LightDir), 0);
 
 		// specular
 		halfPoint = normalize(-LightDir + view);
 
-		// Instead of an If condition, it is sensible to mulitply specular term with cosine term
-		// Ref : Natty Hoffman : SIGGRAPH 2010 ( Physically based shading ) 
-		// if(NdotLPoint > 0)
-			SpecPoint = BlinnBRDF(shadingNormal, halfPoint);// * NdotLPoint;
+		if(NdotLPoint > 0)
+			SpecPoint = BlinnBRDF(vs_outNormal, halfPoint);
 
 		// accumulate...
 		DiffusePoint += pointLights[i].color * atten * NdotLPoint * pointLights[i].intensity;
 		SpecularPoint += pointLights[i].color * atten * SpecPoint * pointLights[i].intensity;
 	}
 
-	// calculate reflection vector for environment mapping..
-	vec3 R = reflect(Eye, envMapNormal);
-	//vec4 reflectionColor = vec4(textureLod(texture_cubeMap, R, 9.0f));
-	vec4 reflectionColor = vec4(texture(texture_cubeMap, R));
-
 	// Final Color components...
-	Emissive		= baseMapColor * material.Color;
-	Ambient			= vec4(0.2, 0.2, 0.2, 1);
+	Emissive		= vec4(0.0, 0.0, 0.1, 1.0);
+	Ambient			= vec4(0.4, 0.4, 0.4, 1);
 	Diffuse			= DiffuseDir + DiffusePoint;
 	Specular		= SpecularDir + SpecularPoint; 
-	//Reflection		= reflectionColor * material.reflectionColor;
 
-	outColor = Emissive * (Ambient + Diffuse) + Specular;// + specMapColor;// * Reflection; 
-
+	outColor = Emissive * (Ambient + Diffuse) + Specular + 0.2 * reflectionColor; // Emissive * (Ambient + DiffuseDirect) + specColor * SpecularDirect; 
+	
 	// linear depth
 	/*float near = 0.1f;
 	float far = 10.0f;

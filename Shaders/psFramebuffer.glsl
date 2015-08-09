@@ -129,9 +129,13 @@ void main()
 	//outColor = BlackWhiteFilter();
 
 
-	outColor = vec4(texture(screenTexture, vs_outTexCoord));
+	vec3 hdrColor = vec3(texture(screenTexture, vs_outTexCoord));
+	hdrColor *= 0.5;	
+
+	// Reinhard tone mapping
+	vec3 mapped = hdrColor / (hdrColor + vec3(1));
 
 	// Gamma correction!
 	float gamma = 2.2f;
-	outColor.rgb = pow(outColor.rgb, vec3(1/gamma));
+	outColor.rgb = pow(mapped, vec3(1/gamma));
 }

@@ -166,8 +166,8 @@ void	Mesh::Render(GLSLShader* shader, const glm::mat4& world, Material* mat)
 	GLuint normalNr = 1;
 
 	shader->Use();
-
-	for (GLuint i = 0 ; i < m_textures.size() ; i++)
+	GLuint i = 0;
+	for ( ; i < m_textures.size() ; i++)
 	{
 		glActiveTexture(GL_TEXTURE0 + i);
 
@@ -204,9 +204,9 @@ void	Mesh::Render(GLSLShader* shader, const glm::mat4& world, Material* mat)
 	GLuint shaderID = shader->GetShaderID();
 
 	// bind cubemap
-	glActiveTexture(GL_TEXTURE3);
+	glActiveTexture(GL_TEXTURE0 + (i+1) );
 	GLint hCubeMap = glGetUniformLocation(shaderID, "texture_cubeMap");
-	glUniform1i(hCubeMap, 3);
+	glUniform1i(hCubeMap, i+1);
 	GLSkybox::getInstance().BindCubemap();
 	
 

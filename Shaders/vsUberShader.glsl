@@ -33,5 +33,9 @@ void main()
 	// normals in world space
 	vs_outNormal = normalize((matWorld * vec4(in_Normal,0)).xyz);
 
+	// output rest of the stuff for future use..
+	vs_outTangent = in_Tangent;
+	vs_outBinormal = in_Binormal;
+
 	vs_outTex = in_Tex;
 }
