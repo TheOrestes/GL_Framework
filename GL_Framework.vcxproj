@@ -150,6 +150,7 @@
     <ClCompile Include="ObjectSystem\LightsManager.cpp" />
     <ClCompile Include="ObjectSystem\PointLightObject.cpp" />
     <ClCompile Include="ObjectSystem\StaticObject.cpp" />
+    <ClCompile Include="Renderables\BBoxCube.cpp" />
     <ClCompile Include="Renderables\Framebuffer.cpp" />
     <ClCompile Include="Renderables\GLCube.cpp" />
     <ClCompile Include="Renderables\GLCubeNormal.cpp" />
@@ -173,6 +174,7 @@
     <ClInclude Include="ObjectSystem\LightsManager.h" />
     <ClInclude Include="ObjectSystem\PointLightObject.h" />
     <ClInclude Include="ObjectSystem\StaticObject.h" />
+    <ClInclude Include="Renderables\BBoxCube.h" />
     <ClInclude Include="Renderables\FrameBuffer.h" />
     <ClInclude Include="Renderables\GLCube.h" />
     <ClInclude Include="Renderables\GLCubeNormal.h" />

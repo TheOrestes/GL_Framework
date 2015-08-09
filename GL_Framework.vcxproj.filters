@@ -79,6 +79,9 @@
     <ClCompile Include="Renderables\GLSkybox.cpp">
       <Filter>Renderables</Filter>
     </ClCompile>
+    <ClCompile Include="Renderables\BBoxCube.cpp">
+      <Filter>Renderables</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera\Camera.h">
@@ -146,6 +149,9 @@
     </ClInclude>
     <ClInclude Include="MaterialSystem\Material.h">
       <Filter>MaterialSystem</Filter>
+    </ClInclude>
+    <ClInclude Include="Renderables\BBoxCube.h">
+      <Filter>Renderables</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

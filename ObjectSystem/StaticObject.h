@@ -45,7 +45,7 @@ private:
 
 	GLSLShader*				m_pShader;
 	Model*					m_pModel;
-	Material*				m_pMaterial
+	Material*				m_pMaterial;
 	BBoxCube*				m_pBBoxCube;
 };
 

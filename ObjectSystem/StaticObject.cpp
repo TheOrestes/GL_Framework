@@ -98,7 +98,7 @@ void StaticObject::Update( float dt )
 //////////////////////////////////////////////////////////////////////////////////////////
 void StaticObject::Render()
 {
-	m_pModel->Render(m_pShader, model, m_pMaterial);
+	m_pModel->Render(m_pShader, m_matWorld, m_pMaterial);
 	
 	if (m_bShowBBox)
 	{
