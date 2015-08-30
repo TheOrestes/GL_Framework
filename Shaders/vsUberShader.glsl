@@ -28,10 +28,10 @@ void main()
 	gl_Position = WVP * vec4(in_Position, 1.0);
 
 	// world space position
-	vs_outPosition = (matWorld * vec4(in_Position, 1.0)).xyz;
+	vs_outPosition = ((matView * matWorld) * vec4(in_Position, 1)).xyz;
 
 	// normals in world space
-	vs_outNormal = normalize((matWorld * vec4(in_Normal,0)).xyz);
+	vs_outNormal = (matWorld * vec4(in_Normal, 0)).xyz;
 
 	// output rest of the stuff for future use..
 	vs_outTangent = in_Tangent;

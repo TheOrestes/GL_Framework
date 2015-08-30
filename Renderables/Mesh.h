@@ -21,6 +21,8 @@ public:
 	std::vector<GLuint>		m_indices;
 	std::vector<Texture>	m_textures;
 
+	void		Kill();
+
 	void		SetMaterialProperties(int shaderID, Material* mat);
 	void		PointLightIlluminance(int shaderID);
 	void		DirectionalLightIlluminance(int shaderID);

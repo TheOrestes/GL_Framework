@@ -9,7 +9,8 @@ in vec3		vs_outTangent;
 in vec3		vs_outBinormal;
 in vec3		vs_outPosition;
 
-out vec4	outColor;
+layout (location = 0) out vec4 outColor;
+layout (location = 1) out vec4 brightColor; 
 
 //---------------------------------------------------------------------------------------
 // Material Properties
@@ -62,6 +63,7 @@ uniform DirectionalLight dirLights[MAX_DIR_LIGHTS];
 //---------------------------------------------------------------------------------------
 uniform vec3		camPosition;
 uniform mat4		matWorld;
+uniform mat4		matView;
 uniform mat4		matWorldInv;
 
 uniform sampler2D	texture_diffuse1;
@@ -89,7 +91,7 @@ vec4 BlinnBRDF(vec3 normal, vec3 half)
 	float NdotH = max(dot(normal, half), 0);
 	//float specular = pow(NdotH, 1/(1-material.roughnessColor.x));
 
-	float specular = pow(NdotH, 128);
+	float specular = pow(NdotH, 32);
 	
 	return vec4(specular, specular, specular, 1.0f);
 }
@@ -182,6 +184,8 @@ void main()
 	vec4 baseColor = material.Color;
 	vec4 specColor = material.specularColor;
 
+	vec3 normals = normalize(matWorld * vec4(vs_outNormal, 1)).xyz;
+
 	// BaseMap color aka Albedo
 	baseColor = vec4(texture(texture_diffuse1, vs_outTex));
 	// Specular Map color
@@ -209,13 +213,12 @@ void main()
 	for(int i = 0 ; i < numDirLights ; ++i)
 	{
 		// diffuse
-		NdotLDir = max(dot(vs_outNormal, -dirLights[i].direction), 0);
+		NdotLDir = max(dot(normals, -dirLights[i].direction), 0);
 
 		// specular
 		halfDir = normalize(-dirLights[i].direction + view);
-
-		if(NdotLDir > 0)
-			SpecDir = BlinnBRDF(vs_outNormal, halfDir);
+			
+		SpecDir = BlinnBRDF(vs_outNormal, halfDir);// * NdotLDir;
 
 		// accumulate...
 		DiffuseDir += dirLights[i].color * NdotLDir * dirLights[i].intensity;
@@ -248,8 +251,7 @@ void main()
 		// specular
 		halfPoint = normalize(-LightDir + view);
 
-		if(NdotLPoint > 0)
-			SpecPoint = BlinnBRDF(vs_outNormal, halfPoint);
+		SpecPoint = BlinnBRDF(vs_outNormal, halfPoint);// * NdotLPoint;
 
 		// accumulate...
 		DiffusePoint += pointLights[i].color * atten * NdotLPoint * pointLights[i].intensity;
@@ -257,12 +259,18 @@ void main()
 	}
 
 	// Final Color components...
-	Emissive		= vec4(0.0, 0.0, 0.1, 1.0);
-	Ambient			= vec4(0.4, 0.4, 0.4, 1);
+	Emissive		= baseColor;// vec4(0.8, 0, 0, 1.0); //
+	Ambient			= vec4(vec3(2),1);
 	Diffuse			= DiffuseDir + DiffusePoint;
 	Specular		= SpecularDir + SpecularPoint; 
 
-	outColor = Emissive * (Ambient + Diffuse) + Specular + 0.2 * reflectionColor; // Emissive * (Ambient + DiffuseDirect) + specColor * SpecularDirect; 
+	outColor = Emissive * (Ambient + Diffuse) + Specular;// + 0.2 * reflectionColor; 
+
+	// check whether fragment color is more than the threshold brightness value
+	// we calculate first grayscale equivalent...
+	float brightness = dot(outColor.rgb, vec3(0.2126f, 0.7152f, 0.0722f));
+	if(brightness > 1.0f)
+		brightColor = vec4(outColor.rgb, 1.0f);
 	
 	// linear depth
 	/*float near = 0.1f;

@@ -204,5 +204,8 @@
     <None Include="Shaders\psSkybox.glsl">
       <Filter>Shaders</Filter>
     </None>
+    <None Include="Shaders\psBlur.glsl">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

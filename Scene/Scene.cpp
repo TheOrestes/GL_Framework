@@ -60,12 +60,12 @@ void	Scene::Init()
 
 	//---- Sphere
 	StaticObjectData dataSphere;
-	dataSphere.path = "Data/UnitSphere.fbx";
+	dataSphere.path = "Data/UnitTorus.fbx";
 	dataSphere.shader = "UberShader";
 	dataSphere.position = glm::vec3(0,0,0);
 	dataSphere.angle = 0.0f;
-	dataSphere.rotation = glm::vec3(0,1,0);
-	dataSphere.scale = glm::vec3(3);
+	dataSphere.rotation = glm::vec3(0,1,0);                                        
+	dataSphere.scale = glm::vec3(1);
 
 	m_pSphere = new StaticObject(dataSphere);
 	m_pSphere->Init();
@@ -108,10 +108,10 @@ void	Scene::Init()
 	m_pAxis = new StaticObject(dataAxis);
 	m_pAxis->Init();
 
-	/*m_pOmni1 =  new PointLightObject(glm::vec4(1,0,0,1));
+	/*m_pOmni1 =  new PointLightObject(glm::vec4(15,0,0,1));
 	m_pOmni1->Init();
 	m_pOmni1->SetLightPosition(glm::vec3(6,5,0));
-	m_pOmni1->SetLightIntensity(1);
+	m_pOmni1->SetLightIntensity(10);
 	LightsManager::getInstance()->GatherPointLights(static_cast<GameObject*>(m_pOmni1));*/
 
 	/*m_pOmni2->Init();
@@ -127,7 +127,7 @@ void	Scene::Init()
 
 	m_pGlobalDirectional->SetLightDirection(glm::vec3(0,-1,-1));
 	m_pGlobalDirectional->SetLightColor(glm::vec4(1,1,1,1));
-	m_pGlobalDirectional->SetLightIntensity(50);
+	m_pGlobalDirectional->SetLightIntensity(1.5);
 	LightsManager::getInstance()->GatherDirectionalLights(static_cast<GameObject*>(m_pGlobalDirectional));
 
 	// initialize skybox
