@@ -187,7 +187,7 @@ void main()
 	vec3 normals = normalize(matWorld * vec4(vs_outNormal, 1)).xyz;
 
 	// BaseMap color aka Albedo
-	baseColor = vec4(texture(texture_diffuse1, vs_outTex));
+	//baseColor = vec4(texture(texture_diffuse1, vs_outTex));
 	// Specular Map color
 	specColor = vec4(texture(texture_specular1, vs_outTex));
 	// Normal map
@@ -200,8 +200,8 @@ void main()
 	vec3 view = -Eye;
 
 	// calculate reflection vector for environment mapping..
-	vec3 R = reflect(Eye, normalize(vs_outNormal));
-	vec4 reflectionColor = vec4(texture(texture_cubeMap, R));
+	vec3 R = -reflect(Eye, normalize(vs_outNormal));
+	vec4 reflectionColor = vec4(textureLod(texture_cubeMap, R, 1.0f));
 
 	// ------------------------ Directional Illuminance -------------------
 	vec4 DiffuseDir = vec4(0,0,0,1);
@@ -218,7 +218,7 @@ void main()
 		// specular
 		halfDir = normalize(-dirLights[i].direction + view);
 			
-		SpecDir = BlinnBRDF(vs_outNormal, halfDir);// * NdotLDir;
+		SpecDir = BlinnBRDF(vs_outNormal, halfDir) * NdotLDir;
 
 		// accumulate...
 		DiffuseDir += dirLights[i].color * NdotLDir * dirLights[i].intensity;
@@ -251,7 +251,7 @@ void main()
 		// specular
 		halfPoint = normalize(-LightDir + view);
 
-		SpecPoint = BlinnBRDF(vs_outNormal, halfPoint);// * NdotLPoint;
+		SpecPoint = BlinnBRDF(vs_outNormal, halfPoint) * NdotLPoint;
 
 		// accumulate...
 		DiffusePoint += pointLights[i].color * atten * NdotLPoint * pointLights[i].intensity;
@@ -259,12 +259,12 @@ void main()
 	}
 
 	// Final Color components...
-	Emissive		= baseColor;// vec4(0.8, 0, 0, 1.0); //
-	Ambient			= vec4(vec3(2),1);
+	Emissive		= baseColor;//vec4(0.0, 0, 0.6, 1.0); 
+	Ambient			= vec4(vec3(0.2),1);
 	Diffuse			= DiffuseDir + DiffusePoint;
 	Specular		= SpecularDir + SpecularPoint; 
 
-	outColor = Emissive * (Ambient + Diffuse) + Specular;// + 0.2 * reflectionColor; 
+	outColor = Emissive * (Ambient + Diffuse) + 0.1 * reflectionColor; 
 
 	// check whether fragment color is more than the threshold brightness value
 	// we calculate first grayscale equivalent...

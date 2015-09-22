@@ -10,7 +10,7 @@ uniform samplerCube cubeMap;
 
 void main()
 {
-	outColor = texture(cubeMap, vs_outTex);
+	outColor = texture(cubeMap, -vs_outTex);
 
 	// check whether fragment color is more than the threshold brightness value
 	// we calculate first grayscale equivalent...

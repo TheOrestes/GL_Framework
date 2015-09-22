@@ -138,8 +138,10 @@ void main()
 	}
 
 	// Tone Mapping...
-	float exposure = 1.0f;
-	vec3 result = vec3(1.0) - exp(-hdrColor * exposure);
+	float exposure = 1.2f;
+	hdrColor *= exposure;
+
+	vec3 result = hdrColor / (1+hdrColor);
 
 	// Gamma Correction...
     vec3 retColor = pow(result, vec3(1/2.2));

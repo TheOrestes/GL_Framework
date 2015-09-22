@@ -53,7 +53,8 @@ void GLSkybox::Init()
 	m_pShader = new GLSLShader("Shaders/vsSkybox.glsl", "Shaders/psSkybox.glsl");
 
 	// Load cubemap and assign id ...
-	tbo = TextureManager::getInstannce().LoadCubemapFromFile("Data/cubemaps/Yokohama2");
+	//tbo = TextureManager::getInstannce().LoadCubemapFromFile("Data/cubemaps/Yokohama2");
+	tbo = TextureManager::getInstannce().LoadHDRICubemapFromFile("Data/cubemaps/HDRI/uffizi-large");
 
 	// create vao
 	glGenVertexArrays(1, &vao);

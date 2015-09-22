@@ -46,6 +46,7 @@ void Framebuffer::FramebufferSetup()
 		{
 			glBindTexture(GL_TEXTURE_2D, tbo[i]);
 			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, 1280, 800, 0, GL_RGB, GL_FLOAT, NULL);
+			//glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 1280, 800, 0, GL_RGB, GL_UNSIGNED_INT, NULL);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE); // We clamp to the edge as the blur filter would otherwise sample repeated texture values!
@@ -77,22 +78,24 @@ void Framebuffer::FramebufferSetup()
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
+	// Courtesy : http://www.learnopengl.com/#!Advanced-Lighting/Bloom
 	// Ping pong framebuffer for Blurring
-	glGenFramebuffers(2, pingpongFBO);
-	glGenTextures(2, pingpongColorBuffer);
+	glGenFramebuffers(2, bloomFBO);
+	glGenTextures(2, bloomColorBuffer);
 
 	for (GLuint i = 0 ; i < 2 ; i++)
 	{
-		glBindFramebuffer(GL_FRAMEBUFFER, pingpongFBO[i]);
-		glBindTexture(GL_TEXTURE_2D, pingpongColorBuffer[i]);
+		glBindFramebuffer(GL_FRAMEBUFFER, bloomFBO[i]);
+		glBindTexture(GL_TEXTURE_2D, bloomColorBuffer[i]);
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, 1280, 800, 0, GL_RGB, GL_FLOAT, NULL);
+		//glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 1280, 800, 0, GL_RGB, GL_UNSIGNED_INT, NULL);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR); 
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE); // We clamp to the edge as the blur filter would otherwise sample repeated texture values!
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 , GL_TEXTURE_2D, 
-								pingpongColorBuffer[i], 0);
+								bloomColorBuffer[i], 0);
 	}
 
 	// Load all required shaders for post processing...
@@ -124,7 +127,7 @@ void Framebuffer::BeginRenderToFramebuffer()
 {
 	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
 
-	glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+	glClearColor(0.01f, 0.01f, 0.01f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	glEnable(GL_DEPTH_TEST);
@@ -139,7 +142,7 @@ void Framebuffer::EndRenderToFramebuffer()
 //////////////////////////////////////////////////////////////////////////////////////////
 void Framebuffer::RenderFramebuffer()
 {
-	glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+	glClearColor(0.01f, 0.01f, 0.01f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT);
 
 	// No need of any depth testing while rendering a single scene aligned quad...
@@ -174,7 +177,7 @@ void Framebuffer::BlurPass()
 
 	for (int i = 0 ; i<amount ; i++)
 	{
-		glBindFramebuffer(GL_FRAMEBUFFER, pingpongFBO[horizontal]);
+		glBindFramebuffer(GL_FRAMEBUFFER, bloomFBO[horizontal]);
 		glUniform1i(glGetUniformLocation(m_pBlurPostFX->GetShaderID(), "horizontal"), horizontal);
 
 		if (first_iter)
@@ -187,7 +190,7 @@ void Framebuffer::BlurPass()
 		{
 			// For all iterations other than first, we choose other framebuffer's color
 			// buffer for uniform blur in both horizontal & vertical direction...
-			glBindTexture(GL_TEXTURE_2D, pingpongColorBuffer[!horizontal]);
+			glBindTexture(GL_TEXTURE_2D, bloomColorBuffer[!horizontal]);
 		}
 
 		// Draw Quad...
@@ -221,7 +224,7 @@ void Framebuffer::BlendPass()
 	glActiveTexture(GL_TEXTURE1);
 	GLint hVar2 = glGetUniformLocation(m_pBloomPostFX->GetShaderID(), "blurTexture");
 	glUniform1i(hVar2, 1);
-	glBindTexture(GL_TEXTURE_2D, pingpongColorBuffer[!horizontal]);
+	glBindTexture(GL_TEXTURE_2D, bloomColorBuffer[!horizontal]);
 
 	glUniform1i(glGetUniformLocation(m_pBloomPostFX->GetShaderID(), "bloomEnabled"), m_bBloomOn);
 

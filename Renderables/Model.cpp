@@ -77,7 +77,7 @@ std::vector<Texture>	Model::LoadMaterialTextures(aiMaterial* material, aiTexture
 
 	// If there is no texture on the model, load the default chequered texture!
 	// second if condition is added so that default texture is loaded only for the diffuse part & not specular!
-	if( material->GetTextureCount(aiTextureType_DIFFUSE) == 0 && type == aiTextureType_DIFFUSE)
+	/*if( material->GetTextureCount(aiTextureType_DIFFUSE) == 0 && type == aiTextureType_DIFFUSE)
 	{
 		Texture texture;
 		texture.id = TextureManager::getInstannce().Load2DTextureFromFile("UV_mapper.jpg", m_Directory); //TextureFromFile("UV_mapper.jpg", m_Directory);
@@ -86,7 +86,7 @@ std::vector<Texture>	Model::LoadMaterialTextures(aiMaterial* material, aiTexture
 
 		textures.push_back(texture);
 		m_textures_loaded.push_back(texture);
-	}
+	}*/
 
 	return textures;
 }
@@ -104,8 +104,12 @@ Mesh	Model::ProcessMesh(aiMesh* mesh, const aiScene* scene)
 		VertexPNTBT vertex;
 		vertex.position = glm::vec3(mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z);
 		vertex.normal = glm::vec3(mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z);
-		vertex.tangent = glm::vec3(mesh->mTangents[i].x, mesh->mTangents[i].y, mesh->mTangents[i].z);
-		vertex.binormal = glm::vec3(mesh->mBitangents[i].x, mesh->mBitangents[i].y, mesh->mBitangents[i].z);
+		
+		if(mesh->mTangents || mesh->mBitangents)
+		{
+			vertex.tangent = glm::vec3(mesh->mTangents[i].x, mesh->mTangents[i].y, mesh->mTangents[i].z);
+			vertex.binormal = glm::vec3(mesh->mBitangents[i].x, mesh->mBitangents[i].y, mesh->mBitangents[i].z);
+		}
 
 		if(mesh->mTextureCoords[0])
 		{

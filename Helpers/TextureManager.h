@@ -18,6 +18,7 @@ public:
 
 	GLint	Load2DTextureFromFile(const std::string& path, const std::string& dir);
 	GLint	LoadCubemapFromFile(const std::string& dir);
+	GLint	LoadHDRICubemapFromFile(const std::string& dir);
 
 private:
 	TextureManager();

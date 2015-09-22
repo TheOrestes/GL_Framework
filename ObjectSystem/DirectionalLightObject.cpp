@@ -7,7 +7,7 @@ DirectionalLightObject::DirectionalLightObject()
 {
 	m_vecLightDirection = glm::vec3(0,-1,0);
 	m_vecLightColor = glm::vec4(1);
-	m_fIntensity = 1.0f;
+	m_fIntensity = 5.0f;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////

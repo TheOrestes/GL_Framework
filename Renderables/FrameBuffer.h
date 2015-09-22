@@ -28,8 +28,8 @@ private:
 	GLuint			tbo[2];				// Texture buffer Object, one for normal 
 										// post processing & one for brightness threshold
 
-	GLuint			pingpongFBO[2];
-	GLuint			pingpongColorBuffer[2];
+	GLuint			bloomFBO[2];
+	GLuint			bloomColorBuffer[2];
 
 	GLSLShader*		m_pGenericPostFX;
 	GLSLShader*		m_pBlurPostFX;

@@ -8,7 +8,7 @@ struct Material
 	// default constructor
 	Material()
 	{
-		m_color = glm::vec4(1,1,1,1);
+		m_color = glm::vec4(1.0,0.0,0.0,1.0);
 		m_colSpecular = glm::vec4(1);
 		m_colRoughness = glm::vec4(glm::vec3(0.1),1);
 		m_colReflection = glm::vec4(0.2);

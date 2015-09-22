@@ -34,10 +34,15 @@ FIBITMAP* TextureManager::LoadTextureFromFreeImage( const std::string filepath)
 		}
 	}
 
-	// known image format
 	FIBITMAP* bitmap = FreeImage_Load(format, filepath.c_str());
 	
-	return FreeImage_ConvertTo32Bits(bitmap);
+	// Check for floating point image format i.e. HDR
+	if (FreeImage_GetImageType(bitmap) != FIT_RGBF)
+	{
+		bitmap = FreeImage_ConvertTo32Bits(bitmap);
+	}
+	
+	return bitmap;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -115,6 +120,51 @@ GLint TextureManager::LoadCubemapFromFile(const std::string& dir)
 		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 		glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
+
+	glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
+
+	return cubemapID;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+GLint TextureManager::LoadHDRICubemapFromFile( const std::string& name )
+{
+	// we work on the assumption that folder contains specifically named textures
+	// forming a cubemap!
+	// Do some book keeping first by storing textures in the folder into a vector
+	std::vector<std::string> vecCubemapTextures;
+	vecCubemapTextures.push_back(name + ".right.tif");
+	vecCubemapTextures.push_back(name + ".left.tif");
+	vecCubemapTextures.push_back(name + ".bottom.tif");
+	vecCubemapTextures.push_back(name + ".top.tif");
+	vecCubemapTextures.push_back(name + ".front.tif");
+	vecCubemapTextures.push_back(name + ".back.tif");
+
+	GLuint cubemapID;
+	glGenTextures(1, &cubemapID);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapID);
+
+	for (int i = 0 ; i<vecCubemapTextures.size() ; i++)
+	{
+		FIBITMAP* bitmap = LoadTextureFromFreeImage(vecCubemapTextures[i]);
+		int width = FreeImage_GetWidth(bitmap);
+		int height = FreeImage_GetHeight(bitmap);
+		float* bits = (float*)FreeImage_GetBits(bitmap);
+
+		if (bitmap)
+		{
+			glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB9_E5, width, height, 
+						 0, GL_RGB, GL_FLOAT, bits);
+			FreeImage_Unload(bitmap);
+		}
+	}
+
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+	glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
 
 	glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
 

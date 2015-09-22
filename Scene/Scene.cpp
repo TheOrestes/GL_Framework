@@ -60,12 +60,14 @@ void	Scene::Init()
 
 	//---- Sphere
 	StaticObjectData dataSphere;
-	dataSphere.path = "Data/UnitTorus.fbx";
+	dataSphere.path = "Data/nanosuit/Nanosuit.fbx";
+	//dataSphere.path = "Data/Arnold.fbx";
 	dataSphere.shader = "UberShader";
 	dataSphere.position = glm::vec3(0,0,0);
 	dataSphere.angle = 0.0f;
 	dataSphere.rotation = glm::vec3(0,1,0);                                        
 	dataSphere.scale = glm::vec3(1);
+	dataSphere.showBBox = false;
 
 	m_pSphere = new StaticObject(dataSphere);
 	m_pSphere->Init();
@@ -108,11 +110,11 @@ void	Scene::Init()
 	m_pAxis = new StaticObject(dataAxis);
 	m_pAxis->Init();
 
-	/*m_pOmni1 =  new PointLightObject(glm::vec4(15,0,0,1));
+	m_pOmni1 =  new PointLightObject(glm::vec4(5,5,0,1));
 	m_pOmni1->Init();
 	m_pOmni1->SetLightPosition(glm::vec3(6,5,0));
-	m_pOmni1->SetLightIntensity(10);
-	LightsManager::getInstance()->GatherPointLights(static_cast<GameObject*>(m_pOmni1));*/
+	m_pOmni1->SetLightIntensity(1);
+	LightsManager::getInstance()->GatherPointLights(static_cast<GameObject*>(m_pOmni1));
 
 	/*m_pOmni2->Init();
 	m_pOmni2->SetLightPosition(glm::vec3(-6,5,0));
@@ -137,11 +139,11 @@ void	Scene::Init()
 //////////////////////////////////////////////////////////////////////////////////////////
 void	Scene::Update(float dt)
 {
-	//m_pOmni1->Update(dt);
+	m_pOmni1->Update(dt);
 	/*m_pOmni2->Update(dt);
 	m_pOmni3->Update(dt);*/
 
-	m_pCube->Update(dt);
+	//m_pSphere->Update(dt);
 	
 	GLSkybox::getInstance().Update(dt);
 }
@@ -149,7 +151,7 @@ void	Scene::Update(float dt)
 //////////////////////////////////////////////////////////////////////////////////////////
 void	Scene::Render()
 {
-	//m_pOmni1->Render();
+	m_pOmni1->Render();
 	/*m_pOmni2->Render();
 	m_pOmni3->Render();*/
 
@@ -158,7 +160,7 @@ void	Scene::Render()
 	m_pSphere->Render();
 	//m_pCylinder->Render();
 	//m_pTorus->Render();
-	//m_pAxis->Render();
+	//m_pAxis->Render();*/
 
 	GLSkybox::getInstance().Render();
 }
