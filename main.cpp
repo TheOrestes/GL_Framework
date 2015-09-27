@@ -8,6 +8,9 @@
 #include "Scene/Scene.h"
 #include "Renderables/FrameBuffer.h"
 
+#include "Kernel/OVR_System.h"
+#include "OVR_CAPI_GL.h"
+
 //////////////////////////////////////////////////////////////////////////////////////////
 GLFWwindow* window;
 Scene		gScene;
@@ -88,6 +91,37 @@ void GameLoop(float tick)
 	gFBufferPtr->RenderBloomEffect();
 }
 
+void InitializeDevices()
+{
+	/// Key callback
+	glfwSetKeyCallback(window, key_callback);
+
+	/// Mouse 
+	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	glfwSetCursorPosCallback(window, Mouse_Callback);
+
+	/// Oculus
+	ovrHmd HMD;
+	ovrGraphicsLuid luid;
+
+	OVR::System::Init();
+	ovrResult result = ovr_Initialize(nullptr);
+	if(OVR_FAILURE(result))
+		printf("\novr_Initialize() FAILED!");
+
+	result = ovr_Create(&HMD, &luid);
+	if(OVR_FAILURE(result))
+		printf("\novr_Create() FAILED!");
+
+	ovrHmdDesc hmdDesc = ovr_GetHmdDesc(HMD);
+
+	printf("\nRift Serial Number : %s", hmdDesc.SerialNumber);
+	printf("\nRift Manufacturer : %s", hmdDesc.Manufacturer);
+
+	ovr_Shutdown();
+	OVR::System::Destroy();
+}
+
 void InitializeScene()
 {
 	//cube.Init();
@@ -115,18 +149,12 @@ int main(void)
 	/// Make current context for this window
 	glfwMakeContextCurrent(window);
 
-	/// Key callback
-	
-	glfwSetKeyCallback(window, key_callback);
-
-	/// Mouse 
-	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-	glfwSetCursorPosCallback(window, Mouse_Callback);
-
 	/// Init GLEW after window & context creation
 	glewExperimental = true;
 	glewInit();
 
+	// Initialize Devices
+	InitializeDevices();
 	
 	// Initialize Scene
 	InitializeScene();
