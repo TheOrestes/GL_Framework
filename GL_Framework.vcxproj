@@ -98,13 +98,13 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(SolutionDir)\Dependencies\glew_1.11.0\include;$(SolutionDir)\Dependencies\glfw_3.0.4;$(SolutionDir)\Dependencies\glm_0.9.6.1;$(SolutionDir)\Dependencies\assimp-3.1.1\include;$(SolutionDir)\Dependencies\SOIL\include;$(SolutionDir)\Dependencies\FreeImage3160\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\Dependencies\glew_1.11.0\include;$(SolutionDir)\Dependencies\glfw_3.0.4;$(SolutionDir)\Dependencies\glm_0.9.6.1;$(SolutionDir)\Dependencies\assimp-3.1.1\include;$(SolutionDir)\Dependencies\SOIL\include;$(SolutionDir)\Dependencies\FreeImage3160\Include;$(SolutionDir)\Dependencies\AntTweakBar\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(SolutionDir)\Dependencies\glew_1.11.0\Debug;$(SolutionDir)\Dependencies\glfw_3.0.4\Debug;$(SolutionDir)\Dependencies\assimp-3.1.1\Debug;$(SolutionDir)\Dependencies\SOIL\Debug;$(SolutionDir)\Dependencies\FreeImage3160\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>glew32d.lib;glfw3dll.lib;opengl32.lib;assimpd.lib;SOIL.lib;FreeImaged.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)\Dependencies\glew_1.11.0\Debug;$(SolutionDir)\Dependencies\glfw_3.0.4\Debug;$(SolutionDir)\Dependencies\assimp-3.1.1\Debug;$(SolutionDir)\Dependencies\SOIL\Debug;$(SolutionDir)\Dependencies\FreeImage3160\Debug;$(SolutionDir)\Dependencies\AntTweakBar\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>glew32d.lib;glfw3dll.lib;opengl32.lib;assimpd.lib;SOIL.lib;FreeImaged.lib;AntTweakBar64.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">

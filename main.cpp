@@ -8,11 +8,15 @@
 #include "Scene/Scene.h"
 #include "Renderables/FrameBuffer.h"
 
+#include "AntTweakBar.h"
+
 //////////////////////////////////////////////////////////////////////////////////////////
 GLFWwindow* window;
 Scene		gScene;
 Framebuffer* gFBufferPtr;  
 
+TwBar* bar;
+ 
 //GLCube		cube;
 
 const float gScreenWidth	=	1280.0f;
@@ -116,18 +120,46 @@ int main(void)
 	glfwMakeContextCurrent(window);
 
 	/// Key callback
-	
 	glfwSetKeyCallback(window, key_callback);
 
 	/// Mouse 
-	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 	glfwSetCursorPosCallback(window, Mouse_Callback);
+
+	/*
+	// - Directly redirect GLFW mouse button events to AntTweakBar
+	glfwSetMouseButtonCallback((GLFWmousebuttonfun)TwEventMouseButtonGLFW);
+	// - Directly redirect GLFW mouse position events to AntTweakBar
+	glfwSetCursorPosCallback((GLFWcursorposfun)TwEventMousePosGLFW);
+	// - Directly redirect GLFW mouse wheel events to AntTweakBar
+	glfwSetScrollCallback((GLFWscrollfun)TwEventMouseWheelGLFW);
+	// - Directly redirect GLFW key events to AntTweakBar
+	glfwSetKeyCallback((GLFWkeyfun)TwEventKeyGLFW);
+	// - Directly redirect GLFW char events to AntTweakBar
+	glfwSetCharCallback((GLFWcharfun)TwEventCharGLFW);*/
 
 	/// Init GLEW after window & context creation
 	glewExperimental = true;
 	glewInit();
 
-	
+	TwInit(TW_OPENGL_CORE, nullptr);
+	TwWindowSize(gScreenWidth, gScreenHeight);
+
+	bar = TwNewBar("TestBar");
+	TwDefine("This is the test bar rendered using Ant UI");
+
+	// Add 'speed' to 'bar': it is a modifable (RW) variable of type TW_TYPE_DOUBLE. 
+	// Its key shortcuts are [s] and [S].
+	double speed = 0.3;
+	bool wire = true;
+	float bgColor[] = { 0.1f, 0.2f, 0.4f };
+	unsigned char cubeColor[] = { 255, 0, 0, 128 }; 
+
+	TwAddVarRW(bar, "speed", TW_TYPE_DOUBLE, &speed, " label='Rot speed' min=0 max=2 step=0.01 keyIncr=s keyDecr=S help='Rotation speed (turns/second)' ");
+	TwAddVarRW(bar, "wire", TW_TYPE_BOOL32, &wire, " label='Wireframe mode' key=w help='Toggle wireframe display mode.' ");
+	TwAddVarRW(bar, "bgColor", TW_TYPE_COLOR3F, &bgColor, " label='Background color' ");
+	TwAddVarRW(bar, "cubeColor", TW_TYPE_COLOR32, &cubeColor, " label='Cube color' alpha help='Color and transparency of the cube.' ");
+
 	// Initialize Scene
 	InitializeScene();
 
@@ -141,10 +173,12 @@ int main(void)
 		lastFrameTime = currFrameTime;*/
 
 		GameLoop(tick);
+		TwDraw();
 		
 		glfwSwapBuffers(window);
 	}
 
+	TwTerminate();
 	glfwTerminate();
 	return 0;
 }
