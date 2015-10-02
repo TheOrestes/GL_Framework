@@ -126,18 +126,6 @@ int main(void)
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 	glfwSetCursorPosCallback(window, Mouse_Callback);
 
-	/*
-	// - Directly redirect GLFW mouse button events to AntTweakBar
-	glfwSetMouseButtonCallback((GLFWmousebuttonfun)TwEventMouseButtonGLFW);
-	// - Directly redirect GLFW mouse position events to AntTweakBar
-	glfwSetCursorPosCallback((GLFWcursorposfun)TwEventMousePosGLFW);
-	// - Directly redirect GLFW mouse wheel events to AntTweakBar
-	glfwSetScrollCallback((GLFWscrollfun)TwEventMouseWheelGLFW);
-	// - Directly redirect GLFW key events to AntTweakBar
-	glfwSetKeyCallback((GLFWkeyfun)TwEventKeyGLFW);
-	// - Directly redirect GLFW char events to AntTweakBar
-	glfwSetCharCallback((GLFWcharfun)TwEventCharGLFW);*/
-
 	/// Init GLEW after window & context creation
 	glewExperimental = true;
 	glewInit();
@@ -159,6 +147,17 @@ int main(void)
 	TwAddVarRW(bar, "wire", TW_TYPE_BOOL32, &wire, " label='Wireframe mode' key=w help='Toggle wireframe display mode.' ");
 	TwAddVarRW(bar, "bgColor", TW_TYPE_COLOR3F, &bgColor, " label='Background color' ");
 	TwAddVarRW(bar, "cubeColor", TW_TYPE_COLOR32, &cubeColor, " label='Cube color' alpha help='Color and transparency of the cube.' ");
+
+	// - Directly redirect GLFW mouse button events to AntTweakBar
+	glfwSetMouseButtonCallback(window, (GLFWmousebuttonfun)TwEventMouseButtonGLFW3);
+	// - Directly redirect GLFW mouse position events to AntTweakBar
+	glfwSetCursorPosCallback(window, (GLFWcursorposfun)TwEventCursorPosGLFW3);
+	// - Directly redirect GLFW mouse wheel events to AntTweakBar
+	glfwSetScrollCallback(window, (GLFWscrollfun)TwEventScrollGLFW3);
+	// - Directly redirect GLFW key events to AntTweakBar
+	glfwSetKeyCallback(window, (GLFWkeyfun)TwEventKeyGLFW3);
+	// - Directly redirect GLFW char events to AntTweakBar
+	glfwSetCharCallback(window, (GLFWcharfun)TwEventCharModsGLFW3);
 
 	// Initialize Scene
 	InitializeScene();
