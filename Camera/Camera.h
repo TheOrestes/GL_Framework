@@ -36,6 +36,10 @@ public:
 	inline glm::vec3		getCameraPosition(){ return m_vecPosition; }
 	inline glm::vec3		getCameraLookVector() { return m_vecDirection; }
 
+	void			setViewMatrix(const glm::mat4& vr_view);
+	void			setProjMatrix(const glm::mat4& vr_proj);
+	void			setPosition(const glm::vec3& vr_pos);
+
 private:
 	Camera();
 

@@ -66,7 +66,7 @@ void	Scene::Init()
 	dataSphere.position = glm::vec3(0,0,0);
 	dataSphere.angle = 0.0f;
 	dataSphere.rotation = glm::vec3(0,1,0);                                        
-	dataSphere.scale = glm::vec3(1);
+	dataSphere.scale = glm::vec3(0.2);
 	dataSphere.showBBox = false;
 
 	m_pSphere = new StaticObject(dataSphere);
@@ -143,7 +143,7 @@ void	Scene::Update(float dt)
 	/*m_pOmni2->Update(dt);
 	m_pOmni3->Update(dt);*/
 
-	//m_pSphere->Update(dt);
+	m_pSphere->Update(dt);
 	
 	GLSkybox::getInstance().Update(dt);
 }

@@ -14,7 +14,7 @@ Camera::Camera() :
 	m_fSensitivity(0.05f),
 	m_fZoom(45.0f)
 {
-	Update();
+	//Update();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -94,7 +94,7 @@ void Camera::ProcessMouseMovement(float xOffset, float yOffset, bool bConstraint
 			m_fPitch = -89.0f;
 	}
 
-	Update();
+	//Update();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -106,12 +106,30 @@ void Camera::ProcessMouseScroll(float offset)
 //////////////////////////////////////////////////////////////////////////////////////////
 glm::mat4x4 Camera::getViewMatrix()
 {
-	return glm::lookAt(m_vecPosition, m_vecPosition + m_vecDirection, m_vecUp);
+	return m_matView; //glm::lookAt(m_vecPosition, m_vecPosition + m_vecDirection, m_vecUp);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
 glm::mat4x4 Camera::getProjectionMatrix()
 {
-	return glm::perspective(m_fZoom, 1.6f, 0.1f, 1000.0f);
+	return m_matProjection; //glm::perspective(m_fZoom, 1.6f, 0.1f, 1000.0f);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+void Camera::setViewMatrix( const glm::mat4& vr_view )
+{
+	m_matView = glm::transpose(vr_view);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+void Camera::setProjMatrix( const glm::mat4& vr_proj )
+{
+	m_matProjection = glm::transpose(vr_proj);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+void Camera::setPosition( const glm::vec3& vr_pos )
+{
+	m_vecPosition = vr_pos;
 }
 

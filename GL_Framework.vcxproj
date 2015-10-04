@@ -100,6 +100,7 @@
       <PreprocessorDefinitions>OVR_BUILD_DEBUG;WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(SolutionDir)\Dependencies\glew_1.11.0\include;$(SolutionDir)\Dependencies\glfw_3.0.4;$(SolutionDir)\Dependencies\glm_0.9.6.1;$(SolutionDir)\Dependencies\assimp-3.1.1\include;$(SolutionDir)\Dependencies\SOIL\include;$(SolutionDir)\Dependencies\FreeImage3160\Include;$(SolutionDir)\Dependencies\OculusSDK_0.7.0.0\LibOVR\Include;$(SolutionDir)\Dependencies\OculusSDK_0.7.0.0\LibOVRKernel\Src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
