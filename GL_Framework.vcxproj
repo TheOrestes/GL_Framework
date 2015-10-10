@@ -152,6 +152,7 @@
     <ClCompile Include="ObjectSystem\LightsManager.cpp" />
     <ClCompile Include="ObjectSystem\PointLightObject.cpp" />
     <ClCompile Include="ObjectSystem\StaticObject.cpp" />
+    <ClCompile Include="Oculus\OculusPlayer.cpp" />
     <ClCompile Include="Renderables\BBoxCube.cpp" />
     <ClCompile Include="Renderables\Framebuffer.cpp" />
     <ClCompile Include="Renderables\GLCube.cpp" />
@@ -176,6 +177,7 @@
     <ClInclude Include="ObjectSystem\LightsManager.h" />
     <ClInclude Include="ObjectSystem\PointLightObject.h" />
     <ClInclude Include="ObjectSystem\StaticObject.h" />
+    <ClInclude Include="Oculus\OculusPlayer.h" />
     <ClInclude Include="Renderables\BBoxCube.h" />
     <ClInclude Include="Renderables\FrameBuffer.h" />
     <ClInclude Include="Renderables\GLCube.h" />

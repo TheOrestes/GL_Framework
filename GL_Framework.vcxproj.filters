@@ -25,6 +25,9 @@
     <Filter Include="MaterialSystem">
       <UniqueIdentifier>{d6a52450-3843-46a5-bd29-b5ba1cce6c9c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Oculus">
+      <UniqueIdentifier>{8af31575-aa60-4f37-ba77-ea95a54aca81}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Camera\Camera.cpp">
@@ -81,6 +84,9 @@
     </ClCompile>
     <ClCompile Include="Renderables\BBoxCube.cpp">
       <Filter>Renderables</Filter>
+    </ClCompile>
+    <ClCompile Include="Oculus\OculusPlayer.cpp">
+      <Filter>Oculus</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -152,6 +158,9 @@
     </ClInclude>
     <ClInclude Include="Renderables\BBoxCube.h">
       <Filter>Renderables</Filter>
+    </ClInclude>
+    <ClInclude Include="Oculus\OculusPlayer.h">
+      <Filter>Oculus</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
