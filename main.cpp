@@ -8,14 +8,13 @@
 #include "Scene/Scene.h"
 #include "Renderables/FrameBuffer.h"
 
-#include "AntTweakBar.h"
+#include "../imgui/imgui.h"
+#include "../imgui/imgui_impl_glfw_gl3.h"
 
 //////////////////////////////////////////////////////////////////////////////////////////
 GLFWwindow* window;
 Scene		gScene;
 Framebuffer* gFBufferPtr;  
-
-TwBar* bar;
  
 //GLCube		cube;
 
@@ -26,6 +25,8 @@ const float tick			=	0.016667f;
 bool  bFirstMouse			=	true;
 float lastX					=	gScreenWidth / 2.0f;
 float lastY					=	gScreenHeight / 2.0f;
+
+bool bEditMode = false;
 
 //////////////////////////////////////////////////////////////////////////////////////////
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
@@ -53,6 +54,11 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 	if (key == GLFW_KEY_D && (action == GLFW_REPEAT || GLFW_PRESS))
 	{
 		Camera::getInstance().ProcessKeyboard(CameraMovement::RIGHT, tick);	
+	}
+
+	if(key == GLFW_KEY_ENTER && action == GLFW_PRESS)
+	{
+		bEditMode = !bEditMode;
 	}
 }
 
@@ -119,52 +125,19 @@ int main(void)
 	/// Make current context for this window
 	glfwMakeContextCurrent(window);
 
-	/// Key callback
-	glfwSetKeyCallback(window, key_callback);
-
-	/// Mouse 
-	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-	glfwSetCursorPosCallback(window, Mouse_Callback);
-
 	/// Init GLEW after window & context creation
 	glewExperimental = true;
 	glewInit();
 
-	TwInit(TW_OPENGL_CORE, nullptr);
-	TwWindowSize(gScreenWidth, gScreenHeight);
-
-	bar = TwNewBar("TestBar");
-	TwDefine("This is the test bar rendered using Ant UI");
-
-	// Add 'speed' to 'bar': it is a modifable (RW) variable of type TW_TYPE_DOUBLE. 
-	// Its key shortcuts are [s] and [S].
-	double speed = 0.3;
-	bool wire = true;
-	float bgColor[] = { 0.1f, 0.2f, 0.4f };
-	unsigned char cubeColor[] = { 255, 0, 0, 128 }; 
-
-	TwAddVarRW(bar, "speed", TW_TYPE_DOUBLE, &speed, " label='Rot speed' min=0 max=2 step=0.01 keyIncr=s keyDecr=S help='Rotation speed (turns/second)' ");
-	TwAddVarRW(bar, "wire", TW_TYPE_BOOL32, &wire, " label='Wireframe mode' key=w help='Toggle wireframe display mode.' ");
-	TwAddVarRW(bar, "bgColor", TW_TYPE_COLOR3F, &bgColor, " label='Background color' ");
-	TwAddVarRW(bar, "cubeColor", TW_TYPE_COLOR32, &cubeColor, " label='Cube color' alpha help='Color and transparency of the cube.' ");
-
-	// - Directly redirect GLFW mouse button events to AntTweakBar
-	glfwSetMouseButtonCallback(window, (GLFWmousebuttonfun)TwEventMouseButtonGLFW3);
-	// - Directly redirect GLFW mouse position events to AntTweakBar
-	glfwSetCursorPosCallback(window, (GLFWcursorposfun)TwEventCursorPosGLFW3);
-	// - Directly redirect GLFW mouse wheel events to AntTweakBar
-	glfwSetScrollCallback(window, (GLFWscrollfun)TwEventScrollGLFW3);
-	// - Directly redirect GLFW key events to AntTweakBar
-	glfwSetKeyCallback(window, (GLFWkeyfun)TwEventKeyGLFW3);
-	// - Directly redirect GLFW char events to AntTweakBar
-	glfwSetCharCallback(window, (GLFWcharfun)TwEventCharModsGLFW3);
-
+	
+	
 	// Initialize Scene
 	InitializeScene();
 
 	//double lastFrameTime = glfwGetTime();
 
 	/// Message Loop!
+	float roughness = 0.2f;
 	while (!glfwWindowShouldClose(window))
 	{
 		/*double currFrameTime = glfwGetTime();
@@ -172,12 +145,35 @@ int main(void)
 		lastFrameTime = currFrameTime;*/
 
 		GameLoop(tick);
-		TwDraw();
+
+		if (bEditMode)
+		{
+			glfwSetCursorPosCallback(window, NULL);
+
+			// ImGui binding...
+			ImGui_ImplGlfwGL3_Init(window, true);
+			ImGui_ImplGlfwGL3_NewFrame();
+
+			ImGui::Text("Hello ImGui");
+			ImGui::SliderFloat("Roughness", &roughness, 0.0f, 1.0f);
+
+			ImGui::Render();
+		}
+		else
+		{
+			/// Key callback
+			glfwSetKeyCallback(window, key_callback);
+
+			/// Mouse 
+			glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+			glfwSetCursorPosCallback(window, Mouse_Callback);
+		}
+		
 		
 		glfwSwapBuffers(window);
 	}
 
-	TwTerminate();
+	ImGui_ImplGlfwGL3_Shutdown();
 	glfwTerminate();
 	return 0;
 }
