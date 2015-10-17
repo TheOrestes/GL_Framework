@@ -2,6 +2,7 @@
 #pragma once
 
 #include <string>
+#include "glm/glm.hpp"
 
 namespace Helper
 {
@@ -18,5 +19,17 @@ namespace Helper
 		std::string rawName = fileName.substr(0, lastIndex);
 
 		return rawName;
+	}
+
+	inline void glm_vec4_to_float4(const glm::vec4& vec, float* arr)
+	{
+		if(!arr)
+			return;
+
+		// as we know size is 4, we don't need to pass it on as argument
+		arr[0] = vec.r;
+		arr[1] = vec.g;
+		arr[2] = vec.b;
+		arr[3] = vec.a;
 	}
 }

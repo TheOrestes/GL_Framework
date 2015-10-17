@@ -7,9 +7,7 @@
 #include "Camera/Camera.h"
 #include "Scene/Scene.h"
 #include "Renderables/FrameBuffer.h"
-
-#include "../imgui/imgui.h"
-#include "../imgui/imgui_impl_glfw_gl3.h"
+#include "UI/UIManager.h"
 
 //////////////////////////////////////////////////////////////////////////////////////////
 GLFWwindow* window;
@@ -25,8 +23,6 @@ const float tick			=	0.016667f;
 bool  bFirstMouse			=	true;
 float lastX					=	gScreenWidth / 2.0f;
 float lastY					=	gScreenHeight / 2.0f;
-
-bool bEditMode = false;
 
 //////////////////////////////////////////////////////////////////////////////////////////
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
@@ -55,11 +51,11 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 	{
 		Camera::getInstance().ProcessKeyboard(CameraMovement::RIGHT, tick);	
 	}
-
-	if(key == GLFW_KEY_ENTER && action == GLFW_PRESS)
-	{
-		bEditMode = !bEditMode;
-	}
+// 
+// 	if(key == GLFW_KEY_ENTER && action == GLFW_PRESS)
+// 	{
+// 		bEditMode = !bEditMode;
+// 	}
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -79,6 +75,35 @@ void Mouse_Callback(GLFWwindow* window, double xPos, double yPos)
 
 	Camera::getInstance().ProcessMouseMovement(xoffset, yoffset);
 }
+
+/*void UpdateUI(GLFWwindow* window)
+{
+	if (bEditMode)
+	{
+		glfwSetCursorPosCallback(window, NULL);
+
+		// ImGui binding...
+		ImGui_ImplGlfwGL3_Init(window, true);
+		ImGui_ImplGlfwGL3_NewFrame();
+
+		ImGui::Begin("Material Editor");
+		ImGui::SliderFloat("Roughness", &roughness, 0.0f, 1.0f);
+		if(ImGui::Button("Close"))
+			bEditMode = false;
+		ImGui::End();
+
+		ImGui::Render();
+	}
+	else
+	{
+		/// Key callback
+		glfwSetKeyCallback(window, key_callback);
+
+		/// Mouse 
+		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+		glfwSetCursorPosCallback(window, Mouse_Callback);
+	}
+}*/
 
 //////////////////////////////////////////////////////////////////////////////////////////
 void GameLoop(float tick)
@@ -129,51 +154,32 @@ int main(void)
 	glewExperimental = true;
 	glewInit();
 
-	
-	
+	// Initialize UI Manager
+	UIManager::getInstance().InitUIManager(window);
+
 	// Initialize Scene
 	InitializeScene();
 
 	//double lastFrameTime = glfwGetTime();
 
-	/// Message Loop!
-	float roughness = 0.2f;
+	/// Message Loop!!!
 	while (!glfwWindowShouldClose(window))
 	{
 		/*double currFrameTime = glfwGetTime();
 		float delta = (float)(currFrameTime - lastFrameTime);
 		lastFrameTime = currFrameTime;*/
+		
 
 		GameLoop(tick);
 
-		if (bEditMode)
-		{
-			glfwSetCursorPosCallback(window, NULL);
+		UIManager::getInstance().EndRender();
 
-			// ImGui binding...
-			ImGui_ImplGlfwGL3_Init(window, true);
-			ImGui_ImplGlfwGL3_NewFrame();
-
-			ImGui::Text("Hello ImGui");
-			ImGui::SliderFloat("Roughness", &roughness, 0.0f, 1.0f);
-
-			ImGui::Render();
-		}
-		else
-		{
-			/// Key callback
-			glfwSetKeyCallback(window, key_callback);
-
-			/// Mouse 
-			glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-			glfwSetCursorPosCallback(window, Mouse_Callback);
-		}
-		
+		//UpdateUI(window);
 		
 		glfwSwapBuffers(window);
 	}
 
-	ImGui_ImplGlfwGL3_Shutdown();
+	//ImGui_ImplGlfwGL3_Shutdown();
 	glfwTerminate();
 	return 0;
 }

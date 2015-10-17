@@ -166,6 +166,7 @@
     <ClCompile Include="Renderables\Model.cpp" />
     <ClCompile Include="Scene\Scene.cpp" />
     <ClCompile Include="ShaderEngine\GLSLShader.cpp" />
+    <ClCompile Include="UI\UIManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera\Camera.h" />
@@ -198,6 +199,7 @@
     <ClInclude Include="Renderables\Model.h" />
     <ClInclude Include="Scene\Scene.h" />
     <ClInclude Include="ShaderEngine\GLSLShader.h" />
+    <ClInclude Include="UI\UIManager.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ClassDiagram.cd" />

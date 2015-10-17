@@ -15,12 +15,12 @@ Scene::Scene()
 	/*m_pOmni2 = new PointLightObject(glm::vec4(1,1,0,1));
 	m_pOmni3 = new PointLightObject(glm::vec4(0,1,0,1));*/
 
-	m_pCube   = nullptr;
+	//m_pCube   = nullptr;
 	m_pSphere = nullptr; 
-	m_pCylinder = nullptr; 
+	/*m_pCylinder = nullptr; 
 	m_pTorus = nullptr; 
 	m_pPlane = nullptr; 
-	m_pAxis = nullptr;
+	m_pAxis = nullptr;*/
 
 	m_pGlobalDirectional = new DirectionalLightObject(glm::vec4(0,1,0,1));
 }
@@ -35,7 +35,7 @@ Scene::~Scene()
 void	Scene::Init()
 {
 	//---- Cube
-	StaticObjectData dataCube;
+	/*StaticObjectData dataCube;
 	dataCube.path = "Data/UnitCube.fbx";
 	dataCube.shader = "UberShader";
 	dataCube.position = glm::vec3(-4,1,0);
@@ -56,7 +56,7 @@ void	Scene::Init()
 	dataPlane.scale = glm::vec3(15,1,15);
 
 	m_pPlane = new StaticObject(dataPlane);
-	m_pPlane->Init();
+	m_pPlane->Init();*/
 
 	//---- Sphere
 	StaticObjectData dataSphere;
@@ -73,7 +73,7 @@ void	Scene::Init()
 	m_pSphere->Init();
 
 	//---- Cylinder
-	StaticObjectData dataCylinder;
+	/*StaticObjectData dataCylinder;
 	dataCylinder.path = "Data/UnitCylinder.fbx";
 	dataCylinder.shader = "UberShader";
 	dataCylinder.position = glm::vec3(0,1,4);
@@ -108,7 +108,7 @@ void	Scene::Init()
 	dataAxis.scale = glm::vec3(1);
 
 	m_pAxis = new StaticObject(dataAxis);
-	m_pAxis->Init();
+	m_pAxis->Init();*/
 
 	m_pOmni1 =  new PointLightObject(glm::vec4(5,5,0,1));
 	m_pOmni1->Init();
@@ -143,7 +143,7 @@ void	Scene::Update(float dt)
 	/*m_pOmni2->Update(dt);
 	m_pOmni3->Update(dt);*/
 
-	//m_pSphere->Update(dt);
+	m_pSphere->Update(dt);
 	
 	GLSkybox::getInstance().Update(dt);
 }
@@ -225,9 +225,9 @@ void	Scene::Kill()
 	delete m_pGlobalDirectional;
 
 	delete m_pCube;
-	delete m_pPlane;
+	/*delete m_pPlane;
 	delete m_pSphere;
 	delete m_pCylinder;
 	delete m_pTorus;
-	delete m_pAxis;
+	delete m_pAxis;*/
 }
