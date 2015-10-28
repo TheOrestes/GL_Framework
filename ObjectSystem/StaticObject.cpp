@@ -99,7 +99,6 @@ void StaticObject::Update( float dt )
 //////////////////////////////////////////////////////////////////////////////////////////
 void StaticObject::Render()
 {
-	UIManager::getInstance().BeginRender();
 	UIManager::getInstance().RenderMaterialUI(m_pMaterial);
 
 	m_pModel->Render(m_pShader, m_matWorld, m_pMaterial);

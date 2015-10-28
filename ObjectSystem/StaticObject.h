@@ -34,7 +34,6 @@ public:
 
 			void			InitBBox(std::vector<glm::vec3> _vecVertexPositions);
 			void			UpdateBBox(const glm::mat3& _matWorld);
-			void			RenderBBox(const StaticObjectData& data);
 
 	inline void				SetPath(const std::string& path){ m_strPath = path; }
 	inline void				SetShader(const std::string& shader){ m_strShader = shader; }

@@ -169,6 +169,7 @@ int main(void)
 		float delta = (float)(currFrameTime - lastFrameTime);
 		lastFrameTime = currFrameTime;*/
 		
+		UIManager::getInstance().BeginRender();
 
 		GameLoop(tick);
 
