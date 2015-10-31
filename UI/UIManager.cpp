@@ -1,9 +1,10 @@
 
 #include "UIManager.h"
-#include "glfw3.h"
 #include "../MaterialSystem/Material.h"
+#include "../Renderables/FrameBuffer.h"
 #include "../Helpers/Helper.h"
 
+#include "glfw3.h"
 #include <glm/gtc/type_ptr.hpp>
 
 extern GLFWwindow* window;
@@ -31,22 +32,50 @@ void UIManager::InitUIManager(GLFWwindow* window)
 //////////////////////////////////////////////////////////////////////////////////////////
 void UIManager::RenderMaterialUI(Material* material)
 {
-	static float color[4];
-	Helper::glm_vec4_to_float4(material->m_color, color);
+	static float albedo[4];
+	Helper::glm_vec4_to_float4(material->m_colAlbedo, albedo);
+
+	static float roughness = material->m_colRoughness.x;
+	static float metallic = material->m_colMetallic.x;
 	
 	if (bUIActive)
 	{
 		glfwSetCursorPosCallback(m_pWindow, NULL);
 		
 		ImGui::Begin("Material Editor");
-		ImGui::ColorEdit4("Albedo", color);
+		ImGui::ColorEdit4("Albedo", albedo);
+		ImGui::SliderFloat("Roughness", &roughness, 0, 1);
+		ImGui::SliderFloat("Metallic", &metallic, 0, 1);
 		ImGui::End();
 	}
 
-	material->m_color.r = color[0];
-	material->m_color.g = color[1];
-	material->m_color.b = color[2];
-	material->m_color.a = color[3];
+	// Albedo
+	material->m_colAlbedo.r = albedo[0];
+	material->m_colAlbedo.g = albedo[1];
+	material->m_colAlbedo.b = albedo[2];
+	material->m_colAlbedo.a = albedo[3];
+
+	// Roughness
+	material->m_colRoughness.r = material->m_colRoughness.g = material->m_colRoughness.b = roughness;
+	material->m_colRoughness.a = 1.0f;
+
+	// Metallic
+	material->m_colMetallic.r = material->m_colMetallic.g = material->m_colMetallic.b = metallic;
+	material->m_colMetallic.a = 1.0f;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+void UIManager::RenderPostFxUI( PostFXData* data )
+{
+	if (bUIActive)
+	{
+		glfwSetCursorPosCallback(m_pWindow, NULL);
+		ImGui::Begin("PostProcess Effects");
+		ImGui::Checkbox("Bloom On", &(data->m_bBloomOn));
+		ImGui::SliderFloat("Exposure", &(data->m_fExposure), 0, 10);
+		ImGui::SliderInt("Bloom Spread", &(data->m_iBlurIter), 1, 10);
+		ImGui::End();
+	}
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -66,6 +95,8 @@ void UIManager::Kill()
 {
 	ImGui_ImplGlfwGL3_Shutdown();
 }
+
+
 
 
 

@@ -17,12 +17,9 @@ layout (location = 1) out vec4 brightColor;
 //---------------------------------------------------------------------------------------
 struct Material
 {
-	vec4 Color;
-	vec4 specularColor;
-	vec4 roughnessColor;
-	vec4 reflectionColor;
-
-	float metallic;
+	vec4 Albedo;
+	vec4 Roughness;
+	vec4 Metallic;
 };
 
 uniform Material material;
@@ -89,9 +86,9 @@ vec4 PhongBRDF(vec3 camLook, vec3 reflection)
 vec4 BlinnBRDF(vec3 normal, vec3 half)
 {
 	float NdotH = max(dot(normal, half), 0);
-	//float specular = pow(NdotH, 1/(1-material.roughnessColor.x));
+	float specular = pow(NdotH, 1/(1-material.Roughness.x));
 
-	float specular = pow(NdotH, 32);
+	//float specular = pow(NdotH, 32);
 	
 	return vec4(specular, specular, specular, 1.0f);
 }
@@ -101,7 +98,7 @@ vec4 BlinnBRDF(vec3 normal, vec3 half)
 //---------------------------------------------------------------------------------------
 vec4 CookTorranceBRDF(vec3 normal, vec3 camLook, vec3 lightDir, vec3 half)
 {
-	float roughness = material.roughnessColor.x;
+	float roughness = material.Roughness.x;
 
 	float NdotL = clamp(dot(normal, lightDir), 0, 1);
 	float NdotH = clamp(dot(normal, half), 0, 1);
@@ -181,15 +178,15 @@ void main()
 	vec3 shadingNormal = vec3(0);
 	vec3 envMapNormal = vec3(0);
 	vec3 objSpaceNormal = vec3(0);
-	vec4 baseColor = material.Color;
-	vec4 specColor = material.specularColor;
+	vec4 baseColor = material.Albedo;
+	//vec4 specColor = material.specularColor;
 
 	vec3 normals = normalize(matWorld * vec4(vs_outNormal, 1)).xyz;
 
 	// BaseMap color aka Albedo
 	//baseColor = vec4(texture(texture_diffuse1, vs_outTex));
 	// Specular Map color
-	specColor = vec4(texture(texture_specular1, vs_outTex));
+	//specColor = vec4(texture(texture_specular1, vs_outTex));
 	// Normal map
 	vec3 normalMap = texture(texture_normal1, vs_outTex).rgb;
 
@@ -201,7 +198,9 @@ void main()
 
 	// calculate reflection vector for environment mapping..
 	vec3 R = -reflect(Eye, normalize(vs_outNormal));
-	vec4 reflectionColor = vec4(textureLod(texture_cubeMap, R, 1.0f));
+	vec4 reflectionColor = vec4(textureLod(texture_cubeMap, R, 8 * material.Roughness.x));
+
+	//vec4 ambientColor = vec4(textureLod(texture_cubeMap, vs_outNormal, 7)); 
 
 	// ------------------------ Directional Illuminance -------------------
 	vec4 DiffuseDir = vec4(0,0,0,1);
@@ -213,7 +212,7 @@ void main()
 	for(int i = 0 ; i < numDirLights ; ++i)
 	{
 		// diffuse
-		NdotLDir = max(dot(normals, -dirLights[i].direction), 0);
+		NdotLDir = max(dot(vs_outNormal, -dirLights[i].direction), 0);
 
 		// specular
 		halfDir = normalize(-dirLights[i].direction + view);
@@ -264,7 +263,7 @@ void main()
 	Diffuse			= DiffuseDir + DiffusePoint;
 	Specular		= SpecularDir + SpecularPoint; 
 
-	outColor = Emissive * (Ambient + Diffuse) + 0.1 * reflectionColor; 
+	outColor = Emissive * Diffuse + 0.1 * reflectionColor; 
 
 	// check whether fragment color is more than the threshold brightness value
 	// we calculate first grayscale equivalent...

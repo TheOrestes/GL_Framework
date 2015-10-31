@@ -28,7 +28,7 @@ void main()
 	gl_Position = WVP * vec4(in_Position, 1.0);
 
 	// world space position
-	vs_outPosition = ((matView * matWorld) * vec4(in_Position, 1)).xyz;
+	vs_outPosition = (matWorld * vec4(in_Position, 1)).xyz;
 
 	// normals in world space
 	vs_outNormal = (matWorld * vec4(in_Normal, 0)).xyz;

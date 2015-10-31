@@ -2,6 +2,7 @@
 #include "FrameBuffer.h"
 #include "../ShaderEngine/GLSLShader.h"
 #include "../Helpers/VertexStructures.h"
+#include "../UI/UIManager.h"
 #include <iostream>
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -19,8 +20,8 @@ Framebuffer::Framebuffer()
 	quadVertices[4] = VertexPT(glm::vec3(1,-1,0), glm::vec2(1,0));
 	quadVertices[5] = VertexPT(glm::vec3(1,1,0), glm::vec2(1,1));
 
-	// Bloom 
-	m_bBloomOn = true;
+	// FX Data
+	m_pFXData = nullptr;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -29,6 +30,7 @@ Framebuffer::~Framebuffer()
 	delete m_pGenericPostFX;
 	delete m_pBlurPostFX;
 	delete m_pBloomPostFX;
+	delete m_pFXData;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -120,6 +122,9 @@ void Framebuffer::FramebufferSetup()
 		glVertexAttribPointer(texAttrib, 2, GL_FLOAT, GL_FALSE, sizeof(VertexPT), (void*)offsetof(VertexPT, uv));
 
 	glBindVertexArray(0);
+
+	// FX Data initialize
+	m_pFXData = new PostFXData();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -151,6 +156,8 @@ void Framebuffer::RenderFramebuffer()
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	m_pGenericPostFX->Use();
 
+	glUniform1f(glGetUniformLocation(m_pGenericPostFX->GetShaderID(), "exposure"), m_pFXData->m_fExposure);
+
 	/*GLuint shader = m_pShader->GetShaderID();
 	GLint hTex = glGetUniformLocation(shader, "screenTexture");
 	glUniform1i(hTex, 0);*/
@@ -171,11 +178,9 @@ void Framebuffer::BlurPass()
 	horizontal = true;
 	bool first_iter = true;
 
-	int amount = 10;
-
 	m_pBlurPostFX->Use();
 
-	for (int i = 0 ; i<amount ; i++)
+	for (int i = 0 ; i<2 * m_pFXData->m_iBlurIter ; i++)
 	{
 		glBindFramebuffer(GL_FRAMEBUFFER, bloomFBO[horizontal]);
 		glUniform1i(glGetUniformLocation(m_pBlurPostFX->GetShaderID(), "horizontal"), horizontal);
@@ -226,8 +231,8 @@ void Framebuffer::BlendPass()
 	glUniform1i(hVar2, 1);
 	glBindTexture(GL_TEXTURE_2D, bloomColorBuffer[!horizontal]);
 
-	glUniform1i(glGetUniformLocation(m_pBloomPostFX->GetShaderID(), "bloomEnabled"), m_bBloomOn);
-
+	glUniform1i(glGetUniformLocation(m_pBloomPostFX->GetShaderID(), "bloomEnabled"), m_pFXData->m_bBloomOn);
+	glUniform1f(glGetUniformLocation(m_pGenericPostFX->GetShaderID(), "exposure"), m_pFXData->m_fExposure);
 	// Draw Quad...
 	glBindVertexArray(vao);
 	glDrawArrays(GL_TRIANGLES, 0, 6);
@@ -236,8 +241,10 @@ void Framebuffer::BlendPass()
 
 void Framebuffer::RenderBloomEffect()
 {
+	UIManager::getInstance().RenderPostFxUI(m_pFXData);
+
 	// Bloom controlled by UI?
-	if(m_bBloomOn)
+	if(m_pFXData->m_bBloomOn)
 	{
 		BlurPass();
 		BlendPass();

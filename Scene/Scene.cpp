@@ -114,7 +114,7 @@ void	Scene::Init()
 	m_pOmni1->Init();
 	m_pOmni1->SetLightPosition(glm::vec3(6,5,0));
 	m_pOmni1->SetLightIntensity(1);
-	LightsManager::getInstance()->GatherPointLights(static_cast<GameObject*>(m_pOmni1));
+	//LightsManager::getInstance()->GatherPointLights(static_cast<GameObject*>(m_pOmni1));
 
 	/*m_pOmni2->Init();
 	m_pOmni2->SetLightPosition(glm::vec3(-6,5,0));

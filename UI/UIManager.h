@@ -6,6 +6,7 @@
 #include "glm/glm.hpp"
 
 struct  Material;
+struct PostFXData;
 
 class UIManager
 {
@@ -20,6 +21,7 @@ public:
 
 	void			InitUIManager(GLFWwindow* window);
 	void			RenderMaterialUI(Material* material);
+	void			RenderPostFxUI(PostFXData* data);
 	void			RenderPropertiesUI(glm::vec3& pos, glm::vec3& rot, 
 									   glm::vec3& scale, bool showBB);
 	void			Kill();
