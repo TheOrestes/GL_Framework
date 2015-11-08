@@ -123,11 +123,9 @@ void Mesh::DirectionalLightIlluminance( int shaderID )
 //////////////////////////////////////////////////////////////////////////////////////////
 void Mesh::SetMaterialProperties(int shaderID, Material* mat)
 {
-	glUniform4fv(glGetUniformLocation(shaderID, "material.Color"), 1, glm::value_ptr(mat->m_color));
-	glUniform4fv(glGetUniformLocation(shaderID, "material.specularColor"), 1, glm::value_ptr(mat->m_colSpecular));
-	glUniform4fv(glGetUniformLocation(shaderID, "material.roughnessColor"), 1, glm::value_ptr(mat->m_colRoughness));
-	glUniform4fv(glGetUniformLocation(shaderID, "material.reflectionColor"), 1, glm::value_ptr(mat->m_colReflection));
-	glUniform1f(glGetUniformLocation(shaderID, "material.metallic"), mat->m_fMetallic);
+	glUniform4fv(glGetUniformLocation(shaderID, "material.Albedo"), 1, glm::value_ptr(mat->m_colAlbedo));
+	glUniform4fv(glGetUniformLocation(shaderID, "material.Roughness"), 1, glm::value_ptr(mat->m_colRoughness));
+	glUniform4fv(glGetUniformLocation(shaderID, "material.Metallic"), 1, glm::value_ptr(mat->m_colMetallic));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////

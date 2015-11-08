@@ -6,6 +6,20 @@
 
 class GLSLShader;
 
+struct PostFXData
+{
+	PostFXData()
+	{
+		m_bBloomOn = true;
+		m_fExposure = 1.2f;
+		m_iBlurIter = 5;
+	}
+
+	bool	m_bBloomOn;
+	float	m_fExposure;
+	int		m_iBlurIter;
+};
+
 class Framebuffer
 {
 public:
@@ -41,7 +55,8 @@ private:
 	GLint			posAttrib;
 	GLint			texAttrib;
 	VertexPT		quadVertices[6]; 
-
-	bool			m_bBloomOn;
 	bool	        horizontal;
+
+	// Tweakable data
+	PostFXData*		m_pFXData;
 };

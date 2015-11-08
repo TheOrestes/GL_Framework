@@ -7,12 +7,13 @@
 #include "Camera/Camera.h"
 #include "Scene/Scene.h"
 #include "Renderables/FrameBuffer.h"
+#include "UI/UIManager.h"
 
 //////////////////////////////////////////////////////////////////////////////////////////
 GLFWwindow* window;
 Scene		gScene;
 Framebuffer* gFBufferPtr;  
-
+ 
 //GLCube		cube;
 
 const float gScreenWidth	=	1280.0f;
@@ -50,6 +51,11 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 	{
 		Camera::getInstance().ProcessKeyboard(CameraMovement::RIGHT, tick);	
 	}
+// 
+// 	if(key == GLFW_KEY_ENTER && action == GLFW_PRESS)
+// 	{
+// 		bEditMode = !bEditMode;
+// 	}
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -69,6 +75,35 @@ void Mouse_Callback(GLFWwindow* window, double xPos, double yPos)
 
 	Camera::getInstance().ProcessMouseMovement(xoffset, yoffset);
 }
+
+/*void UpdateUI(GLFWwindow* window)
+{
+	if (bEditMode)
+	{
+		glfwSetCursorPosCallback(window, NULL);
+
+		// ImGui binding...
+		ImGui_ImplGlfwGL3_Init(window, true);
+		ImGui_ImplGlfwGL3_NewFrame();
+
+		ImGui::Begin("Material Editor");
+		ImGui::SliderFloat("Roughness", &roughness, 0.0f, 1.0f);
+		if(ImGui::Button("Close"))
+			bEditMode = false;
+		ImGui::End();
+
+		ImGui::Render();
+	}
+	else
+	{
+		/// Key callback
+		glfwSetKeyCallback(window, key_callback);
+
+		/// Mouse 
+		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+		glfwSetCursorPosCallback(window, Mouse_Callback);
+	}
+}*/
 
 //////////////////////////////////////////////////////////////////////////////////////////
 void GameLoop(float tick)
@@ -115,36 +150,37 @@ int main(void)
 	/// Make current context for this window
 	glfwMakeContextCurrent(window);
 
-	/// Key callback
-	
-	glfwSetKeyCallback(window, key_callback);
-
-	/// Mouse 
-	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-	glfwSetCursorPosCallback(window, Mouse_Callback);
-
 	/// Init GLEW after window & context creation
 	glewExperimental = true;
 	glewInit();
 
-	
+	// Initialize UI Manager
+	UIManager::getInstance().InitUIManager(window);
+
 	// Initialize Scene
 	InitializeScene();
 
 	//double lastFrameTime = glfwGetTime();
 
-	/// Message Loop!
+	/// Message Loop!!!
 	while (!glfwWindowShouldClose(window))
 	{
 		/*double currFrameTime = glfwGetTime();
 		float delta = (float)(currFrameTime - lastFrameTime);
 		lastFrameTime = currFrameTime;*/
+		
+		UIManager::getInstance().BeginRender();
 
 		GameLoop(tick);
+
+		UIManager::getInstance().EndRender();
+
+		//UpdateUI(window);
 		
 		glfwSwapBuffers(window);
 	}
 
+	//ImGui_ImplGlfwGL3_Shutdown();
 	glfwTerminate();
 	return 0;
 }

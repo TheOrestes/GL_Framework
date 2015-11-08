@@ -15,6 +15,6 @@ void main()
 	// check whether fragment color is more than the threshold brightness value
 	// we calculate first grayscale equivalent...
 	float brightness = dot(outColor.rgb, vec3(0.2126f, 0.7152f, 0.0722f));
-	if(brightness > 1.0f)
+	if(brightness > 200.0f)
 		brightColor = vec4(outColor.rgb, 1.0f);
 }

@@ -8,6 +8,7 @@ out vec4 outColor;
 uniform sampler2D screenTexture;
 uniform sampler2D blurTexture;
 uniform bool bloomEnabled;
+uniform float exposure;
 
 const float offset = 1.0f/3000.0f;
 const vec2 offsets[9] = vec2[] (
@@ -23,10 +24,10 @@ const vec2 offsets[9] = vec2[] (
 							);
 
 /////////////////////////////////////// Black-n-White ////////////////////////////////////////////
-vec4 BlackWhiteFilter()
+vec4 BlackWhiteFilter(vec4 inColor)
 {
-	vec4 screenColor = vec4(texture(screenTexture, vs_outTexCoord));
-	return vec4((0.2126f * screenColor.r + 0.7152f * screenColor.g + 0.0722f * screenColor.b) );
+	//vec4 screenColor = vec4(texture(screenTexture, vs_outTexCoord));
+	return vec4((0.2126f * inColor.r + 0.7152f * inColor.g + 0.0722f * inColor.b) );
 }
 
 ////////////////////////////////////////// Blur ////////////////////////////////////////////
@@ -138,12 +139,18 @@ void main()
 	}
 
 	// Tone Mapping...
-	float exposure = 1.2f;
-	hdrColor *= exposure;
+	//float exposure = 1.2f;
+	//hdrColor *= exposure;
 
-	vec3 result = hdrColor / (1+hdrColor);
+	//vec3 result = hdrColor / (1+hdrColor);
+
+	vec3 result = vec3(1.0) - exp(-hdrColor * exposure);
+
+
 
 	// Gamma Correction...
     vec3 retColor = pow(result, vec3(1/2.2));
     outColor = vec4(retColor,1);
+
+	//outColor = BlackWhiteFilter(outColor);
 }
