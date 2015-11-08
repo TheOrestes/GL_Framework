@@ -263,7 +263,7 @@ void main()
 	Diffuse			= DiffuseDir + DiffusePoint;
 	Specular		= SpecularDir + SpecularPoint; 
 
-	outColor = Emissive * Diffuse + 0.1 * reflectionColor; 
+	outColor = Emissive * Diffuse + (0.2f)*reflectionColor; 
 
 	// check whether fragment color is more than the threshold brightness value
 	// we calculate first grayscale equivalent...
