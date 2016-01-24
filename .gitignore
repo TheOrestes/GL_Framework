@@ -1,9 +1,9 @@
 Debug/
 Data/
+Dependencies/
 Log/
 ipch/
 x64/
-Dependencies/
 
 *.exe
 *.dll

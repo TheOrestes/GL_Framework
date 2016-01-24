@@ -25,11 +25,11 @@
     <Filter Include="MaterialSystem">
       <UniqueIdentifier>{d6a52450-3843-46a5-bd29-b5ba1cce6c9c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="imgui">
-      <UniqueIdentifier>{549fb31e-99b3-4cbb-9c3c-9cfdd67d9c1c}</UniqueIdentifier>
-    </Filter>
     <Filter Include="UI">
       <UniqueIdentifier>{43005b68-2cd8-4a4e-b25e-e13ab9817938}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="imgui">
+      <UniqueIdentifier>{1b6029dc-2b96-4c32-af85-bc2cc9a5ed64}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -88,6 +88,9 @@
     <ClCompile Include="Renderables\BBoxCube.cpp">
       <Filter>Renderables</Filter>
     </ClCompile>
+    <ClCompile Include="UI\UIManager.cpp">
+      <Filter>UI</Filter>
+    </ClCompile>
     <ClCompile Include="Dependencies\imgui\imgui.cpp">
       <Filter>imgui</Filter>
     </ClCompile>
@@ -99,9 +102,6 @@
     </ClCompile>
     <ClCompile Include="Dependencies\imgui\imgui_impl_glfw_gl3.cpp">
       <Filter>imgui</Filter>
-    </ClCompile>
-    <ClCompile Include="UI\UIManager.cpp">
-      <Filter>UI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -174,6 +174,9 @@
     <ClInclude Include="Renderables\BBoxCube.h">
       <Filter>Renderables</Filter>
     </ClInclude>
+    <ClInclude Include="UI\UIManager.h">
+      <Filter>UI</Filter>
+    </ClInclude>
     <ClInclude Include="Dependencies\imgui\imconfig.h">
       <Filter>imgui</Filter>
     </ClInclude>
@@ -194,9 +197,6 @@
     </ClInclude>
     <ClInclude Include="Dependencies\imgui\stb_truetype.h">
       <Filter>imgui</Filter>
-    </ClInclude>
-    <ClInclude Include="UI\UIManager.h">
-      <Filter>UI</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

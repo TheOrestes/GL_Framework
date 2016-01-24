@@ -60,8 +60,7 @@ void	Scene::Init()
 
 	//---- Sphere
 	StaticObjectData dataSphere;
-	dataSphere.path = "Data/nanosuit/Nanosuit.fbx";
-	//dataSphere.path = "Data/Arnold.fbx";
+	dataSphere.path = "Data/Models/SK_Mannequin.fbx";
 	dataSphere.shader = "UberShader";
 	dataSphere.position = glm::vec3(0,0,0);
 	dataSphere.angle = 0.0f;

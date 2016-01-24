@@ -1,12 +1,12 @@
 
 #pragma once
 
-#include "../imgui/imgui.h"
-#include "../imgui/imgui_impl_glfw_gl3.h"
+#include "imgui.h"
+#include "imgui_impl_glfw_gl3.h"
 #include "glm/glm.hpp"
 
 struct  Material;
-struct PostFXData;
+struct	PostFXData;
 
 class UIManager
 {

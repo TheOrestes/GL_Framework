@@ -3,13 +3,13 @@
 
 //////////////////////////////////////////////////////////////////////////////////////////
 Camera::Camera() : 
-	m_vecPosition(0,8,15),
+	m_vecPosition(0,12,20),
 	m_vecDirection(0,0,1),
 	m_vecRight(1,0,0),
 	m_vecUp(0,1,0),
 	m_vecWorldUp(0,1,0),
 	m_fYaw(-90.0f),
-	m_fPitch(0.0f),
+	m_fPitch(-5.0f),
 	m_fSpeed(30.0f),
 	m_fSensitivity(0.05f),
 	m_fZoom(45.0f)
