@@ -54,7 +54,7 @@ void GLSkybox::Init()
 
 	// Load cubemap and assign id ...
 	//tbo = TextureManager::getInstannce().LoadCubemapFromFile("Data/cubemaps/Yokohama2");
-	tbo = TextureManager::getInstannce().LoadHDRICubemapFromFile("Data/cubemaps/HDRI/uffizi-large");
+	tbo = TextureManager::getInstannce().LoadHDRICubemapFromFile("Data/cubemaps/Church");
 
 	// create vao
 	glGenVertexArrays(1, &vao);

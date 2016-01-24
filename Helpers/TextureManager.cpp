@@ -133,12 +133,12 @@ GLint TextureManager::LoadHDRICubemapFromFile( const std::string& name )
 	// forming a cubemap!
 	// Do some book keeping first by storing textures in the folder into a vector
 	std::vector<std::string> vecCubemapTextures;
-	vecCubemapTextures.push_back(name + ".right.tif");
-	vecCubemapTextures.push_back(name + ".left.tif");
-	vecCubemapTextures.push_back(name + ".bottom.tif");
-	vecCubemapTextures.push_back(name + ".top.tif");
-	vecCubemapTextures.push_back(name + ".front.tif");
-	vecCubemapTextures.push_back(name + ".back.tif");
+	vecCubemapTextures.push_back(name + '/' + "right.tif");
+	vecCubemapTextures.push_back(name + '/' + "left.tif");
+	vecCubemapTextures.push_back(name + '/' + "bottom.tif");
+	vecCubemapTextures.push_back(name + '/' + "top.tif");
+	vecCubemapTextures.push_back(name + '/' + "front.tif");
+	vecCubemapTextures.push_back(name + '/' + "back.tif");
 
 	GLuint cubemapID;
 	glGenTextures(1, &cubemapID);
