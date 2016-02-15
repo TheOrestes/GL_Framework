@@ -7,6 +7,7 @@ out vec4 outColor;
 
 uniform sampler2D screenTexture;
 uniform sampler2D blurTexture;
+
 uniform bool bloomEnabled;
 uniform float exposure;
 

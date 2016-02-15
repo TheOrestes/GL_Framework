@@ -68,64 +68,11 @@ void	Mesh::SetupMesh()
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
-void Mesh::PointLightIlluminance(int shaderID)
-{
-	int numPointLights = LightsManager::getInstance()->GetPointlightsCount();
-	glUniform1i(glGetUniformLocation(shaderID, "numPointLights"), numPointLights);
-
-	for (GLuint i = 0 ; i<numPointLights ; ++i)
-	{
-		PointLightObject* light = LightsManager::getInstance()->GetPointLight(i);
-		
-		glm::vec3 position = light->GetLightPosition();
-		glm::vec4 color    = light->GetLightColor();
-		float intensity    = light->GetLightIntensity();
-		float radius       = light->GetLightRadius();
-
-		// form a string out of point light Ids
-		std::string pointLightPosStr = "pointLights["+ std::to_string(i) + "].position";
-		std::string pointLightColStr = "pointLights["+ std::to_string(i) + "].color";
-		std::string pointLightIntStr = "pointLights["+ std::to_string(i) + "].intensity";
-		std::string pointLightRadStr = "pointLights["+ std::to_string(i) + "].radius";
-
-		glUniform3fv(glGetUniformLocation(shaderID, pointLightPosStr.c_str()), 1, glm::value_ptr(position));
-		glUniform4fv(glGetUniformLocation(shaderID,  pointLightColStr.c_str()), 1, glm::value_ptr(color));
-		glUniform1f(glGetUniformLocation(shaderID, pointLightIntStr.c_str()), intensity);
-		glUniform1f(glGetUniformLocation(shaderID, pointLightRadStr.c_str()), radius);
-	}
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////
-void Mesh::DirectionalLightIlluminance( int shaderID )
-{
-	int numDirLights = LightsManager::getInstance()->GetDirectionalLightsCount();
-	glUniform1i(glGetUniformLocation(shaderID, "numDirLights"), numDirLights);
-
-	for (GLuint i = 0 ; i<numDirLights ; ++i)
-	{
-		DirectionalLightObject* light = LightsManager::getInstance()->GetDirectionalLight(i);
-
-		glm::vec3 dir	   = light->GetLightDirection();
-		glm::vec4 color    = light->GetLightColor();
-		float intensity    = light->GetLightIntensity();
-
-		// form a string out of point light Ids
-		std::string dirLightPosStr = "dirLights["+ std::to_string(i) + "].direction";
-		std::string dirLightColStr = "dirLights["+ std::to_string(i) + "].color";
-		std::string dirLightIntStr = "dirLights["+ std::to_string(i) + "].intensity";
-
-		glUniform3fv(glGetUniformLocation(shaderID, dirLightPosStr.c_str()), 1, glm::value_ptr(dir));
-		glUniform4fv(glGetUniformLocation(shaderID,  dirLightColStr.c_str()), 1, glm::value_ptr(color));
-		glUniform1f(glGetUniformLocation(shaderID, dirLightIntStr.c_str()), intensity);
-	}
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////
 void Mesh::SetMaterialProperties(int shaderID, Material* mat)
 {
 	glUniform4fv(glGetUniformLocation(shaderID, "material.Albedo"), 1, glm::value_ptr(mat->m_colAlbedo));
-	glUniform4fv(glGetUniformLocation(shaderID, "material.Roughness"), 1, glm::value_ptr(mat->m_colRoughness));
-	glUniform4fv(glGetUniformLocation(shaderID, "material.Metallic"), 1, glm::value_ptr(mat->m_colMetallic));
+	glUniform4fv(glGetUniformLocation(shaderID, "material.Specular"), 1, glm::value_ptr(mat->m_colSpecular));
+	glUniform4fv(glGetUniformLocation(shaderID, "material.Emission"), 1, glm::value_ptr(mat->m_colEmissive));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -135,35 +82,36 @@ void Mesh::SetShaderVariables( int shaderID, const glm::mat4& world, Material* m
 	glm::mat4 projection = Camera::getInstance().getProjectionMatrix();
 	glm::mat4 view = Camera::getInstance().getViewMatrix();
 
-	glm::mat4 InvWorld = glm::inverse(world);
 	glm::vec3 CamPosition = Camera::getInstance().getCameraPosition();
-
-	glm::vec3 LightPosition = glm::vec3(0,5,5);
+	glUniform3fv(glGetUniformLocation(shaderID, "camPosition"), 1, glm::value_ptr(CamPosition));
 
 	glUniformMatrix4fv(glGetUniformLocation(shaderID, "matProj"), 1, GL_FALSE, glm::value_ptr(projection));
 	glUniformMatrix4fv(glGetUniformLocation(shaderID, "matView"), 1, GL_FALSE, glm::value_ptr(view));
 	glUniformMatrix4fv(glGetUniformLocation(shaderID, "matWorld"), 1, GL_FALSE, glm::value_ptr(world));
-	glUniformMatrix4fv(glGetUniformLocation(shaderID, "matWorldInv"), 1, GL_FALSE, glm::value_ptr(InvWorld));
-	glUniform3fv(glGetUniformLocation(shaderID, "camPosition"), 1, glm::value_ptr(CamPosition));
 
 	// set material properties associated with this mesh...
 	SetMaterialProperties(shaderID, mat);
-
-	// Set Directional light related shader variables...
-	DirectionalLightIlluminance(shaderID);
-
-	// Set Point light related shader variables...
-	PointLightIlluminance(shaderID);
 }	
 
 //////////////////////////////////////////////////////////////////////////////////////////
 void	Mesh::Render(GLSLShader* shader, const glm::mat4& world, Material* mat)
 {
-	GLuint diffuseNr = 1;
-	GLuint specularNr = 1;
-	GLuint normalNr = 1;
+	GLuint diffuseNr = 1;		bool bDiffuseTexture = false;
+	GLuint specularNr = 1;		bool bSpecularTexture = false;
+	GLuint normalNr = 1;		bool bNormalMapTexture = false;
+	GLuint emissNr = 1;			bool bEmissiveTexture = false;
+	GLuint heightNr = 1;		bool bHeightMapTexture = false;
+	GLuint ambientNr = 1;		bool bAmbientOccTexture = false;
+	GLuint shininessNr = 1;		bool bShininessTexture = false;
+	GLuint dispNr = 1;			bool bDisplacementTexture = false;
+	GLuint lightmapNr = 1;		bool bLightMapTexture = false;
+	GLuint reflectionNr = 1;	bool bReflectionTexture = false;
 
 	shader->Use();
+
+	// set sampler to the correct texture
+	GLuint shaderID = shader->GetShaderID();
+
 	GLuint i = 0;
 	for ( ; i < m_textures.size() ; i++)
 	{
@@ -175,31 +123,82 @@ void	Mesh::Render(GLSLShader* shader, const glm::mat4& world, Material* mat)
 
 		if(name == "texture_diffuse")
 		{
+			bDiffuseTexture = true;
+			glUniform1i(glGetUniformLocation(shaderID, "bDiffuseTexture"), bDiffuseTexture);
+
 			ss << diffuseNr++;
 		}
 		else if(name == "texture_specular")
 		{
+			bSpecularTexture = true;
+			glUniform1i(glGetUniformLocation(shaderID, "bSpecularTexture"), bSpecularTexture);
+
 			ss << specularNr++;
 		}
 		else if (name == "texture_normal")
 		{
+			bNormalMapTexture = true;
+			glUniform1i(glGetUniformLocation(shaderID, "bNormalMapTexture"), bNormalMapTexture);
+
 			ss << normalNr++;
 		}
+		else if(name == "texture_emissive")
+		{
+			bEmissiveTexture = true;
+			glUniform1i(glGetUniformLocation(shaderID, "bEmissiveTexture"), bEmissiveTexture);
 
+			ss << emissNr++;
+		}
+		else if(name == "texture_height")
+		{
+			bHeightMapTexture = true;
+			glUniform1i(glGetUniformLocation(shaderID, "bHeightMapTexture"), bHeightMapTexture);
+
+			ss << heightNr++;
+		}
+		else if(name == "texture_ambient")
+		{
+			bAmbientOccTexture = true;
+			glUniform1i(glGetUniformLocation(shaderID, "bAmbientOccTexture"), bAmbientOccTexture);
+
+			ss << ambientNr++;
+		}
+		else if(name == "texture_shininess")
+		{
+			bShininessTexture = true;
+			glUniform1i(glGetUniformLocation(shaderID, "bShininessTexture"), bShininessTexture);
+
+			ss << shininessNr++;
+		}
+		else if(name == "texture_displacement")
+		{
+			bDisplacementTexture = true;
+			glUniform1i(glGetUniformLocation(shaderID, "bDisplacementTexture"), bDisplacementTexture);
+
+			ss << dispNr++;
+		}
+		else if(name == "texture_lightmap")
+		{
+			bLightMapTexture = true;
+			glUniform1i(glGetUniformLocation(shaderID, "bLightMapTexture"), bLightMapTexture);
+
+			ss << lightmapNr++;
+		}
+		else if(name == "texture_reflection")
+		{
+			bReflectionTexture = true;
+			glUniform1i(glGetUniformLocation(shaderID, "bReflectionTexture"), bReflectionTexture);
+
+			ss << reflectionNr++;
+		}
 
 		number = ss.str();
-
-		// set sampler to the correct texture
-		GLuint shaderID = shader->GetShaderID();
 		GLint hVar = glGetUniformLocation(shaderID, (name + number).c_str());
 		glUniform1i(hVar, i);
 
 		// bind the texture
 		glBindTexture(GL_TEXTURE_2D, m_textures[i].id);
 	}
-
-
-	GLuint shaderID = shader->GetShaderID();
 
 	// bind cubemap
 	glActiveTexture(GL_TEXTURE0 + (i+1) );

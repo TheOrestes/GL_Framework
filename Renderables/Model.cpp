@@ -146,6 +146,14 @@ Mesh	Model::ProcessMesh(aiMesh* mesh, const aiScene* scene)
 		unsigned int nDiff = material->GetTextureCount(aiTextureType_DIFFUSE);
 		unsigned int nHeight = material->GetTextureCount(aiTextureType_HEIGHT);
 		unsigned int nNormal = material->GetTextureCount(aiTextureType_NORMALS);
+		unsigned int nEmissive = material->GetTextureCount(aiTextureType_EMISSIVE);
+		unsigned int nSpecular = material->GetTextureCount(aiTextureType_SPECULAR);
+		unsigned int nAmbient = material->GetTextureCount(aiTextureType_AMBIENT);
+		unsigned int nShininess = material->GetTextureCount(aiTextureType_SHININESS);
+		unsigned int nDisplacement = material->GetTextureCount(aiTextureType_DISPLACEMENT);
+		unsigned int nLightmap = material->GetTextureCount(aiTextureType_LIGHTMAP);
+		unsigned int nReflection = material->GetTextureCount(aiTextureType_REFLECTION);
+		unsigned int nUnknown = material->GetTextureCount(aiTextureType_UNKNOWN);
 		
 		
 		// diffuse maps
@@ -153,12 +161,44 @@ Mesh	Model::ProcessMesh(aiMesh* mesh, const aiScene* scene)
 		textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
 
 		// specular maps
-		std::vector<Texture> specularMaps = LoadMaterialTextures(material, aiTextureType_SPECULAR, "texture_specular");
-		textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
+		std::vector<Texture> heightMaps = LoadMaterialTextures(material, aiTextureType_HEIGHT, "texture_height");
+		textures.insert(textures.end(), heightMaps.begin(), heightMaps.end());
 
 		// normal maps
 		std::vector<Texture> normalMaps = LoadMaterialTextures(material, aiTextureType_NORMALS, "texture_normal");
 		textures.insert(textures.end(), normalMaps.begin(), normalMaps.end());
+
+		// normal maps
+		std::vector<Texture> emissiveMaps = LoadMaterialTextures(material, aiTextureType_EMISSIVE, "texture_emissive");
+		textures.insert(textures.end(), emissiveMaps.begin(), emissiveMaps.end());
+
+		// emissive maps
+		std::vector<Texture> specularMaps = LoadMaterialTextures(material, aiTextureType_SPECULAR, "texture_specular");
+		textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
+		
+		// normal maps
+		std::vector<Texture> ambientMaps = LoadMaterialTextures(material, aiTextureType_AMBIENT, "texture_ambient");
+		textures.insert(textures.end(), ambientMaps.begin(), ambientMaps.end());
+
+		// normal maps
+		std::vector<Texture> shininessMaps = LoadMaterialTextures(material, aiTextureType_SHININESS, "texture_shininess");
+		textures.insert(textures.end(), shininessMaps.begin(), shininessMaps.end());
+
+		// normal maps
+		std::vector<Texture> displacementMaps = LoadMaterialTextures(material, aiTextureType_DISPLACEMENT, "texture_displacement");
+		textures.insert(textures.end(), displacementMaps.begin(), displacementMaps.end());
+
+		// normal maps
+		std::vector<Texture> lightMaps = LoadMaterialTextures(material, aiTextureType_LIGHTMAP, "texture_lightmap");
+		textures.insert(textures.end(), lightMaps.begin(), lightMaps.end());
+
+		// normal maps
+		std::vector<Texture> reflectionMaps = LoadMaterialTextures(material, aiTextureType_REFLECTION, "texture_reflection");
+		textures.insert(textures.end(), reflectionMaps.begin(), reflectionMaps.end());
+
+		// normal maps
+		std::vector<Texture> unknownMaps = LoadMaterialTextures(material, aiTextureType_UNKNOWN, "texture_unknown");
+		textures.insert(textures.end(), unknownMaps.begin(), unknownMaps.end());
 
 	}
 

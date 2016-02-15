@@ -24,9 +24,6 @@ public:
 	void		Kill();
 
 	void		SetMaterialProperties(int shaderID, Material* mat);
-	void		PointLightIlluminance(int shaderID);
-	void		DirectionalLightIlluminance(int shaderID);
-
 	void		SetShaderVariables(int shaderID, const glm::mat4& world, Material* mat);
 	void		Render(GLSLShader* shader, const glm::mat4& world, Material* mat);
 

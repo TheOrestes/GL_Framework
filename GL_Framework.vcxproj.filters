@@ -252,5 +252,8 @@
     <None Include="Shaders\psBlur.glsl">
       <Filter>Shaders</Filter>
     </None>
+    <None Include="Shaders\psDeferredLighting.glsl">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

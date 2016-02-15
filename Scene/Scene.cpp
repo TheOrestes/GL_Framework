@@ -58,11 +58,11 @@ void	Scene::Init()
 	m_pPlane = new StaticObject(dataPlane);
 	m_pPlane->Init();*/
 
-	//---- Sphere
+	//---- Sphere 9820474374
 	StaticObjectData dataSphere;
-	dataSphere.path = "Data/Models/SK_Mannequin.fbx";
+	dataSphere.path = "Data/Models/Superior_IronMan.FBX";
 	dataSphere.shader = "UberShader";
-	dataSphere.position = glm::vec3(0,0,0);
+	dataSphere.position = glm::vec3(0,1,0);
 	dataSphere.angle = 0.0f;
 	dataSphere.rotation = glm::vec3(0,1,0);                                        
 	dataSphere.scale = glm::vec3(1);
@@ -111,7 +111,7 @@ void	Scene::Init()
 
 	m_pOmni1 =  new PointLightObject(glm::vec4(5,5,0,1));
 	m_pOmni1->Init();
-	m_pOmni1->SetLightPosition(glm::vec3(6,5,0));
+	m_pOmni1->SetLightPosition(glm::vec3(6,15,0));
 	m_pOmni1->SetLightIntensity(1);
 	//LightsManager::getInstance()->GatherPointLights(static_cast<GameObject*>(m_pOmni1));
 
@@ -128,7 +128,7 @@ void	Scene::Init()
 
 	m_pGlobalDirectional->SetLightDirection(glm::vec3(0,-1,-1));
 	m_pGlobalDirectional->SetLightColor(glm::vec4(1,1,1,1));
-	m_pGlobalDirectional->SetLightIntensity(1.5);
+	m_pGlobalDirectional->SetLightIntensity(1);
 	LightsManager::getInstance()->GatherDirectionalLights(static_cast<GameObject*>(m_pGlobalDirectional));
 
 	// initialize skybox

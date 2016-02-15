@@ -35,7 +35,7 @@ void UIManager::RenderMaterialUI(Material* material)
 	static float albedo[4];
 	Helper::glm_vec4_to_float4(material->m_colAlbedo, albedo);
 
-	static float roughness = material->m_colRoughness.x;
+	/*static float roughness = material->m_colRoughness.x;
 	static float metallic = material->m_colMetallic.x;
 	
 	if (bUIActive)
@@ -61,7 +61,7 @@ void UIManager::RenderMaterialUI(Material* material)
 
 	// Metallic
 	material->m_colMetallic.r = material->m_colMetallic.g = material->m_colMetallic.b = metallic;
-	material->m_colMetallic.a = 1.0f;
+	material->m_colMetallic.a = 1.0f;*/
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////

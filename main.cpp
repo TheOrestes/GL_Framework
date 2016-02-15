@@ -118,9 +118,9 @@ void GameLoop(float tick)
 	gScene.Render();
 	gFBufferPtr->EndRenderToFramebuffer();
 
-	gFBufferPtr->RenderFramebuffer();
+	gFBufferPtr->RenderDeferredLightingPass();
 
-	gFBufferPtr->RenderBloomEffect();
+	//gFBufferPtr->RenderBloomEffect();
 }
 
 void InitializeScene()

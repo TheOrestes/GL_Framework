@@ -135,7 +135,7 @@ void GLLight::Update(float dt)
 	// multiply with the first argument.
 	// https://www.youtube.com/watch?v=U_RtSchYYec
 
-	glm::mat4 T   = glm::translate(glm::mat4(1), position);
+	glm::mat4 T  = glm::translate(glm::mat4(1), position);
 	glm::mat4 TS = glm::scale(T, glm::vec3(0.2f, 0.2f, 0.2f));
 
 	// Set final World transformation matrix...

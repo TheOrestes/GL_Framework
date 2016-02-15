@@ -203,6 +203,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="ClassDiagram.cd" />
+    <None Include="Shaders\psDeferredLighting.glsl" />
     <None Include="Shaders\ps.glsl" />
     <None Include="Shaders\psBlur.glsl" />
     <None Include="Shaders\psDiffuse.glsl" />

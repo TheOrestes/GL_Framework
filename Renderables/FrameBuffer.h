@@ -6,6 +6,15 @@
 
 class GLSLShader;
 
+enum FramebufferType
+{
+	POSITION_BUFFER = 0,
+	NORMAL_BUFFER,
+	ALBEDO_COLOR_BUFFER,
+	CUBEMAP_BUFFER,
+	MAX_NUM_BUFFER
+};
+
 struct PostFXData
 {
 	PostFXData()
@@ -29,18 +38,21 @@ public:
 	void			FramebufferSetup();
 	void			BeginRenderToFramebuffer();
 	void			EndRenderToFramebuffer();
-	void			RenderFramebuffer();
+	void			RenderDeferredLightingPass();
 	void			RenderBloomEffect();
+	void			SetShaderVariables(int shaderID);
 
 private:
 	void			BlurPass();
 	void			BlendPass();
+	void			PointLightIlluminance(int shaderID);
+	void			DirectionalLightIlluminance(int shaderID);			
 
 private:
-	GLuint			fbo;				// Framebuffer Object
-	GLuint			rbo;				// RenderBuffer Object
-	GLuint			tbo[2];				// Texture buffer Object, one for normal 
-										// post processing & one for brightness threshold
+	GLuint			fbo;					// Framebuffer Object
+	GLuint			rbo;					// RenderBuffer Object
+	GLuint			tbo[MAX_NUM_BUFFER+1];	// Texture buffer Object, one for normal 
+											// post processing & one for brightness threshold
 
 	GLuint			bloomFBO[2];
 	GLuint			bloomColorBuffer[2];
@@ -48,6 +60,7 @@ private:
 	GLSLShader*		m_pGenericPostFX;
 	GLSLShader*		m_pBlurPostFX;
 	GLSLShader*		m_pBloomPostFX;
+	GLSLShader*		m_pDeferredLightingFX;
 
 	// Screen aligned Quad
 	GLuint			vbo;

@@ -9,8 +9,10 @@ in vec3		vs_outTangent;
 in vec3		vs_outBinormal;
 in vec3		vs_outPosition;
 
-layout (location = 0) out vec4 outColor;
-layout (location = 1) out vec4 brightColor; 
+layout (location = 0) out vec4 positionColor;
+layout (location = 1) out vec4 normalColor;
+layout (location = 2) out vec4 albedoColor; 
+layout (location = 3) out vec4 cubemapColor;
 
 //---------------------------------------------------------------------------------------
 // Material Properties
@@ -18,56 +20,34 @@ layout (location = 1) out vec4 brightColor;
 struct Material
 {
 	vec4 Albedo;
-	vec4 Roughness;
-	vec4 Metallic;
+	vec4 Specular;
+	vec4 Emission;
 };
 
 uniform Material material;
 
 //---------------------------------------------------------------------------------------
-// Point Lights
-//---------------------------------------------------------------------------------------
-#define MAX_POINT_LIGHTS 8
-
-uniform int			numPointLights;		// number of point lights in the scene
-struct PointLight
-{
-	float radius;
-	float intensity;
-	vec3 position;
-	vec4 color;
-};
-
-uniform PointLight pointLights[MAX_POINT_LIGHTS];
-
-//---------------------------------------------------------------------------------------
-// Directional Lights
-//---------------------------------------------------------------------------------------
-#define MAX_DIR_LIGHTS 8
-
-uniform int			numDirLights;		// number of point lights in the scene
-struct DirectionalLight
-{
-	float intensity;
-	vec3 direction;
-	vec4 color;
-};
-
-uniform DirectionalLight dirLights[MAX_DIR_LIGHTS];
-
-//---------------------------------------------------------------------------------------
 // Other Uniforms
 //---------------------------------------------------------------------------------------
-uniform vec3		camPosition;
-uniform mat4		matWorld;
-uniform mat4		matView;
-uniform mat4		matWorldInv;
-
 uniform sampler2D	texture_diffuse1;
 uniform sampler2D	texture_specular1;
-uniform sampler2D	texture_normal1;		
+uniform sampler2D	texture_normal1;	
+uniform sampler2D   texture_ambient1;
+uniform sampler2D	texture_emissive1;	
 uniform samplerCube texture_cubeMap;   
-uniform bool		bNormalMapping = true;
+
+uniform vec3 camPosition;
+
+uniform bool bDiffuseTexture;
+uniform bool bSpecularTexture;
+uniform bool bNormalMapTexture;
+uniform bool bEmissiveTexture;
+uniform bool bHeightMapTexture;
+uniform bool bAmbientOccTexture;
+uniform bool bShininessTexture;
+uniform bool bDisplacementTexture;
+uniform bool bLightMapTexture;
+uniform bool bReflectionTexture;
 
 //---------------------------------------------------------------------------------------
 // Phong Specular
@@ -86,9 +66,9 @@ vec4 PhongBRDF(vec3 camLook, vec3 reflection)
 vec4 BlinnBRDF(vec3 normal, vec3 half)
 {
 	float NdotH = max(dot(normal, half), 0);
-	float specular = pow(NdotH, 1/(1-material.Roughness.x));
+	//float specular = pow(NdotH, 1/(1-material.Roughness.x));
 
-	//float specular = pow(NdotH, 32);
+	float specular = pow(NdotH, 32);
 	
 	return vec4(specular, specular, specular, 1.0f);
 }
@@ -98,7 +78,7 @@ vec4 BlinnBRDF(vec3 normal, vec3 half)
 //---------------------------------------------------------------------------------------
 vec4 CookTorranceBRDF(vec3 normal, vec3 camLook, vec3 lightDir, vec3 half)
 {
-	float roughness = material.Roughness.x;
+	float roughness = 0.5f;// material.Roughness.x;
 
 	float NdotL = clamp(dot(normal, lightDir), 0, 1);
 	float NdotH = clamp(dot(normal, half), 0, 1);
@@ -170,106 +150,55 @@ vec4 CookTorranceBRDF(vec3 normal, vec3 camLook, vec3 lightDir, vec3 half)
 void main()
 {
 	// Final contributors...
-	vec4 Diffuse = vec4(0);
-	vec4 Specular = vec4(0);
-	vec4 Emissive = vec4(0);
-	vec4 Ambient = vec4(0);
-	vec4 Reflection = vec4(0);
-	vec3 shadingNormal = vec3(0);
-	vec3 envMapNormal = vec3(0);
-	vec3 objSpaceNormal = vec3(0);
-	vec4 baseColor = material.Albedo;
-	//vec4 specColor = material.specularColor;
-
-	vec3 normals = normalize(matWorld * vec4(vs_outNormal, 1)).xyz;
+	vec4 Albedo;
+	vec4 Specular;
+	float ao;
 
 	// BaseMap color aka Albedo
-	//baseColor = vec4(texture(texture_diffuse1, vs_outTex));
-	// Specular Map color
-	//specColor = vec4(texture(texture_specular1, vs_outTex));
+	if(bDiffuseTexture)
+		Albedo = texture(texture_diffuse1, vs_outTex);
+	else
+		Albedo = material.Albedo;
+
+	// Specular Color
+	if(bSpecularTexture)
+		Specular = texture(texture_specular1, vs_outTex);
+	else
+		Specular = material.Specular;
+
+	// Ambient occlusion gets stored in alpha channel of albedo buffer
+	if(bAmbientOccTexture)
+		ao = texture(texture_ambient1, vs_outTex).r;
+	else
+		ao = 0.0f;
+
 	// Normal map
-	vec3 normalMap = texture(texture_normal1, vs_outTex).rgb;
+	//vec3 normalMap = texture(texture_normal1, vs_outTex).rgb;
 
-	// calculate camera eye vector in world space
-	vec3 Eye = normalize(vs_outPosition - camPosition);
-
-	// calculate view vector
-	vec3 view = -Eye;
+	// View vector
+	vec3 view = normalize(camPosition - vs_outPosition);
 
 	// calculate reflection vector for environment mapping..
-	vec3 R = -reflect(Eye, normalize(vs_outNormal));
-	vec4 reflectionColor = vec4(textureLod(texture_cubeMap, R, 8 * material.Roughness.x));
+	vec3 R = reflect(view, normalize(vs_outNormal));
+	vec4 reflectionColor = texture(texture_cubeMap, R);
 
 	//vec4 ambientColor = vec4(textureLod(texture_cubeMap, vs_outNormal, 7)); 
 
-	// ------------------------ Directional Illuminance -------------------
-	vec4 DiffuseDir = vec4(0,0,0,1);
-	vec4 SpecularDir = vec4(0,0,0,1);
-	vec3 halfDir = vec3(0,0,0);
-	float NdotLDir = 0.0f;
-	vec4 SpecDir = vec4(0,0,0,1);
+	// Buffer color outputs for deferred rendering
+	positionColor = vec4(vs_outPosition, 1.0f);		// world space position data
+	normalColor.rgb = vs_outNormal;					// normal data
+	normalColor.a = Specular.r;						// specular data
+	albedoColor.rgb = Albedo.rgb;					// albedo color
+	albedoColor.a = ao;								// ambient occlusion data
+	cubemapColor = reflectionColor;					// reflection data
 
-	for(int i = 0 ; i < numDirLights ; ++i)
-	{
-		// diffuse
-		NdotLDir = max(dot(vs_outNormal, -dirLights[i].direction), 0);
-
-		// specular
-		halfDir = normalize(-dirLights[i].direction + view);
-			
-		SpecDir = BlinnBRDF(vs_outNormal, halfDir) * NdotLDir;
-
-		// accumulate...
-		DiffuseDir += dirLights[i].color * NdotLDir * dirLights[i].intensity;
-		SpecularDir += dirLights[i].color * SpecDir * dirLights[i].intensity;
-	}
-
-	// ------------------------ Point Light Illuminance ------------------- 
-	// Diffuse & Specular accumulators for Point lights
-	vec4 DiffusePoint = vec4(0,0,0,1);
-	vec4 SpecularPoint = vec4(0,0,0,1);
-	vec3 LightDir = vec3(0,0,0);
-	vec3 halfPoint = vec3(0,0,0);
-	float NdotLPoint = 0.0f;
-	vec4 SpecPoint = vec4(0,0,0,1);
-	float atten = 0.0f;
-
-	//--- Point Light contribution 
-	for(int i = 0 ; i < numPointLights ; ++i)
-	{
-		LightDir = normalize(vs_outPosition - pointLights[i].position);
-		float dist = length(LightDir);
-		float r = pointLights[i].radius;
-
-		// ref : https://imdoingitwrong.wordpress.com/2011/01/31/light-attenuation/
-		atten = 1 / dist; //(1 + ((2/r)*dist) + ((1/r*r)*(dist*dist)));
-		
-		// diffuse
-		NdotLPoint = max(dot(vs_outNormal, -LightDir), 0);
-
-		// specular
-		halfPoint = normalize(-LightDir + view);
-
-		SpecPoint = BlinnBRDF(vs_outNormal, halfPoint) * NdotLPoint;
-
-		// accumulate...
-		DiffusePoint += pointLights[i].color * atten * NdotLPoint * pointLights[i].intensity;
-		SpecularPoint += pointLights[i].color * atten * SpecPoint * pointLights[i].intensity;
-	}
-
-	// Final Color components...
-	Emissive		= baseColor;//vec4(0.0, 0, 0.6, 1.0); 
-	Ambient			= vec4(vec3(0.2),1);
-	Diffuse			= DiffuseDir + DiffusePoint;
-	Specular		= SpecularDir + SpecularPoint; 
-
-	outColor = Emissive * Diffuse + 0.35*reflectionColor; 
+	// = Emissive * Diffuse + 0.35*reflectionColor; 
 
 	// check whether fragment color is more than the threshold brightness value
 	// we calculate first grayscale equivalent...
-	float brightness = dot(outColor.rgb, vec3(0.2126f, 0.7152f, 0.0722f));
+	/*float brightness = dot(outColor.rgb, vec3(0.2126f, 0.7152f, 0.0722f));
 	if(brightness > 1.0f)
-		brightColor = vec4(outColor.rgb, 1.0f);
+		brightColor = vec4(outColor.rgb, 1.0f);*/
 	
 	// linear depth
 	/*float near = 0.1f;

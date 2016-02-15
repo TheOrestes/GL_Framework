@@ -7,17 +7,16 @@ layout(location=2) in vec3 in_Tangent;
 layout(location=3) in vec3 in_Binormal;
 layout(location=4) in vec2 in_Tex;
 
-out vec2				vs_outTex;
-out vec3				vs_outNormal;
-out vec3				vs_outTangent;
-out vec3				vs_outBinormal;
-out vec3				vs_outPosition;
+out vec2			vs_outTex;
+out vec3			vs_outNormal;
+out vec3			vs_outTangent;
+out vec3			vs_outBinormal;
+out vec3			vs_outPosition;
 
 // uniforms...
 uniform mat4		matWorld;
 uniform mat4		matView;
 uniform mat4		matProj;
-uniform mat4		matWorldInv;
 
 //---------------------------------------------------------------------------------------
 // Main Shader Code
