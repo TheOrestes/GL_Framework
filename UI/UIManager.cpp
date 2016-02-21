@@ -3,6 +3,7 @@
 #include "../MaterialSystem/Material.h"
 #include "../Renderables/FrameBuffer.h"
 #include "../Helpers/Helper.h"
+#include "../Helpers/LogManager.h"
 
 #include "glfw3.h"
 #include <glm/gtc/type_ptr.hpp>
@@ -24,9 +25,20 @@ UIManager::~UIManager()
 //////////////////////////////////////////////////////////////////////////////////////////
 void UIManager::InitUIManager(GLFWwindow* window)
 {
+	std::string msg;
+
 	m_pWindow = window;
 	// ImGui binding...
-	ImGui_ImplGlfwGL3_Init(m_pWindow, true);
+	if(ImGui_ImplGlfwGL3_Init(m_pWindow, true))
+	{
+		msg = "IMGUI Initialized...";
+		LogManager::getInstance().WriteToConsole(LOG_INFO, msg);
+	}
+	else
+	{
+		msg = "IMGUI Initialization FAILED...!!!";
+		LogManager::getInstance().WriteToConsole(LOG_ERROR, msg);
+	}
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////

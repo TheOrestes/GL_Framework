@@ -6,6 +6,7 @@
 #include "../ShaderEngine/GLSLShader.h"
 #include "../MaterialSystem/Material.h"
 #include "../Helpers/TextureManager.h"
+#include "../Helpers/LogManager.h"
 
 //////////////////////////////////////////////////////////////////////////////////////////
 Model::Model(const std::string& path)
@@ -28,7 +29,8 @@ void	Model::LoadModel(const std::string& path)
 
 	if(!scene || scene->mFlags == AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
 	{
-		std::cout << "ASSIMP::ERROR = " << importer.GetErrorString() << std::endl; 
+		std::string err = importer.GetErrorString();
+		LogManager::getInstance().WriteToConsole(LOG_ERROR, err);
 		return;
 	}
 
@@ -214,7 +216,16 @@ void	Model::ProcessNode(aiNode* node, const aiScene* scene)
 		// node contains only indices to actual objects in the scene. But, scene contains
 		// all the data, node is just to keep things organized.
 		aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
-		m_Meshes.push_back(ProcessMesh(mesh, scene));
+		if(!mesh)
+		{
+			std::string err = "Assimp scene has no valid mesh at current index : " + i;
+			LogManager::getInstance().WriteToConsole(LOG_ERROR, err);
+			return;
+		}
+		else
+		{
+			m_Meshes.push_back(ProcessMesh(mesh, scene));
+		}
 	}
 
 	// once we have processed all the meshes, we recursively process each of the children nodes

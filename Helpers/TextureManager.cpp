@@ -3,7 +3,8 @@
 #include <string>
 #include <vector>
 #include "TextureManager.h"
-
+#include "Helper.h"
+#include "LogManager.h"
 
 //////////////////////////////////////////////////////////////////////////////////////////
 TextureManager::TextureManager()
@@ -29,12 +30,23 @@ FIBITMAP* TextureManager::LoadTextureFromFreeImage( const std::string filepath)
 		format = FreeImage_GetFIFFromFilename(filepath.c_str());
 		if(!FreeImage_FIFSupportsReading(format))
 		{
-			std::cout << "FreeImage::Detected Image format cannot be read!" << std::endl;
+			std::string err = filepath + " does not support reading!";
+			LogManager::getInstance().WriteToConsole(LOG_ERROR, err);
 			return nullptr;
 		}
 	}
 
 	FIBITMAP* bitmap = FreeImage_Load(format, filepath.c_str());
+	if(bitmap)
+	{	
+		std::string msg = filepath + " Loaded...";
+		LogManager::getInstance().WriteToConsole(LOG_INFO, msg);
+	}
+	else
+	{
+		std::string err = filepath + " Loading FAILED";
+		LogManager::getInstance().WriteToConsole(LOG_ERROR, err);
+	}
 	
 	// Check for floating point image format i.e. HDR
 	if (FreeImage_GetImageType(bitmap) != FIT_RGBF)

@@ -8,6 +8,7 @@
 #include "Scene/Scene.h"
 #include "Renderables/FrameBuffer.h"
 #include "UI/UIManager.h"
+#include "Helpers/LogManager.h"
 
 //////////////////////////////////////////////////////////////////////////////////////////
 GLFWwindow* window;
@@ -135,6 +136,8 @@ void InitializeScene()
 //////////////////////////////////////////////////////////////////////////////////////////
 int main(void)
 {
+	std::string text;
+
 	/// Initialize GLFW
 	glfwInit();
 
@@ -146,6 +149,16 @@ int main(void)
 
 	/// Finally, Create a window
 	window = glfwCreateWindow(gScreenWidth,gScreenHeight, "OpenGL Window", NULL, NULL);
+	if(!window)
+	{
+		text = "glfwCreateWindow FAILED...!!!";
+		LogManager::getInstance().WriteToConsole(LOG_ERROR, text);
+	}
+	else
+	{
+		text = "glfwCreateWindow Created...!!!";
+		LogManager::getInstance().WriteToConsole(LOG_INFO, text);
+	}
 
 	/// Make current context for this window
 	glfwMakeContextCurrent(window);

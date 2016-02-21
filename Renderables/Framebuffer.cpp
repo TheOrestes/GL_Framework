@@ -7,6 +7,7 @@
 #include "../ObjectSystem/PointLightObject.h"
 #include "../ObjectSystem/DirectionalLightObject.h"
 #include "../Camera/Camera.h"
+#include "../Helpers/LogManager.h"
 #include <iostream>
 
 #define BLOOM_ENABLED 0
@@ -88,7 +89,7 @@ void Framebuffer::FramebufferSetup()
 		// Finally, check if framebuffer is complete
 		if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
 		{
-			std::cout << "Frame Buffer status error!" << std::endl;
+			//std::cout << FRED("Frame Buffer status error!") << std::endl;
 			return;
 		}
 

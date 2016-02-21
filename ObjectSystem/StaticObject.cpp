@@ -5,6 +5,7 @@
 #include "../MaterialSystem/Material.h"
 #include "../Renderables/BBoxCube.h"
 #include "../UI/UIManager.h"
+#include "../Helpers/LogManager.h"
 
 //////////////////////////////////////////////////////////////////////////////////////////
 StaticObject::StaticObject()
@@ -42,6 +43,7 @@ StaticObject::~StaticObject()
 //////////////////////////////////////////////////////////////////////////////////////////
 void StaticObject::Init()
 {
+	std::string msg;
 	std::string vertShaderPath;
 	vertShaderPath = "Shaders/vs" + m_strShader + ".glsl";
 
@@ -49,9 +51,19 @@ void StaticObject::Init()
 	fragShaderPath = "Shaders/ps" + m_strShader + ".glsl";
 
 	m_pShader = new GLSLShader(vertShaderPath, fragShaderPath);
+	if(m_pShader) 
+	{
+		msg = m_strShader + " Compiled & Loaded...";
+		LogManager::getInstance().WriteToConsole(LOG_INFO, msg);
+	}
 
 	// initialize model
 	m_pModel = new Model(m_strPath);
+	if(m_pModel)
+	{
+		msg = m_strPath + " Loaded...";
+		LogManager::getInstance().WriteToConsole(LOG_INFO, msg);
+	}
 
 	// initialize material
 	m_pMaterial = new Material();

@@ -148,6 +148,7 @@
     <ClCompile Include="Dependencies\imgui\imgui_demo.cpp" />
     <ClCompile Include="Dependencies\imgui\imgui_draw.cpp" />
     <ClCompile Include="Dependencies\imgui\imgui_impl_glfw_gl3.cpp" />
+    <ClCompile Include="Helpers\LogManager.cpp" />
     <ClCompile Include="Helpers\TextureManager.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="ObjectSystem\DirectionalLightObject.cpp" />
@@ -177,6 +178,7 @@
     <ClInclude Include="Dependencies\imgui\stb_rect_pack.h" />
     <ClInclude Include="Dependencies\imgui\stb_textedit.h" />
     <ClInclude Include="Dependencies\imgui\stb_truetype.h" />
+    <ClInclude Include="Helpers\LogManager.h" />
     <ClInclude Include="Helpers\Helper.h" />
     <ClInclude Include="Helpers\TextureManager.h" />
     <ClInclude Include="Helpers\VertexStructures.h" />

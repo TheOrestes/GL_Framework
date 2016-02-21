@@ -1,6 +1,6 @@
 
 #include "GLSLShader.h"
-#include <iostream>
+#include "../Helpers/LogManager.h"
 #include <fstream>
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -95,7 +95,8 @@ bool GLSLShader::IsShaderCompiled( GLuint shaderID, const std::string& name )
 	if(!result)
 	{
 		glGetShaderInfoLog(shaderID, infoLogLength, NULL, infoLog);
-		std::cout << "Error compiling shader " << name.c_str() << " : " << infoLog;
+		std::string err = "SHADER COMPILATION ERROR " + name + " : " + infoLog;
+		LogManager::getInstance().WriteToConsole(LOG_ERROR, err);
 		return false;
 	}
 
