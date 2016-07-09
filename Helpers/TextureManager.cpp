@@ -6,93 +6,82 @@
 #include "Helper.h"
 #include "LogManager.h"
 
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
+
 //////////////////////////////////////////////////////////////////////////////////////////
 TextureManager::TextureManager()
 {
-	FreeImage_Initialise();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
 TextureManager::~TextureManager()
 {
-	FreeImage_DeInitialise();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
-FIBITMAP* TextureManager::LoadTextureFromFreeImage( const std::string filepath)
+GLint TextureManager::LoadTextureFromFile(const std::string& path)
 {
-	// FreeImage library for loading textures...
-	FREE_IMAGE_FORMAT format = FreeImage_GetFileType(filepath.c_str());
-
-	// if image is found, but the format is unknown...
-	if(format == FIF_UNKNOWN)
-	{
-		format = FreeImage_GetFIFFromFilename(filepath.c_str());
-		if(!FreeImage_FIFSupportsReading(format))
-		{
-			std::string err = filepath + " does not support reading!";
-			LogManager::getInstance().WriteToConsole(LOG_ERROR, err);
-			return nullptr;
-		}
-	}
-
-	FIBITMAP* bitmap = FreeImage_Load(format, filepath.c_str());
-	if(bitmap)
-	{	
-		std::string msg = filepath + " Loaded...";
-		LogManager::getInstance().WriteToConsole(LOG_INFO, msg);
-	}
-	else
-	{
-		std::string err = filepath + " Loading FAILED";
-		LogManager::getInstance().WriteToConsole(LOG_ERROR, err);
-	}
-	
-	// Check for floating point image format i.e. HDR
-	if (FreeImage_GetImageType(bitmap) != FIT_RGBF)
-	{
-		bitmap = FreeImage_ConvertTo32Bits(bitmap);
-	}
-	
-	return bitmap;
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////
-GLint TextureManager::Load2DTextureFromFile(const std::string& path, const std::string& dir)
-{
-	//Generate texture ID and load texture data 
-	std::string filename;
-	filename = dir + '/' + path;
+	int width, height, bpp;
+	void* data;
 
 	GLuint textureID;
 	glGenTextures(1, &textureID);
 
-	FIBITMAP* bitmap32 = LoadTextureFromFreeImage(filename);
-
-	if(bitmap32)
+	if (stbi_is_hdr(path.c_str()))
 	{
-		// grab image width & height
-		int width = FreeImage_GetWidth(bitmap32);
-		int height = FreeImage_GetHeight(bitmap32);
+		stbi_set_flip_vertically_on_load(1);
+		data = stbi_loadf(path.c_str(), &width, &height, &bpp, 0);
 
-		// Assign texture to ID
-		glBindTexture(GL_TEXTURE_2D, textureID);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_SRGB_ALPHA, width, height, 0, GL_BGRA, GL_UNSIGNED_BYTE, (void*)FreeImage_GetBits(bitmap32));
-		glGenerateMipmap(GL_TEXTURE_2D);
+		if (data != nullptr)
+		{
+			// Assign texture to ID
+			glBindTexture(GL_TEXTURE_2D, textureID);
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB9_E5, width, height, 0, GL_RGB, GL_FLOAT, (void*)data);
+			glGenerateMipmap(GL_TEXTURE_2D);
+			stbi_image_free(data);
 
-		// Parameters
-		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
-		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
-		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR );
-		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+			// Parameters
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+			glGenerateMipmap(GL_TEXTURE_2D);
 
-		glBindTexture(GL_TEXTURE_2D, 0);
-
-		FreeImage_Unload(bitmap32);
+			glBindTexture(GL_TEXTURE_2D, 0);
+		}
+		else
+		{
+			textureID = -1;
+		}
+		
 	}
 	else
 	{
-		textureID = -1;
+		stbi_set_flip_vertically_on_load(1);
+		data = stbi_load(path.c_str(), &width, &height, &bpp, 0);
+
+		if (data != nullptr)
+		{
+			// Assign texture to ID
+			glBindTexture(GL_TEXTURE_2D, textureID);
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_SRGB_ALPHA, width, height, 0, GL_BGRA, GL_UNSIGNED_BYTE, (void*)data);
+			glGenerateMipmap(GL_TEXTURE_2D);
+			stbi_image_free(data);
+
+			// Parameters
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+			glGenerateMipmap(GL_TEXTURE_2D);
+
+			glBindTexture(GL_TEXTURE_2D, 0);
+		}
+		else
+		{
+			textureID = -1;
+		}
 	}
 
 	return textureID;
@@ -118,12 +107,14 @@ GLint TextureManager::LoadCubemapFromFile(const std::string& dir)
 
 		for (int i = 0 ; i<vecCubemapTextures.size() ; i++)
 		{
-			FIBITMAP* bitmap = LoadTextureFromFreeImage(vecCubemapTextures[i]);
-			if (bitmap)
+			unsigned char* data;
+			int width, height;
+			data = stbi_load(vecCubemapTextures[i].c_str(), &width, &height, nullptr, 0);
+			if (data != nullptr)
 			{
-				glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_SRGB_ALPHA, FreeImage_GetWidth(bitmap), FreeImage_GetHeight(bitmap), 0, GL_BGRA, GL_UNSIGNED_BYTE, (void*)FreeImage_GetBits(bitmap));
-				FreeImage_Unload(bitmap);
+				glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_SRGB_ALPHA, width, height, 0, GL_BGRA, GL_UNSIGNED_BYTE, (void*)data);
 			}
+			stbi_image_free(data);
 		}
 
 		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -158,16 +149,14 @@ GLint TextureManager::LoadHDRICubemapFromFile( const std::string& name )
 
 	for (int i = 0 ; i<vecCubemapTextures.size() ; i++)
 	{
-		FIBITMAP* bitmap = LoadTextureFromFreeImage(vecCubemapTextures[i]);
-		int width = FreeImage_GetWidth(bitmap);
-		int height = FreeImage_GetHeight(bitmap);
-		float* bits = (float*)FreeImage_GetBits(bitmap);
-
-		if (bitmap)
+		unsigned char* data;
+		int width, height;
+		data = stbi_load(vecCubemapTextures[i].c_str(), &width, &height, nullptr, 0);
+		
+		if (data != nullptr)
 		{
-			glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB9_E5, width, height, 
-						 0, GL_RGB, GL_FLOAT, bits);
-			FreeImage_Unload(bitmap);
+			glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB9_E5, width, height, 0, GL_RGB, GL_FLOAT, (void*)data);
+			stbi_image_free(data);
 		}
 	}
 
@@ -182,5 +171,6 @@ GLint TextureManager::LoadHDRICubemapFromFile( const std::string& name )
 
 	return cubemapID;
 }
+
 
 

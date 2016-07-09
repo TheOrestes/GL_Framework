@@ -200,13 +200,6 @@ void	Mesh::Render(GLSLShader* shader, const glm::mat4& world, Material* mat)
 		glBindTexture(GL_TEXTURE_2D, m_textures[i].id);
 	}
 
-	// bind cubemap
-	glActiveTexture(GL_TEXTURE0 + (i+1) );
-	GLint hCubeMap = glGetUniformLocation(shaderID, "texture_cubeMap");
-	glUniform1i(hCubeMap, i+1);
-	GLSkybox::getInstance().BindCubemap();
-	
-
 	// Draw mesh
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); 
 	glEnable(GL_DEPTH_TEST);
@@ -219,6 +212,8 @@ void	Mesh::Render(GLSLShader* shader, const glm::mat4& world, Material* mat)
 
 	glDrawElements(GL_TRIANGLES, m_indices.size(), GL_UNSIGNED_INT, 0);
 	glBindVertexArray(0);
+
+	//glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	
 	// set everything back to default
 	for (GLuint i = 0; i < m_textures.size(); i++)
@@ -226,8 +221,6 @@ void	Mesh::Render(GLSLShader* shader, const glm::mat4& world, Material* mat)
 		glActiveTexture(GL_TEXTURE0 + i);
 		glBindTexture(GL_TEXTURE_2D, 0);
 	}
-
-	GLSkybox::getInstance().UnbindCubemap();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////

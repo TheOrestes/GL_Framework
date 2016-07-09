@@ -2,17 +2,17 @@
 #version 400
 
 in vec4 vs_outPosition;
-in vec3 vs_outTex;
+in vec2 vs_outTex;
 
 layout (location = 0) out vec4 positionColor;
 layout (location = 2) out vec4 albedoColor;
 
-uniform samplerCube cubeMap;
+uniform sampler2D texture_diffuse1;
 
 void main()
 {
 	positionColor = vs_outPosition;
-	albedoColor = texture(cubeMap, -vs_outTex);
+	albedoColor = texture(texture_diffuse1, vs_outTex);
 
 	// check whether fragment color is more than the threshold brightness value
 	// we calculate first grayscale equivalent...

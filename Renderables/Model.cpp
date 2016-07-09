@@ -17,7 +17,7 @@ Model::Model(const std::string& path)
 //////////////////////////////////////////////////////////////////////////////////////////
 Model::~Model()
 {
-	FreeImage_DeInitialise();
+	
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -66,9 +66,11 @@ std::vector<Texture>	Model::LoadMaterialTextures(aiMaterial* material, aiTexture
 
 		if(!skip)
 		{
+			// Create full path for textures
+			std::string fullTexturePath = m_Directory + '/' + str.C_Str();
 			// if texture is not loaded, load it now.
 			Texture texture;
-			texture.id = TextureManager::getInstannce().Load2DTextureFromFile(str.C_Str(), m_Directory); //TextureFromFile(str.C_Str(), m_Directory);
+			texture.id = TextureManager::getInstannce().LoadTextureFromFile(fullTexturePath); //TextureFromFile(str.C_Str(), m_Directory);
 			texture.name = typeName;
 			texture.path = str;
 
@@ -162,7 +164,7 @@ Mesh	Model::ProcessMesh(aiMesh* mesh, const aiScene* scene)
 		std::vector<Texture> diffuseMaps = LoadMaterialTextures(material, aiTextureType_DIFFUSE, "texture_diffuse");
 		textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
 
-		// specular maps
+		// height maps
 		std::vector<Texture> heightMaps = LoadMaterialTextures(material, aiTextureType_HEIGHT, "texture_height");
 		textures.insert(textures.end(), heightMaps.begin(), heightMaps.end());
 
@@ -170,35 +172,35 @@ Mesh	Model::ProcessMesh(aiMesh* mesh, const aiScene* scene)
 		std::vector<Texture> normalMaps = LoadMaterialTextures(material, aiTextureType_NORMALS, "texture_normal");
 		textures.insert(textures.end(), normalMaps.begin(), normalMaps.end());
 
-		// normal maps
+		// emissive maps
 		std::vector<Texture> emissiveMaps = LoadMaterialTextures(material, aiTextureType_EMISSIVE, "texture_emissive");
 		textures.insert(textures.end(), emissiveMaps.begin(), emissiveMaps.end());
 
-		// emissive maps
+		// specular maps
 		std::vector<Texture> specularMaps = LoadMaterialTextures(material, aiTextureType_SPECULAR, "texture_specular");
 		textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
 		
-		// normal maps
+		// ambient maps
 		std::vector<Texture> ambientMaps = LoadMaterialTextures(material, aiTextureType_AMBIENT, "texture_ambient");
 		textures.insert(textures.end(), ambientMaps.begin(), ambientMaps.end());
 
-		// normal maps
+		// shininess maps
 		std::vector<Texture> shininessMaps = LoadMaterialTextures(material, aiTextureType_SHININESS, "texture_shininess");
 		textures.insert(textures.end(), shininessMaps.begin(), shininessMaps.end());
 
-		// normal maps
+		// displacement maps
 		std::vector<Texture> displacementMaps = LoadMaterialTextures(material, aiTextureType_DISPLACEMENT, "texture_displacement");
 		textures.insert(textures.end(), displacementMaps.begin(), displacementMaps.end());
 
-		// normal maps
+		// lightmap maps
 		std::vector<Texture> lightMaps = LoadMaterialTextures(material, aiTextureType_LIGHTMAP, "texture_lightmap");
 		textures.insert(textures.end(), lightMaps.begin(), lightMaps.end());
 
-		// normal maps
+		// reflection maps
 		std::vector<Texture> reflectionMaps = LoadMaterialTextures(material, aiTextureType_REFLECTION, "texture_reflection");
 		textures.insert(textures.end(), reflectionMaps.begin(), reflectionMaps.end());
 
-		// normal maps
+		// unknown maps
 		std::vector<Texture> unknownMaps = LoadMaterialTextures(material, aiTextureType_UNKNOWN, "texture_unknown");
 		textures.insert(textures.end(), unknownMaps.begin(), unknownMaps.end());
 

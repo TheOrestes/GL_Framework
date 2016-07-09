@@ -5,7 +5,7 @@
 #include "../Helpers/Helper.h"
 #include "../Helpers/LogManager.h"
 
-#include "glfw3.h"
+#include "GLFW\glfw3.h"
 #include <glm/gtc/type_ptr.hpp>
 
 extern GLFWwindow* window;
@@ -46,9 +46,6 @@ void UIManager::RenderMaterialUI(Material* material)
 {
 	static float albedo[4];
 	Helper::glm_vec4_to_float4(material->m_colAlbedo, albedo);
-
-	/*static float roughness = material->m_colRoughness.x;
-	static float metallic = material->m_colMetallic.x;
 	
 	if (bUIActive)
 	{
@@ -56,8 +53,6 @@ void UIManager::RenderMaterialUI(Material* material)
 		
 		ImGui::Begin("Material Editor");
 		ImGui::ColorEdit4("Albedo", albedo);
-		ImGui::SliderFloat("Roughness", &roughness, 0, 1);
-		ImGui::SliderFloat("Metallic", &metallic, 0, 1);
 		ImGui::End();
 	}
 
@@ -66,14 +61,6 @@ void UIManager::RenderMaterialUI(Material* material)
 	material->m_colAlbedo.g = albedo[1];
 	material->m_colAlbedo.b = albedo[2];
 	material->m_colAlbedo.a = albedo[3];
-
-	// Roughness
-	material->m_colRoughness.r = material->m_colRoughness.g = material->m_colRoughness.b = roughness;
-	material->m_colRoughness.a = 1.0f;
-
-	// Metallic
-	material->m_colMetallic.r = material->m_colMetallic.g = material->m_colMetallic.b = metallic;
-	material->m_colMetallic.a = 1.0f;*/
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////

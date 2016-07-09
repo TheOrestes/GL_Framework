@@ -1,6 +1,6 @@
 
 #include "LogManager.h"
-#include "../Dependencies/TermColor/termcolor.hpp"
+#include "../Dependencies/termColor/termcolor.hpp"
 
 //////////////////////////////////////////////////////////////////////////
 LogManager::LogManager()

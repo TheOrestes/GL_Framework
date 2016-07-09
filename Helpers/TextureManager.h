@@ -2,7 +2,6 @@
 #pragma once
 
 #include "GL\glew.h"
-#include "FreeImage.h"
 #include <string>
 
 class TextureManager
@@ -16,11 +15,10 @@ public:
 
 	~TextureManager();
 
-	GLint	Load2DTextureFromFile(const std::string& path, const std::string& dir);
+	GLint	LoadTextureFromFile(const std::string& path);
 	GLint	LoadCubemapFromFile(const std::string& dir);
 	GLint	LoadHDRICubemapFromFile(const std::string& dir);
 
 private:
 	TextureManager();
-	FIBITMAP*	LoadTextureFromFreeImage(const std::string filepath);
 };

@@ -90,7 +90,7 @@ struct VertexPNT
 		normal(1.0f),
 		texcoord(0.0f){}
 
-	VertexPNT(const glm::vec3& _p, const glm::vec3& _n, const glm::vec3& _uv) :
+	VertexPNT(const glm::vec3& _p, const glm::vec3& _n, const glm::vec2& _uv) :
 		position(_p),
 		normal(_n),
 		texcoord(_uv){}
@@ -110,7 +110,7 @@ struct VertexPNTBT
 		binormal(0.0f),
 		texcoord(0.0f){}
 
-	VertexPNTBT(const glm::vec3& _p, const glm::vec3& _n, const glm::vec3& _t, const glm::vec3& _b, const glm::vec3& _uv) :
+	VertexPNTBT(const glm::vec3& _p, const glm::vec3& _n, const glm::vec3& _t, const glm::vec3& _b, const glm::vec2& _uv) :
 		position(_p),
 		normal(_n),
 		tangent(_t),

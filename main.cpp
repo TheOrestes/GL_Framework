@@ -2,7 +2,7 @@
 #include <iostream>
 
 #include "GL/glew.h"
-#include "glfw3.h"
+#include "GLFW\glfw3.h"
 
 #include "Camera/Camera.h"
 #include "Scene/Scene.h"
@@ -121,7 +121,7 @@ void GameLoop(float tick)
 
 	gFBufferPtr->RenderDeferredLightingPass();
 
-	//gFBufferPtr->RenderBloomEffect();
+	gFBufferPtr->RenderBloomEffect();
 }
 
 void InitializeScene()

@@ -6,7 +6,6 @@
 class DirectionalLightObject;
 class PointLightObject;
 class StaticObject;
-class GLSkybox;
 
 class Scene
 {
@@ -25,15 +24,9 @@ public:
 private:
 
 	PointLightObject*		m_pOmni1;
-	PointLightObject*		m_pOmni2;
-	PointLightObject*		m_pOmni3;
 
-	StaticObject*			m_pSphere;
-	StaticObject*			m_pCube;
-	StaticObject*			m_pCylinder;
-	StaticObject*			m_pTorus;
-	StaticObject*			m_pPlane;
-	StaticObject*			m_pAxis;
+	StaticObject*			m_pMesh;
+	StaticObject*			m_pSkySphere;
 
 	DirectionalLightObject*	m_pGlobalDirectional;
 };

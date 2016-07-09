@@ -54,7 +54,7 @@ void GLSkybox::Init()
 
 	// Load cubemap and assign id ...
 	//tbo = TextureManager::getInstannce().LoadCubemapFromFile("Data/cubemaps/Yokohama2");
-	tbo = TextureManager::getInstannce().LoadHDRICubemapFromFile("Data/cubemaps/Church");
+	//tbo = TextureManager::getInstannce().LoadHDRICubemapFromFile("Data/cubemaps/Fjaderholmarna");
 
 	// create vao
 	glGenVertexArrays(1, &vao);
@@ -128,13 +128,7 @@ void GLSkybox::Render()
 void GLSkybox::Update( float dt )
 {
 	matWorld = glm::translate(glm::mat4(1), vecPosition);
-
-	// Note that, we first convert matrix to 3x3 so that we remove the translation part, later
-	// we convert back to 4x4 matrix keeping the rotation part intact! 
-	// All this is done so that, when player moves, skybox moves with him giving impression that
-	// skybox is far far away!
-	matView = glm::mat4(glm::mat3(Camera::getInstance().getViewMatrix()));
-
+	matView = Camera::getInstance().getViewMatrix();
 	matProj = Camera::getInstance().getProjectionMatrix();
 }
 
