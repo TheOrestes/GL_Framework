@@ -27,12 +27,12 @@ public:
 private:
 	std::vector<Mesh>		m_Meshes;
 	std::string				m_Directory;
-	std::vector<Texture>	m_textures_loaded;
+	//std::vector<Texture>	m_textures_loaded;
 	std::vector<glm::vec3>	m_bbVertices;
 
 	void					LoadModel(const std::string& path);
 	void					ProcessNode(aiNode* node, const aiScene* scene);
 	Mesh					ProcessMesh(aiMesh* mesh, const aiScene* scene);
 
-	std::vector<Texture>	LoadMaterialTextures(aiMaterial* material, aiTextureType type, const std::string& typeName);
+	//std::vector<Texture>	LoadMaterialTextures(aiMaterial* material, aiTextureType type, const std::string& typeName);
 };

@@ -125,14 +125,6 @@ struct VertexPNTBT
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////
-struct Texture
-{
-	GLuint		id;
-	std::string name;
-	aiString	path;
-};
-
-//////////////////////////////////////////////////////////////////////////////////////////
 struct BBox
 {
 	// logical stuff...
@@ -160,6 +152,7 @@ struct StaticObjectData
 {
 	StaticObjectData()
 	{
+		name.clear();
 		path.clear();
 		shader.clear();
 
@@ -171,6 +164,7 @@ struct StaticObjectData
 		showBBox  = false;
 	}
 
+	std::string name;
 	std::string path;
 	std::string shader;
 

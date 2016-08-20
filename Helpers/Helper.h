@@ -5,6 +5,8 @@
 #include "glm/glm.hpp"
 #include <iostream>
 
+#define IM_ARRAYSIZE(_ARR)  ((int)(sizeof(_ARR)/sizeof(*_ARR)))
+
 namespace Helper
 {
 	/// Extract directory path from given filepath

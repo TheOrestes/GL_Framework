@@ -9,6 +9,7 @@
 #include "Renderables/FrameBuffer.h"
 #include "UI/UIManager.h"
 #include "Helpers/LogManager.h"
+#include "AntTweakBar.h"
 
 //////////////////////////////////////////////////////////////////////////////////////////
 GLFWwindow* window;
@@ -77,35 +78,6 @@ void Mouse_Callback(GLFWwindow* window, double xPos, double yPos)
 	Camera::getInstance().ProcessMouseMovement(xoffset, yoffset);
 }
 
-/*void UpdateUI(GLFWwindow* window)
-{
-	if (bEditMode)
-	{
-		glfwSetCursorPosCallback(window, NULL);
-
-		// ImGui binding...
-		ImGui_ImplGlfwGL3_Init(window, true);
-		ImGui_ImplGlfwGL3_NewFrame();
-
-		ImGui::Begin("Material Editor");
-		ImGui::SliderFloat("Roughness", &roughness, 0.0f, 1.0f);
-		if(ImGui::Button("Close"))
-			bEditMode = false;
-		ImGui::End();
-
-		ImGui::Render();
-	}
-	else
-	{
-		/// Key callback
-		glfwSetKeyCallback(window, key_callback);
-
-		/// Mouse 
-		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-		glfwSetCursorPosCallback(window, Mouse_Callback);
-	}
-}*/
-
 //////////////////////////////////////////////////////////////////////////////////////////
 void GameLoop(float tick)
 {
@@ -138,8 +110,15 @@ int main(void)
 {
 	std::string text;
 
+	LogManager::getInstance().WriteToConsole(LOG_RAW, "", "--------------------------- START ----------------------------");
+
 	/// Initialize GLFW
-	glfwInit();
+	if (!glfwInit())
+	{
+		LogManager::getInstance().WriteToConsole(LOG_ERROR, "", "GLFW Initialization FAILED!");
+		glfwTerminate();
+		return 0;
+	}
 
 	/// Set OpenGL context version & profile version
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -152,20 +131,38 @@ int main(void)
 	if(!window)
 	{
 		text = "glfwCreateWindow FAILED...!!!";
-		LogManager::getInstance().WriteToConsole(LOG_ERROR, text);
+		LogManager::getInstance().WriteToConsole(LOG_ERROR, "MainFunction", text);
 	}
 	else
 	{
 		text = "glfwCreateWindow Created...!!!";
-		LogManager::getInstance().WriteToConsole(LOG_INFO, text);
+		LogManager::getInstance().WriteToConsole(LOG_INFO, "MainFunction", text);
 	}
 
 	/// Make current context for this window
 	glfwMakeContextCurrent(window);
 
+	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+
+	// - Directly redirect GLFW mouse button events to AntTweakBar 
+	glfwSetMouseButtonCallback(window, (GLFWmousebuttonfun)TwEventMouseButtonGLFW3);
+	// - Directly redirect GLFW mouse position events to AntTweakBar 
+	glfwSetCursorPosCallback(window, (GLFWcursorposfun)TwEventCursorPosGLFW3);
+	// - Directly redirect GLFW mouse wheel events to AntTweakBar 
+	glfwSetScrollCallback(window, (GLFWscrollfun)TwEventScrollGLFW3);
+	// - Directly redirect GLFW key events to AntTweakBar 
+	glfwSetKeyCallback(window, (GLFWkeyfun)TwEventKeyGLFW3);
+	// - Directly redirect GLFW char events to AntTweakBar 
+	glfwSetCharCallback(window, (GLFWcharfun)TwEventCharModsGLFW3);
+
 	/// Init GLEW after window & context creation
 	glewExperimental = true;
-	glewInit();
+	GLenum err = glewInit();
+	if (GLEW_OK != err)
+	{
+		LogManager::getInstance().WriteToConsole(LOG_ERROR, "MainFunction", (char*)glewGetErrorString(err));
+		return 0;
+	}
 
 	// Initialize UI Manager
 	UIManager::getInstance().InitUIManager(window);
@@ -173,27 +170,18 @@ int main(void)
 	// Initialize Scene
 	InitializeScene();
 
-	//double lastFrameTime = glfwGetTime();
-
 	/// Message Loop!!!
 	while (!glfwWindowShouldClose(window))
 	{
-		/*double currFrameTime = glfwGetTime();
-		float delta = (float)(currFrameTime - lastFrameTime);
-		lastFrameTime = currFrameTime;*/
-		
-		UIManager::getInstance().BeginRender();
-
 		GameLoop(tick);
-
-		UIManager::getInstance().EndRender();
-
-		//UpdateUI(window);
-		
+		UIManager::getInstance().Render();
 		glfwSwapBuffers(window);
 	}
 
-	//ImGui_ImplGlfwGL3_Shutdown();
+	UIManager::getInstance().Kill();
 	glfwTerminate();
+
+	LogManager::getInstance().WriteToConsole(LOG_RAW, "", "--------------------------- END ----------------------------");
+
 	return 0;
 }

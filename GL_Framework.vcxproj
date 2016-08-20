@@ -98,14 +98,14 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(SolutionDir)\Dependencies\glew\include;$(SolutionDir)\Dependencies\glfw\Include;$(SolutionDir)\Dependencies\glm;$(SolutionDir)\Dependencies\assimp\include;$(SolutionDir)\Dependencies\imgui;$(SolutionDir)\Dependencies\stb;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\Dependencies\glew\include;$(SolutionDir)\Dependencies\glfw\Include;$(SolutionDir)\Dependencies\glm;$(SolutionDir)\Dependencies\assimp\include;$(SolutionDir)\Dependencies\imgui;$(SolutionDir)\Dependencies\stb;$(SolutionDir)\Dependencies\AntTweakbar\include;$(SolutionDir)\Dependencies\nfd\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(SolutionDir)\Dependencies\glew\lib\Debug;$(SolutionDir)\Dependencies\glfw\lib\Debug;$(SolutionDir)\Dependencies\assimp\lib\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>glew32d.lib;glfw3dll.lib;opengl32.lib;assimpd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)\Dependencies\glew\lib\Debug;$(SolutionDir)\Dependencies\glfw\lib\Debug;$(SolutionDir)\Dependencies\assimp\lib\Debug;$(SolutionDir)\Dependencies\AntTweakbar\lib\Debug;$(SolutionDir)\Dependencies\nfd\lib\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>glew32d.lib;glfw3dll.lib;opengl32.lib;assimpd.lib;AntTweakBar64.lib;nfd_d.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -144,10 +144,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Camera\Camera.cpp" />
-    <ClCompile Include="Dependencies\imgui\imgui.cpp" />
-    <ClCompile Include="Dependencies\imgui\imgui_demo.cpp" />
-    <ClCompile Include="Dependencies\imgui\imgui_draw.cpp" />
-    <ClCompile Include="Dependencies\imgui\imgui_impl_glfw_gl3.cpp" />
     <ClCompile Include="Helpers\LogManager.cpp" />
     <ClCompile Include="Helpers\TextureManager.cpp" />
     <ClCompile Include="main.cpp" />
@@ -171,13 +167,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera\Camera.h" />
-    <ClInclude Include="Dependencies\imgui\imconfig.h" />
-    <ClInclude Include="Dependencies\imgui\imgui.h" />
-    <ClInclude Include="Dependencies\imgui\imgui_impl_glfw_gl3.h" />
-    <ClInclude Include="Dependencies\imgui\imgui_internal.h" />
-    <ClInclude Include="Dependencies\imgui\stb_rect_pack.h" />
-    <ClInclude Include="Dependencies\imgui\stb_textedit.h" />
-    <ClInclude Include="Dependencies\imgui\stb_truetype.h" />
     <ClInclude Include="Helpers\LogManager.h" />
     <ClInclude Include="Helpers\Helper.h" />
     <ClInclude Include="Helpers\TextureManager.h" />

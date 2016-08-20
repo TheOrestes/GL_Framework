@@ -5,7 +5,6 @@
 #include "../Helpers/VertexStructures.h"
 #include "../ShaderEngine/GLSLShader.h"
 #include "../MaterialSystem/Material.h"
-#include "../Helpers/TextureManager.h"
 #include "../Helpers/LogManager.h"
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -30,7 +29,7 @@ void	Model::LoadModel(const std::string& path)
 	if(!scene || scene->mFlags == AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
 	{
 		std::string err = importer.GetErrorString();
-		LogManager::getInstance().WriteToConsole(LOG_ERROR, err);
+		LogManager::getInstance().WriteToConsole(LOG_ERROR, "Model", err);
 		return;
 	}
 
@@ -43,64 +42,64 @@ void	Model::LoadModel(const std::string& path)
 
 
 //////////////////////////////////////////////////////////////////////////////////////////
-std::vector<Texture>	Model::LoadMaterialTextures(aiMaterial* material, aiTextureType type, const std::string& typeName)
-{
-	std::vector<Texture> textures;
-
-	for (GLuint i = 0 ; i<material->GetTextureCount(type) ; i++)
-	{
-		aiString str;
-		material->GetTexture(type, i, &str);
-
-		// check if texture was loaded earlier, if yes then continue to next iteration
-		bool skip = false;
-		for (GLuint j = 0 ; j<m_textures_loaded.size() ; j++)
-		{
-			if (m_textures_loaded[i].path == str)
-			{
-				textures.push_back(m_textures_loaded[j]);
-				skip = true;	// texture with the filename has already been loaded, continue to next one.
-				break;
-			}
-		}
-
-		if(!skip)
-		{
-			// Create full path for textures
-			std::string fullTexturePath = m_Directory + '/' + str.C_Str();
-			// if texture is not loaded, load it now.
-			Texture texture;
-			texture.id = TextureManager::getInstannce().LoadTextureFromFile(fullTexturePath); //TextureFromFile(str.C_Str(), m_Directory);
-			texture.name = typeName;
-			texture.path = str;
-
-			textures.push_back(texture);
-			m_textures_loaded.push_back(texture);
-		}
-	}
-
-	// If there is no texture on the model, load the default chequered texture!
-	// second if condition is added so that default texture is loaded only for the diffuse part & not specular!
-	/*if( material->GetTextureCount(aiTextureType_DIFFUSE) == 0 && type == aiTextureType_DIFFUSE)
-	{
-		Texture texture;
-		texture.id = TextureManager::getInstannce().Load2DTextureFromFile("UV_mapper.jpg", m_Directory); //TextureFromFile("UV_mapper.jpg", m_Directory);
-		texture.name = typeName;
-		texture.path = "UV_mapper.jpg";
-
-		textures.push_back(texture);
-		m_textures_loaded.push_back(texture);
-	}*/
-
-	return textures;
-}
+//std::vector<Texture>	Model::LoadMaterialTextures(aiMaterial* material, aiTextureType type, const std::string& typeName)
+//{
+//	std::vector<Texture> textures;
+//
+//	for (GLuint i = 0 ; i<material->GetTextureCount(type) ; i++)
+//	{
+//		aiString str;
+//		material->GetTexture(type, i, &str);
+//
+//		// check if texture was loaded earlier, if yes then continue to next iteration
+//		bool skip = false;
+//		for (GLuint j = 0 ; j<m_textures_loaded.size() ; j++)
+//		{
+//			if (m_textures_loaded[i].path == str)
+//			{
+//				textures.push_back(m_textures_loaded[j]);
+//				skip = true;	// texture with the filename has already been loaded, continue to next one.
+//				break;
+//			}
+//		}
+//
+//		if(!skip)
+//		{
+//			// Create full path for textures
+//			std::string fullTexturePath = m_Directory + '/' + str.C_Str();
+//			// if texture is not loaded, load it now.
+//			Texture texture;
+//			texture.id = TextureManager::getInstannce().LoadTextureFromFile(fullTexturePath); //TextureFromFile(str.C_Str(), m_Directory);
+//			texture.name = typeName;
+//			texture.path = str;
+//
+//			textures.push_back(texture);
+//			m_textures_loaded.push_back(texture);
+//		}
+//	}
+//
+//	// If there is no texture on the model, load the default chequered texture!
+//	// second if condition is added so that default texture is loaded only for the diffuse part & not specular!
+//	/*if( material->GetTextureCount(aiTextureType_DIFFUSE) == 0 && type == aiTextureType_DIFFUSE)
+//	{
+//		Texture texture;
+//		texture.id = TextureManager::getInstannce().Load2DTextureFromFile("UV_mapper.jpg", m_Directory); //TextureFromFile("UV_mapper.jpg", m_Directory);
+//		texture.name = typeName;
+//		texture.path = "UV_mapper.jpg";
+//
+//		textures.push_back(texture);
+//		m_textures_loaded.push_back(texture);
+//	}*/
+//
+//	return textures;
+//}
 
 //////////////////////////////////////////////////////////////////////////////////////////
 Mesh	Model::ProcessMesh(aiMesh* mesh, const aiScene* scene)
 {
 	std::vector<VertexPNTBT>	vertices;
 	std::vector<GLuint>			indices;
-	std::vector<Texture>		textures;
+	//std::vector<Texture>		textures;
 
 	// loop through each vertex
 	for (GLuint i = 0 ; i<mesh->mNumVertices ; i++)
@@ -143,7 +142,7 @@ Mesh	Model::ProcessMesh(aiMesh* mesh, const aiScene* scene)
 	}
 
 	// process materials
-	if (mesh->mMaterialIndex >= 0)
+	/*if (mesh->mMaterialIndex >= 0)
 	{
 		aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
 
@@ -204,10 +203,10 @@ Mesh	Model::ProcessMesh(aiMesh* mesh, const aiScene* scene)
 		std::vector<Texture> unknownMaps = LoadMaterialTextures(material, aiTextureType_UNKNOWN, "texture_unknown");
 		textures.insert(textures.end(), unknownMaps.begin(), unknownMaps.end());
 
-	}
+	}*/
 
 	// return  a mesh object created from the extracted mesh data
-	return Mesh(vertices, indices, textures);
+	return Mesh(vertices, indices);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -221,7 +220,7 @@ void	Model::ProcessNode(aiNode* node, const aiScene* scene)
 		if(!mesh)
 		{
 			std::string err = "Assimp scene has no valid mesh at current index : " + i;
-			LogManager::getInstance().WriteToConsole(LOG_ERROR, err);
+			LogManager::getInstance().WriteToConsole(LOG_ERROR, "Model", err);
 			return;
 		}
 		else

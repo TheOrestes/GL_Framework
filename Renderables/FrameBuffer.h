@@ -3,6 +3,7 @@
 
 #include "GL\glew.h"
 #include "../Helpers/VertexStructures.h"
+#include "AntTweakBar.h"
 
 class GLSLShader;
 
@@ -72,4 +73,5 @@ private:
 
 	// Tweakable data
 	PostFXData*		m_pFXData;
+	TwBar*			m_pFXUI;
 };

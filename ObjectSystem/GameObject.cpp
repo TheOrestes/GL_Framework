@@ -8,7 +8,6 @@
 GameObject::GameObject()
 {
 	m_iID = 0;
-	m_strName.clear();
 
 	m_vecPosition = glm::vec3(0);
 	m_vecRotation = glm::vec3(0,1,0);
@@ -78,8 +77,3 @@ void GameObject::SetID( int id )
 	m_iID = id;
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////
-void GameObject::SetName( const std::string& name )
-{
-	m_strName = name;
-}

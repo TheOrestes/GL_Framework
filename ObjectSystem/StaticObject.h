@@ -8,6 +8,8 @@
 #include "glm/gtc/type_ptr.hpp"
 #include "GameObject.h"
 
+#include "AntTweakBar.h"
+
 class Model;
 struct Material;
 class GLSLShader;
@@ -25,6 +27,7 @@ public:
 	virtual void			Kill();
 	virtual void			Update(float dt);
 	virtual void			Render();
+	virtual void			InitUI();
 
 	virtual void			SetPosition(const glm::vec3& pos);
 	virtual void			SetRotation(const glm::vec3& axis, float angle);
@@ -37,8 +40,10 @@ public:
 
 	inline void				SetPath(const std::string& path){ m_strPath = path; }
 	inline void				SetShader(const std::string& shader){ m_strShader = shader; }
+	inline void				SetName(const std::string& name) { m_strName = name; };
 
 private:
+	std::string				m_strName;
 	std::string				m_strPath;
 	std::string				m_strShader;
 
@@ -46,5 +51,7 @@ private:
 	Model*					m_pModel;
 	Material*				m_pMaterial;
 	BBoxCube*				m_pBBoxCube;
+
+	TwBar*					m_pUIBar;
 };
 

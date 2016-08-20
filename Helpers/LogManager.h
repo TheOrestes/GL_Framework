@@ -1,14 +1,14 @@
 
-// Windows Only!! - https://www.daniweb.com/programming/software-development/code/216345/add-a-little-color-to-your-console-text
-
 #pragma once
 
-#include <Windows.h>   // WinApi header
 #include <iostream>
+#include <time.h>
 
 enum LOGTYPE 
 {
+	LOG_RAW,
 	LOG_INFO,
+	LOG_DEBUG,
 	LOG_ERROR,
 	LOG_MAX
 };
@@ -24,7 +24,9 @@ public:
 
 	~LogManager();
 
-	void	WriteToConsole(LOGTYPE type, const std::string& message);
+	// http://stackoverflow.com/questions/997946/how-to-get-current-time-and-date-in-c
+	const std::string CurrentDateTime();
+	void	WriteToConsole(LOGTYPE type, const std::string& file, const std::string& message);
 
 private:
 	LogManager();

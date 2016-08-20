@@ -1,9 +1,8 @@
 
 #pragma once
 
-#include "imgui.h"
-#include "imgui_impl_glfw_gl3.h"
 #include "glm/glm.hpp"
+#include "AntTweakBar.h"
 
 struct  Material;
 struct	PostFXData;
@@ -25,13 +24,13 @@ public:
 	void			RenderPropertiesUI(glm::vec3& pos, glm::vec3& rot, 
 									   glm::vec3& scale, bool showBB);
 	void			Kill();
-	void			BeginRender();
-	void			EndRender();
+	void			Render();
 private:
 	UIManager();
 	UIManager(const UIManager&);
 	void operator=(const UIManager&);
 
-	bool			bUIActive;
 	GLFWwindow*     m_pWindow;
+
+	TwBar*			m_pFxUIBar;
 };

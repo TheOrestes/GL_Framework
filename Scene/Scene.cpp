@@ -28,6 +28,7 @@ Scene::~Scene()
 void	Scene::Init()
 {
 	StaticObjectData dataMesh;
+	dataMesh.name = "SuperiorIronMan";
 	dataMesh.path = "Data/Models/Superior_IronMan.FBX";
 	dataMesh.shader = "UberShader";
 	dataMesh.position = glm::vec3(0,3,0);
@@ -40,6 +41,7 @@ void	Scene::Init()
 	m_pMesh->Init();
 
 	StaticObjectData dataSkySphere;
+	dataSkySphere.name = "HDRISphere";
 	dataSkySphere.path = "Data/Models/SkySphere.FBX";
 	dataSkySphere.shader = "Skybox";
 	dataSkySphere.position = glm::vec3(0, 0, 0);
@@ -68,7 +70,7 @@ void	Scene::Update(float dt)
 {
 	m_pOmni1->Update(dt);
 
-	//m_pSkySphere->Update(0.2*dt);
+	m_pSkySphere->Update(0*dt);
 	m_pMesh->Update(dt);
 }
 

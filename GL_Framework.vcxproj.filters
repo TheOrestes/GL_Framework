@@ -28,9 +28,6 @@
     <Filter Include="UI">
       <UniqueIdentifier>{43005b68-2cd8-4a4e-b25e-e13ab9817938}</UniqueIdentifier>
     </Filter>
-    <Filter Include="imgui">
-      <UniqueIdentifier>{1b6029dc-2b96-4c32-af85-bc2cc9a5ed64}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Camera\Camera.cpp">
@@ -90,18 +87,6 @@
     </ClCompile>
     <ClCompile Include="UI\UIManager.cpp">
       <Filter>UI</Filter>
-    </ClCompile>
-    <ClCompile Include="Dependencies\imgui\imgui.cpp">
-      <Filter>imgui</Filter>
-    </ClCompile>
-    <ClCompile Include="Dependencies\imgui\imgui_demo.cpp">
-      <Filter>imgui</Filter>
-    </ClCompile>
-    <ClCompile Include="Dependencies\imgui\imgui_draw.cpp">
-      <Filter>imgui</Filter>
-    </ClCompile>
-    <ClCompile Include="Dependencies\imgui\imgui_impl_glfw_gl3.cpp">
-      <Filter>imgui</Filter>
     </ClCompile>
     <ClCompile Include="Helpers\LogManager.cpp">
       <Filter>Helpers</Filter>
@@ -179,27 +164,6 @@
     </ClInclude>
     <ClInclude Include="UI\UIManager.h">
       <Filter>UI</Filter>
-    </ClInclude>
-    <ClInclude Include="Dependencies\imgui\imconfig.h">
-      <Filter>imgui</Filter>
-    </ClInclude>
-    <ClInclude Include="Dependencies\imgui\imgui.h">
-      <Filter>imgui</Filter>
-    </ClInclude>
-    <ClInclude Include="Dependencies\imgui\imgui_impl_glfw_gl3.h">
-      <Filter>imgui</Filter>
-    </ClInclude>
-    <ClInclude Include="Dependencies\imgui\imgui_internal.h">
-      <Filter>imgui</Filter>
-    </ClInclude>
-    <ClInclude Include="Dependencies\imgui\stb_rect_pack.h">
-      <Filter>imgui</Filter>
-    </ClInclude>
-    <ClInclude Include="Dependencies\imgui\stb_textedit.h">
-      <Filter>imgui</Filter>
-    </ClInclude>
-    <ClInclude Include="Dependencies\imgui\stb_truetype.h">
-      <Filter>imgui</Filter>
     </ClInclude>
     <ClInclude Include="Helpers\LogManager.h">
       <Filter>Helpers</Filter>

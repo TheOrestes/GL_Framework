@@ -14,12 +14,11 @@ struct Material;
 class Mesh
 {
 public:
-	Mesh(std::vector<VertexPNTBT> vertices, std::vector<GLuint> indices, std::vector<Texture> textures);
+	Mesh(std::vector<VertexPNTBT> vertices, std::vector<GLuint> indices);
 	~Mesh();
 
 	std::vector<VertexPNTBT>	m_vertices;
 	std::vector<GLuint>		m_indices;
-	std::vector<Texture>	m_textures;
 
 	void		Kill();
 

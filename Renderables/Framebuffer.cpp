@@ -30,6 +30,7 @@ Framebuffer::Framebuffer()
 
 	// FX Data
 	m_pFXData = nullptr;
+	m_pFXUI = nullptr;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -40,6 +41,7 @@ Framebuffer::~Framebuffer()
 	delete m_pBlurPostFX;
 	delete m_pBloomPostFX;
 	delete m_pFXData;
+	delete m_pFXUI;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -144,6 +146,14 @@ void Framebuffer::FramebufferSetup()
 
 	// FX Data initialize
 	m_pFXData = new PostFXData();
+
+	// Initialize FX UI
+	m_pFXUI = TwNewBar("Postprocess");
+	TwAddVarRW(m_pFXUI, "Bloom", TW_TYPE_BOOL8, &(m_pFXData->m_bBloomOn), "label='Bloom Control'");
+	TwAddVarRW(m_pFXUI, "Exposure", TW_TYPE_FLOAT, &(m_pFXData->m_fExposure), 
+						"label='Exposure Control' min=0 max=10 step=0.1");
+	TwAddVarRW(m_pFXUI, "BlurIter", TW_TYPE_INT8, &(m_pFXData->m_iBlurIter), 
+						"label='Blur Iteration' min=0 max=5 step=1");
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -262,8 +272,6 @@ void Framebuffer::BlendPass()
 
 void Framebuffer::RenderBloomEffect()
 {
-	UIManager::getInstance().RenderPostFxUI(m_pFXData);
-
 	// Bloom controlled by UI?
 	if(m_pFXData->m_bBloomOn)
 	{

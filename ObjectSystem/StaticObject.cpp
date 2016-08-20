@@ -6,6 +6,9 @@
 #include "../Renderables/BBoxCube.h"
 #include "../UI/UIManager.h"
 #include "../Helpers/LogManager.h"
+#include "../Helpers/Helper.h"
+
+#include "nfd.h"
 
 //////////////////////////////////////////////////////////////////////////////////////////
 StaticObject::StaticObject()
@@ -21,7 +24,8 @@ StaticObject::StaticObject()
 
 //////////////////////////////////////////////////////////////////////////////////////////
 StaticObject::StaticObject(const StaticObjectData& data)
-	:	m_strPath(data.path),
+	:	m_strName(data.name),
+		m_strPath(data.path),
 		m_strShader(data.shader),
 		m_pShader(nullptr),
 		m_pModel(nullptr),
@@ -54,7 +58,7 @@ void StaticObject::Init()
 	if(m_pShader) 
 	{
 		msg = m_strShader + " Compiled & Loaded...";
-		LogManager::getInstance().WriteToConsole(LOG_INFO, msg);
+		LogManager::getInstance().WriteToConsole(LOG_INFO, "StaticObject", msg);
 	}
 
 	// initialize model
@@ -62,7 +66,7 @@ void StaticObject::Init()
 	if(m_pModel)
 	{
 		msg = m_strPath + " Loaded...";
-		LogManager::getInstance().WriteToConsole(LOG_INFO, msg);
+		LogManager::getInstance().WriteToConsole(LOG_INFO, "StaticObject", msg);
 	}
 
 	// initialize material
@@ -78,6 +82,41 @@ void StaticObject::Init()
 
 	// initialize bounding box
 	InitBBox(m_pModel->GetVertexPositions());
+
+	// Initialize AntTweakBar UI
+	InitUI();
+}
+
+void TW_CALL UpdateTexture(void* data)
+{
+	nfdchar_t* outPath = nullptr;
+	nfdresult_t result = NFD_OpenDialog("png,jpg,tif,bmp,tga,hdr", nullptr, &outPath);
+	if (result == NFD_OKAY)
+	{
+		TextureProperty* prop = static_cast<TextureProperty*>(data);
+		prop->setPath(outPath);
+		prop->changed = true;
+	}
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+void StaticObject::InitUI()
+{
+	m_pUIBar = TwNewBar(m_strName.c_str());
+
+	TwAddVarRW(m_pUIBar, "AlbdeoColor", TW_TYPE_COLOR4F, glm::value_ptr(m_pMaterial->m_colAlbedo), "label='Albdeo Color'");
+	TwAddVarRW(m_pUIBar, "EmissiveColor", TW_TYPE_COLOR4F, glm::value_ptr(m_pMaterial->m_colEmissive), "label='Emissive Color'");
+	TwAddVarRW(m_pUIBar, "Roughness", TW_TYPE_FLOAT, &(m_pMaterial->m_fRoughness), 
+						 "label='Roughness' min=0 max=1 step=0.1");
+	TwAddVarRW(m_pUIBar, "Metallic", TW_TYPE_FLOAT, &(m_pMaterial->m_fMetallic), 
+						 "label='Metallic' min=0 max=1 step=0.1");
+
+	TwAddButton(m_pUIBar, "AlbedoTexture", UpdateTexture, &(m_pMaterial->m_pTexAlbedo), "label='Albedo Texture'");
+	TwAddButton(m_pUIBar, "EmissionTexture", UpdateTexture, &(m_pMaterial->m_pTexEmission), "label='Emission Texture'");
+	TwAddButton(m_pUIBar, "HeightTexture", UpdateTexture, &(m_pMaterial->m_pTexHeight), "label='Height Texture'");
+	TwAddButton(m_pUIBar, "NormalTexture", UpdateTexture, &(m_pMaterial->m_pTexNormal), "label='Normal Texture'");
+	TwAddButton(m_pUIBar, "OcclusionTexture", UpdateTexture, &(m_pMaterial->m_pTexOcclusion), "label='Occlusion Texture'");
+	TwAddButton(m_pUIBar, "SpecularTexture", UpdateTexture, &(m_pMaterial->m_pTexSpecular), "label='Specular Texture'");
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -111,14 +150,14 @@ void StaticObject::Update( float dt )
 //////////////////////////////////////////////////////////////////////////////////////////
 void StaticObject::Render()
 {
-	UIManager::getInstance().RenderMaterialUI(m_pMaterial);
-
 	m_pModel->Render(m_pShader, m_matWorld, m_pMaterial);
 	
 	if (m_bShowBBox)
 	{
 		m_pBBoxCube->Render(m_matWorld);
 	}
+
+	//TwDraw();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////

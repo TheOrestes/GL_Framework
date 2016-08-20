@@ -33,12 +33,10 @@ public:
 	virtual void			SetCentroid(const glm::vec3& center);
 
 	void					SetID(int id);
-	void					SetName(const std::string& name);
 
 private:
 
 	int						m_iID;
-	std::string				m_strName;
 
 protected:
 	glm::vec3				m_vecPosition;

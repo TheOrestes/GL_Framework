@@ -96,8 +96,13 @@ bool GLSLShader::IsShaderCompiled( GLuint shaderID, const std::string& name )
 	{
 		glGetShaderInfoLog(shaderID, infoLogLength, NULL, infoLog);
 		std::string err = "SHADER COMPILATION ERROR " + name + " : " + infoLog;
-		LogManager::getInstance().WriteToConsole(LOG_ERROR, err);
+		LogManager::getInstance().WriteToConsole(LOG_ERROR,  "GLSLShader", err);
 		return false;
+	}
+	else
+	{
+		std::string msg = name + " compiled!";
+		LogManager::getInstance().WriteToConsole(LOG_DEBUG, "GLSLShader", msg);
 	}
 
 	return true;
