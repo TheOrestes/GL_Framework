@@ -107,6 +107,10 @@
       <AdditionalLibraryDirectories>$(SolutionDir)\Dependencies\glew\lib\Debug;$(SolutionDir)\Dependencies\glfw\lib\Debug;$(SolutionDir)\Dependencies\assimp\lib\Debug;$(SolutionDir)\Dependencies\AntTweakbar\lib\Debug;$(SolutionDir)\Dependencies\nfd\lib\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>glew32d.lib;glfw3dll.lib;opengl32.lib;assimpd.lib;AntTweakBar64.lib;nfd_d.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PostBuildEvent>
+      <Command>xcopy $(SolutionDir)\Data $(SolutionDir)$(Platform)\$(Configuration)\Data /e /y /i /r
+xcopy $(SolutionDir)\Shaders $(SolutionDir)$(Platform)\$(Configuration)\Shaders /e /y /i /r</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
