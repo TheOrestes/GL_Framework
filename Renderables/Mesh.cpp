@@ -71,8 +71,7 @@ void	Mesh::SetupMesh()
 void Mesh::SetMaterialProperties(int shaderID, Material* mat)
 {
 	glUniform4fv(glGetUniformLocation(shaderID, "material.Albedo"), 1, glm::value_ptr(mat->m_colAlbedo));
-	//glUniform4fv(glGetUniformLocation(shaderID, "material.Specular"), 1, glm::value_ptr(mat->m_colSpecular));
-	glUniform4fv(glGetUniformLocation(shaderID, "material.Emission"), 1, glm::value_ptr(mat->m_colEmissive));
+	glUniform4fv(glGetUniformLocation(shaderID, "material.Emissive"), 1, glm::value_ptr(mat->m_colEmissive));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -120,62 +119,78 @@ void	Mesh::Render(GLSLShader* shader, const glm::mat4& world, Material* mat)
 		bDiffuseTexture = true;
 		mat->m_pTexAlbedo.setID(TextureManager::getInstannce().LoadTextureFromFile(mat->m_pTexAlbedo.getPath()));
 		mat->m_pTexAlbedo.changed = false;
+		
+		glUniform1i(glGetUniformLocation(shaderID, "bDiffuseTexture"), bDiffuseTexture);
+		glUniform1i(glGetUniformLocation(shaderID, "texture_diffuse"), 0);
 	}
-	else if (mat->m_pTexEmission.hasChanged())
+
+	if (mat->m_pTexEmission.hasChanged())
 	{
 		bEmissiveTexture = true;
 		mat->m_pTexEmission.setID(TextureManager::getInstannce().LoadTextureFromFile(mat->m_pTexEmission.getPath()));
 		mat->m_pTexEmission.changed = false;
+
+		glUniform1i(glGetUniformLocation(shaderID, "bEmissiveTexture"), bEmissiveTexture);
+		glUniform1i(glGetUniformLocation(shaderID, "texture_emissive"), 1);
 	}
-	else if (mat->m_pTexHeight.hasChanged())
+
+	if (mat->m_pTexHeight.hasChanged())
 	{
 		bHeightMapTexture = true;
 		mat->m_pTexHeight.setID(TextureManager::getInstannce().LoadTextureFromFile(mat->m_pTexHeight.getPath()));
 		mat->m_pTexHeight.changed = false;
+
+		glUniform1i(glGetUniformLocation(shaderID, "bHeightMapTexture"), bHeightMapTexture);
+		glUniform1i(glGetUniformLocation(shaderID, "texture_height"), 2);
 	}
-	else if (mat->m_pTexNormal.hasChanged())
+	
+	if (mat->m_pTexNormal.hasChanged())
 	{
 		bNormalMapTexture = true;
 		mat->m_pTexNormal.setID(TextureManager::getInstannce().LoadTextureFromFile(mat->m_pTexNormal.getPath()));
 		mat->m_pTexNormal.changed = false;
+
+		glUniform1i(glGetUniformLocation(shaderID, "bNormalMapTexture"), bHeightMapTexture);
+		glUniform1i(glGetUniformLocation(shaderID, "texture_normal"), 3);
 	}
-	else if (mat->m_pTexOcclusion.hasChanged())
+
+	if (mat->m_pTexOcclusion.hasChanged())
 	{
 		bAmbientOccTexture = true;
 		mat->m_pTexOcclusion.setID(TextureManager::getInstannce().LoadTextureFromFile(mat->m_pTexOcclusion.getPath()));
 		mat->m_pTexOcclusion.changed = false;
+
+		glUniform1i(glGetUniformLocation(shaderID, "bAmbientOccTexture"), bAmbientOccTexture);
+		glUniform1i(glGetUniformLocation(shaderID, "texture_ambient"), 4);
 	}
-	else if (mat->m_pTexSpecular.hasChanged())
+
+	if (mat->m_pTexSpecular.hasChanged())
 	{
 		bSpecularTexture = true;
 		mat->m_pTexSpecular.setID(TextureManager::getInstannce().LoadTextureFromFile(mat->m_pTexSpecular.getPath()));
 		mat->m_pTexSpecular.changed = false;
+
+		glUniform1i(glGetUniformLocation(shaderID, "bSpecularTexture"), bSpecularTexture);
+		glUniform1i(glGetUniformLocation(shaderID, "texture_specular"), 5);
 	}
 
 	glActiveTexture(GL_TEXTURE0);
-	glUniform1i(glGetUniformLocation(shaderID, "bDiffuseTexture"), true);
 	glBindTexture(GL_TEXTURE_2D, mat->m_pTexAlbedo.getID());
 
 	glActiveTexture(GL_TEXTURE1);
-	glUniform1i(glGetUniformLocation(shaderID, "bEmissiveTexture"), true);
 	glBindTexture(GL_TEXTURE_2D, mat->m_pTexEmission.getID());
 
 	glActiveTexture(GL_TEXTURE2);
-	glUniform1i(glGetUniformLocation(shaderID, "bHeightMapTexture"), true);
 	glBindTexture(GL_TEXTURE_2D, mat->m_pTexHeight.getID());
 
 	glActiveTexture(GL_TEXTURE3);
-	glUniform1i(glGetUniformLocation(shaderID, "bNormalMapTexture"), true);
 	glBindTexture(GL_TEXTURE_2D, mat->m_pTexNormal.getID());
 
 	glActiveTexture(GL_TEXTURE4);
-	glUniform1i(glGetUniformLocation(shaderID, "bAmbientOccTexture"), true);
 	glBindTexture(GL_TEXTURE_2D, mat->m_pTexOcclusion.getID());
 
 	glActiveTexture(GL_TEXTURE5);
-	glUniform1i(glGetUniformLocation(shaderID, "bSpecularTexture"), true);
 	glBindTexture(GL_TEXTURE_2D, mat->m_pTexSpecular.getID());
-
 
 	/*GLuint i = 0;
 	for ( ; i < m_textures.size() ; i++)
@@ -269,7 +284,6 @@ void	Mesh::Render(GLSLShader* shader, const glm::mat4& world, Material* mat)
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); 
 	glEnable(GL_DEPTH_TEST);
 
-
 	// Set all Shader variables...
 	SetShaderVariables(shaderID, world, mat);
 
@@ -277,6 +291,24 @@ void	Mesh::Render(GLSLShader* shader, const glm::mat4& world, Material* mat)
 
 	glDrawElements(GL_TRIANGLES, m_indices.size(), GL_UNSIGNED_INT, 0);
 	glBindVertexArray(0);
+
+	/*glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, 0);
+
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, 0);
+
+	glActiveTexture(GL_TEXTURE2);
+	glBindTexture(GL_TEXTURE_2D, 0);
+
+	glActiveTexture(GL_TEXTURE3);
+	glBindTexture(GL_TEXTURE_2D, 0);
+
+	glActiveTexture(GL_TEXTURE4);
+	glBindTexture(GL_TEXTURE_2D, 0);
+
+	glActiveTexture(GL_TEXTURE5);
+	glBindTexture(GL_TEXTURE_2D, 0);*/
 
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	

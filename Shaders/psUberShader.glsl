@@ -13,6 +13,7 @@ layout (location = 0) out vec4 positionColor;
 layout (location = 1) out vec4 normalColor;
 layout (location = 2) out vec4 albedoColor; 
 layout (location = 3) out vec4 cubemapColor;
+layout (location = 4) out vec4 emissiveColor;
 
 //---------------------------------------------------------------------------------------
 // Material Properties
@@ -20,8 +21,7 @@ layout (location = 3) out vec4 cubemapColor;
 struct Material
 {
 	vec4 Albedo;
-	vec4 Specular;
-	vec4 Emission;
+	vec4 Emissive;
 };
 
 uniform Material material;
@@ -29,11 +29,12 @@ uniform Material material;
 //---------------------------------------------------------------------------------------
 // Other Uniforms
 //---------------------------------------------------------------------------------------
-uniform sampler2D	texture_diffuse1;
-uniform sampler2D	texture_specular1;
-uniform sampler2D	texture_normal1;	
-uniform sampler2D   texture_ambient1;
-uniform sampler2D	texture_emissive1;	
+uniform sampler2D	texture_diffuse;
+uniform sampler2D	texture_specular;
+uniform sampler2D	texture_normal;	
+uniform sampler2D   texture_ambient;
+uniform sampler2D	texture_emissive;	
+uniform sampler2D	texture_height;
 uniform samplerCube texture_cubeMap;   
 
 uniform vec3 camPosition;
@@ -152,28 +153,37 @@ void main()
 	// Final contributors...
 	vec4 Albedo;
 	vec4 Specular;
+	vec4 Emissive;
+	vec4 Normal;
 	float ao;
 
 	// BaseMap color aka Albedo
 	if(bDiffuseTexture)
-		Albedo = texture(texture_diffuse1, vs_outTex);
+		Albedo = texture(texture_diffuse, vs_outTex) * material.Albedo;
 	else
 		Albedo = material.Albedo;
 
 	// Specular Color
 	if(bSpecularTexture)
-		Specular = texture(texture_specular1, vs_outTex);
+		Specular = texture(texture_specular, vs_outTex);
+
+	// Emissive Color
+	if(bEmissiveTexture)
+		Emissive = texture(texture_emissive, vs_outTex) * material.Emissive;
 	else
-		Specular = material.Specular;
+		Emissive = material.Emissive;
 
 	// Ambient occlusion gets stored in alpha channel of albedo buffer
 	if(bAmbientOccTexture)
-		ao = texture(texture_ambient1, vs_outTex).r;
+		ao = texture(texture_ambient, vs_outTex).r;
 	else
 		ao = 0.0f;
 
 	// Normal map
-	//vec3 normalMap = texture(texture_normal1, vs_outTex).rgb;
+	if(bNormalMapTexture)
+		Normal = texture(texture_normal, vs_outTex) * 2.0 - 1.0f;
+	else
+		Normal.xyz = normalize(vs_outNormal);
 
 	// View vector
 	vec3 view = normalize(camPosition - vs_outPosition);
@@ -191,6 +201,8 @@ void main()
 	albedoColor.rgb = Albedo.rgb;					// albedo color
 	albedoColor.a = ao;								// ambient occlusion data
 	cubemapColor = reflectionColor;					// reflection data
+	emissiveColor = Emissive;						// Emissive color
+
 
 	// = Emissive * Diffuse + 0.35*reflectionColor; 
 

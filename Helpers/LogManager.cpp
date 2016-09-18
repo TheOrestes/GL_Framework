@@ -1,7 +1,7 @@
 
 #include "LogManager.h"
 #include "Helper.h"
-#include "../Dependencies/termColor/termcolor.hpp"
+#include "../Dependencies/termcolor/termcolor.hpp"
 
 //////////////////////////////////////////////////////////////////////////
 LogManager::LogManager()

@@ -52,10 +52,11 @@ void Framebuffer::FramebufferSetup()
 	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
 
 		// create two texture buffer objects 
-		// 1. Position buffer
-		// 2. Normal buffer
-		// 3. Albedo color buffer
-		// 4. Cubemap buffer
+		// 0. Position buffer
+		// 1. Normal buffer
+		// 2. Albedo color buffer
+		// 3. Cubemap buffer
+		// 4. Emissive buffer
 		glGenTextures(MAX_NUM_BUFFER, tbo);
 		for (int i = 0 ; i < MAX_NUM_BUFFER ; i++)
 		{
@@ -85,7 +86,7 @@ void Framebuffer::FramebufferSetup()
 		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo);
 
 		// Tell OGL which color attachments we will use...
-		GLuint attachments[MAX_NUM_BUFFER] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3};
+		GLuint attachments[MAX_NUM_BUFFER] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3, GL_COLOR_ATTACHMENT4 };
 		glDrawBuffers(MAX_NUM_BUFFER, attachments);
 
 		// Finally, check if framebuffer is complete
@@ -97,7 +98,7 @@ void Framebuffer::FramebufferSetup()
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-#if BLOOM_ENABLED
+#if 1
 
 	// Courtesy : http://www.learnopengl.com/#!Advanced-Lighting/Bloom
 	// Ping pong framebuffer for Blurring
@@ -211,9 +212,10 @@ void Framebuffer::BlurPass()
 
 	m_pBlurPostFX->Use();
 
+	glBindFramebuffer(GL_FRAMEBUFFER, bloomFBO[horizontal]);
+
 	for (int i = 0 ; i<2 * m_pFXData->m_iBlurIter ; i++)
 	{
-		glBindFramebuffer(GL_FRAMEBUFFER, bloomFBO[horizontal]);
 		glUniform1i(glGetUniformLocation(m_pBlurPostFX->GetShaderID(), "horizontal"), horizontal);
 
 		if (first_iter)
@@ -250,14 +252,14 @@ void Framebuffer::BlendPass()
 
 	m_pBloomPostFX->Use();
 
-	// Original Scene rendered to texture
-	glActiveTexture(GL_TEXTURE0);
+	// Original Scene rendered to 
+	glActiveTexture(GL_TEXTURE5);
 	GLint hVar1 = glGetUniformLocation(m_pBloomPostFX->GetShaderID(), "screenTexture");
 	glUniform1i(hVar1, 0);
 	glBindTexture(GL_TEXTURE_2D, tbo[0]);
 
 	// Blurred scene rendered to texture
-	glActiveTexture(GL_TEXTURE1);
+	glActiveTexture(GL_TEXTURE6);
 	GLint hVar2 = glGetUniformLocation(m_pBloomPostFX->GetShaderID(), "blurTexture");
 	glUniform1i(hVar2, 1);
 	glBindTexture(GL_TEXTURE_2D, bloomColorBuffer[!horizontal]);
@@ -286,15 +288,17 @@ void Framebuffer::SetShaderVariables( int shaderID )
 	glm::vec3 CamPosition = Camera::getInstance().getCameraPosition();
 	glUniform3fv(glGetUniformLocation(shaderID, "camPosition"), 1, glm::value_ptr(CamPosition));
 
-	GLint hAlbedoTex = glGetUniformLocation(shaderID, "albedoTexture");
-	GLint hPositionTex = glGetUniformLocation(shaderID, "positionTexture");
-	GLint hNormalTex = glGetUniformLocation(shaderID, "normalTexture");
-	GLint hCubemapTex = glGetUniformLocation(shaderID, "cubemapTexture");
+	GLint hAlbedoTex = glGetUniformLocation(shaderID, "albedoBuffer");
+	GLint hPositionTex = glGetUniformLocation(shaderID, "positionBuffer");
+	GLint hNormalTex = glGetUniformLocation(shaderID, "normalBuffer");
+	GLint hCubemapTex = glGetUniformLocation(shaderID, "cubemapBuffer");
+	GLint hEmissiveTex = glGetUniformLocation(shaderID, "emissiveBuffer");
 
 	glUniform1i(hPositionTex, 0);
 	glUniform1i(hNormalTex, 1);
 	glUniform1i(hAlbedoTex, 2);
 	glUniform1i(hCubemapTex, 3);
+	glUniform1i(hEmissiveTex, 4);
 
 	// Set Directional light related shader variables...
 	DirectionalLightIlluminance(shaderID);

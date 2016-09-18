@@ -1,7 +1,7 @@
 
 #pragma once
 
-#include "GL/glew.h"
+#include "glew.h"
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_inverse.hpp"
 #include <vector>

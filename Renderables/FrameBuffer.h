@@ -1,7 +1,7 @@
 
 #pragma once
 
-#include "GL\glew.h"
+#include "glew.h"
 #include "../Helpers/VertexStructures.h"
 #include "AntTweakBar.h"
 
@@ -13,6 +13,7 @@ enum FramebufferType
 	NORMAL_BUFFER,
 	ALBEDO_COLOR_BUFFER,
 	CUBEMAP_BUFFER,
+	EMISSIVE_BUFFER,
 	MAX_NUM_BUFFER
 };
 

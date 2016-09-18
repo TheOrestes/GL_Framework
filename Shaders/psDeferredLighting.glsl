@@ -7,10 +7,11 @@ in vec2 vs_outTexCoord;
 
 out vec4 outColor;
 
-uniform sampler2D positionTexture;
-uniform sampler2D normalTexture;
-uniform sampler2D albedoTexture;
-uniform sampler2D cubemapTexture;
+uniform sampler2D positionBuffer;
+uniform sampler2D normalBuffer;
+uniform sampler2D albedoBuffer;
+uniform sampler2D cubemapBuffer;
+uniform sampler2D emissiveBuffer;
 
 //---------------------------------------------------------------------------------------
 // Point Lights
@@ -63,17 +64,19 @@ vec4 BlinnBRDF(vec3 normal, vec3 half)
 void main()
 {
 	// Final contributors...
-	vec4 Emissive = vec4(0);
+	vec4 Albedo = vec4(0);
 	vec4 Ambient = vec4(0);
 	vec4 Diffuse = vec4(0);
 	vec4 Specular = vec4(0);
 	vec4 Reflection = vec4(0);
+	vec4 Emissive = vec4(0);
 
 	// Input from G-Buffers
-	vec3 positionColor = texture(positionTexture, vs_outTexCoord).rgb;
-	vec4 normalColor = texture(normalTexture, vs_outTexCoord);
-	vec4 albedoColor = texture(albedoTexture, vs_outTexCoord);
-	vec4 cubemapColor = texture(cubemapTexture, vs_outTexCoord);
+	vec3 positionColor = texture(positionBuffer, vs_outTexCoord).rgb;
+	vec4 normalColor = texture(normalBuffer, vs_outTexCoord);
+	vec4 albedoColor = texture(albedoBuffer, vs_outTexCoord);
+	vec4 cubemapColor = texture(cubemapBuffer, vs_outTexCoord);
+	vec4 emissiveColor = texture(emissiveBuffer, vs_outTexCoord);
 	float ao = albedoColor.a; 
 	float specColor = normalColor.a;
 
@@ -113,7 +116,6 @@ void main()
 	vec4 SpecularPoint = vec4(0,0,0,1);
 	vec3 halfPoint = vec3(0,0,0);
 	vec4 SpecPoint = vec4(0,0,0,1);
-	
 
 	//--- Point Light contribution 
 	for(int i = 0 ; i < numPointLights ; ++i)
@@ -139,13 +141,14 @@ void main()
 	}
 
 	// Final Color components...
-	Emissive		= vec4(albedoColor.xyz,1);//vec4(0.0, 0, 0.6, 1.0); 
+	Albedo		= vec4(albedoColor.xyz,1);//vec4(0.0, 0, 0.6, 1.0); 
 	Ambient			= vec4(vec3(ao),1);
 	Diffuse			= DiffuseDir + DiffusePoint;
 	Specular		= SpecularDir + SpecularPoint; 
 	Reflection		= cubemapColor;
+	Emissive		= emissiveColor;	// Emissive color will not contribute to final color but instead will be used for Bloom!
 	
-	outColor = Emissive * (Ambient + Diffuse/PI + Specular + specColor*Reflection); //(Ambient + specColor * Specular); //Emissive * (Ambient + Diffuse + Specular);
+	outColor = Emissive + Albedo * (Ambient + Diffuse/PI + Specular + specColor*Reflection); //(Ambient + specColor * Specular); //Emissive * (Ambient + Diffuse + Specular);
 	
 	// Gamma correction!
 	outColor = vec4(pow(outColor.xyz, vec3(1/2.2)), 1);

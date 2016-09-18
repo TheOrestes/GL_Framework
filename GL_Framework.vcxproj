@@ -98,13 +98,13 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(SolutionDir)\Dependencies\glew\include;$(SolutionDir)\Dependencies\glfw\Include;$(SolutionDir)\Dependencies\glm;$(SolutionDir)\Dependencies\assimp\include;$(SolutionDir)\Dependencies\imgui;$(SolutionDir)\Dependencies\stb;$(SolutionDir)\Dependencies\AntTweakbar\include;$(SolutionDir)\Dependencies\nfd\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\Dependencies\glew\include;$(SolutionDir)\Dependencies\glfw\Include;$(SolutionDir)\Dependencies\glm;$(SolutionDir)\Dependencies\assimp\include;$(SolutionDir)\Dependencies\stb;$(SolutionDir)\Dependencies\AntTweakbar\include;$(SolutionDir)\Dependencies\nfd\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(SolutionDir)\Dependencies\glew\lib\Debug;$(SolutionDir)\Dependencies\glfw\lib\Debug;$(SolutionDir)\Dependencies\assimp\lib\Debug;$(SolutionDir)\Dependencies\AntTweakbar\lib\Debug;$(SolutionDir)\Dependencies\nfd\lib\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)\Dependencies\glew\lib;$(SolutionDir)\Dependencies\glfw\lib;$(SolutionDir)\Dependencies\assimp\lib;$(SolutionDir)\Dependencies\AntTweakbar\lib;$(SolutionDir)\Dependencies\nfd\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>glew32d.lib;glfw3dll.lib;opengl32.lib;assimpd.lib;AntTweakBar64.lib;nfd_d.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>

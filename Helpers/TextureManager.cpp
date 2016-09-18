@@ -68,7 +68,12 @@ GLint TextureManager::LoadTextureFromFile(const std::string& path)
 
 			// Assign texture to ID
 			glBindTexture(GL_TEXTURE_2D, textureID);
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_SRGB_ALPHA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, (void*)data);
+
+			if(bpp>3)
+				glTexImage2D(GL_TEXTURE_2D, 0, GL_SRGB_ALPHA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, (void*)data);
+			else
+				glTexImage2D(GL_TEXTURE_2D, 0, GL_SRGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, (void*)data);
+
 			glGenerateMipmap(GL_TEXTURE_2D);
 			stbi_image_free(data);
 

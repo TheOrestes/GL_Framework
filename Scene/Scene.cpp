@@ -29,12 +29,12 @@ void	Scene::Init()
 {
 	StaticObjectData dataMesh;
 	dataMesh.name = "SuperiorIronMan";
-	dataMesh.path = "Data/Models/Superior_IronMan.FBX";
+	dataMesh.path = "Data/Models/imrod.FBX";
 	dataMesh.shader = "UberShader";
 	dataMesh.position = glm::vec3(0,3,0);
 	dataMesh.angle = 0.0f;
 	dataMesh.rotation = glm::vec3(0,1,0);                                        
-	dataMesh.scale = glm::vec3(1);
+	dataMesh.scale = glm::vec3(0.5);
 	dataMesh.showBBox = false;
 
 	m_pMesh = new StaticObject(dataMesh);
