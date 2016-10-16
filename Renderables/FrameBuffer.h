@@ -38,9 +38,10 @@ public:
 	~Framebuffer();
 
 	void			FramebufferSetup();
-	void			BeginRenderToFramebuffer();
-	void			EndRenderToFramebuffer();
+	void			BeginRenderGeometryPass();
+	void			EndRenderGeometryPass();
 	void			RenderDeferredLightingPass();
+	void			RenderPostProcessingPass();
 	void			RenderBloomEffect();
 	void			SetShaderVariables(int shaderID);
 
@@ -53,11 +54,7 @@ private:
 private:
 	GLuint			fbo;					// Framebuffer Object
 	GLuint			rbo;					// RenderBuffer Object
-	GLuint			tbo[MAX_NUM_BUFFER+1];	// Texture buffer Object, one for normal 
-											// post processing & one for brightness threshold
-
-	GLuint			bloomFBO[2];
-	GLuint			bloomColorBuffer[2];
+	GLuint			tbo[MAX_NUM_BUFFER+1];	// Texture buffer Objects, for deferred rendering!
 
 	GLSLShader*		m_pGenericPostFX;
 	GLSLShader*		m_pBlurPostFX;
@@ -72,7 +69,15 @@ private:
 	VertexPT		quadVertices[6]; 
 	bool	        horizontal;
 
+	// Render deferred pass to framebuffer object (Pre-Bloom pass) 
+	GLuint			fboDeferred;
+	GLuint			rboDeferred;
+	GLuint			tboDeferred[2];			// for deferred data & brightness data
+
 	// Tweakable data
 	PostFXData*		m_pFXData;
 	TwBar*			m_pFXUI;
+
+	void			GeometryPassFrameBufferSetup();
+	void			DeferredPassFrameBufferSetup();
 };

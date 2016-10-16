@@ -44,82 +44,115 @@ Framebuffer::~Framebuffer()
 	delete m_pFXUI;
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////
-void Framebuffer::FramebufferSetup()
+/////////////////////////////////////////////////////////////////////////////////////////
+void Framebuffer::GeometryPassFrameBufferSetup()
 {
 	// create actual framebuffer object & bind it. 
 	glGenFramebuffers(1, &fbo);
 	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
 
-		// create two texture buffer objects 
-		// 0. Position buffer
-		// 1. Normal buffer
-		// 2. Albedo color buffer
-		// 3. Cubemap buffer
-		// 4. Emissive buffer
-		glGenTextures(MAX_NUM_BUFFER, tbo);
-		for (int i = 0 ; i < MAX_NUM_BUFFER ; i++)
-		{
-			glBindTexture(GL_TEXTURE_2D, tbo[i]);
-
-			if( i != ALBEDO_COLOR_BUFFER )
-				glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, 1280, 800, 0, GL_RGB, GL_FLOAT, NULL);
-			else
-				glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1280, 800, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);	
-
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE); 
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-
-			// attach texture object to already bind framebuffer as color attachment
-			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, tbo[i], 0);			
-		}
-		
-		// create render buffer object
-		glGenRenderbuffers(1, &rbo);
-		glBindRenderbuffer(GL_RENDERBUFFER, rbo);
-		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, 1280, 800);
-		glBindRenderbuffer(GL_RENDERBUFFER, 0);
-
-		// attach render buffer object as depth & stencil attachment to framebuffer
-		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo);
-
-		// Tell OGL which color attachments we will use...
-		GLuint attachments[MAX_NUM_BUFFER] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3, GL_COLOR_ATTACHMENT4 };
-		glDrawBuffers(MAX_NUM_BUFFER, attachments);
-
-		// Finally, check if framebuffer is complete
-		if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-		{
-			//std::cout << FRED("Frame Buffer status error!") << std::endl;
-			return;
-		}
-
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-#if 1
-
-	// Courtesy : http://www.learnopengl.com/#!Advanced-Lighting/Bloom
-	// Ping pong framebuffer for Blurring
-	glGenFramebuffers(2, bloomFBO);
-	glGenTextures(2, bloomColorBuffer);
-
-	for (GLuint i = 0 ; i < 2 ; i++)
+	// create two texture buffer objects 
+	// 0. Position buffer
+	// 1. Normal buffer
+	// 2. Albedo color buffer
+	// 3. Cubemap buffer
+	// 4. Emissive buffer
+	glGenTextures(MAX_NUM_BUFFER, tbo);
+	for (int i = 0; i < MAX_NUM_BUFFER; i++)
 	{
-		glBindFramebuffer(GL_FRAMEBUFFER, bloomFBO[i]);
-		glBindTexture(GL_TEXTURE_2D, bloomColorBuffer[i]);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, 1280, 800, 0, GL_RGB, GL_FLOAT, NULL);
-		//glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 1280, 800, 0, GL_RGB, GL_UNSIGNED_INT, NULL);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR); 
+		glBindTexture(GL_TEXTURE_2D, tbo[i]);
+
+		if (i != ALBEDO_COLOR_BUFFER)
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, 1280, 800, 0, GL_RGB, GL_FLOAT, NULL);
+		else
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1280, 800, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE); // We clamp to the edge as the blur filter would otherwise sample repeated texture values!
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
-		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 , GL_TEXTURE_2D, 
-								bloomColorBuffer[i], 0);
+		// attach texture object to already bind framebuffer as color attachment
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, tbo[i], 0);
 	}
-#endif
+
+	// create render buffer object
+	glGenRenderbuffers(1, &rbo);
+	glBindRenderbuffer(GL_RENDERBUFFER, rbo);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, 1280, 800);
+	glBindRenderbuffer(GL_RENDERBUFFER, 0);
+
+	// attach render buffer object as depth & stencil attachment to framebuffer
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo);
+
+	// Tell OGL which color attachments we will use...
+	GLuint attachments[MAX_NUM_BUFFER] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3, GL_COLOR_ATTACHMENT4 };
+	glDrawBuffers(MAX_NUM_BUFFER, attachments);
+
+	// Finally, check if framebuffer is complete
+	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+	{
+		//std::cout << FRED("Frame Buffer status error!") << std::endl;
+		return;
+	}
+
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+/////////////////////////////////////////////////////////////////////////////////////////
+void Framebuffer::DeferredPassFrameBufferSetup()
+{
+	// create actual framebuffer object & bind it. 
+	glGenFramebuffers(1, &fboDeferred);
+	glBindFramebuffer(GL_FRAMEBUFFER, fboDeferred);
+
+	// create two texture buffer objects 
+	// 0. color buffer
+	// 1. brightness buffer
+	glGenTextures(2, tboDeferred);
+	for (int i = 0; i < 2; i++)
+	{
+		glBindTexture(GL_TEXTURE_2D, tboDeferred[i]);
+
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, 1280, 800, 0, GL_RGB, GL_FLOAT, NULL);
+	
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+		// attach texture object to already bind framebuffer as color attachment
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, tboDeferred[i], 0);
+	}
+
+	// create render buffer object
+	glGenRenderbuffers(1, &rboDeferred);
+	glBindRenderbuffer(GL_RENDERBUFFER, rboDeferred);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, 1280, 800);
+	glBindRenderbuffer(GL_RENDERBUFFER, 0);
+
+	// attach render buffer object as depth & stencil attachment to framebuffer
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rboDeferred);
+
+	// Tell OGL which color attachments we will use...
+	GLuint attachments[2] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
+	glDrawBuffers(2, attachments);
+
+	// Finally, check if framebuffer is complete
+	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+	{
+		//std::cout << FRED("Frame Buffer status error!") << std::endl;
+		return;
+	}
+
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+void Framebuffer::FramebufferSetup()
+{
+	GeometryPassFrameBufferSetup();
+	DeferredPassFrameBufferSetup();
 
 	// Load all required shaders for post processing...
 	m_pGenericPostFX = new GLSLShader("Shaders/vsFramebuffer.glsl", "Shaders/psFramebuffer.glsl");
@@ -158,7 +191,7 @@ void Framebuffer::FramebufferSetup()
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
-void Framebuffer::BeginRenderToFramebuffer()
+void Framebuffer::BeginRenderGeometryPass()
 {
 	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
 
@@ -169,7 +202,7 @@ void Framebuffer::BeginRenderToFramebuffer()
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
-void Framebuffer::EndRenderToFramebuffer()
+void Framebuffer::EndRenderGeometryPass()
 {
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
@@ -177,7 +210,10 @@ void Framebuffer::EndRenderToFramebuffer()
 //////////////////////////////////////////////////////////////////////////////////////////
 void Framebuffer::RenderDeferredLightingPass()
 {
-	glClearColor(0.01f, 0.01f, 0.01f, 1.0f);
+	glBindFramebuffer(GL_FRAMEBUFFER, fboDeferred);
+
+	//glBindFramebuffer(GL_FRAMEBUFFER, fboDeferred);
+	glClearColor(0.1f, 0.01f, 0.01f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT);
 
 	// No need of any depth testing while rendering a single scene aligned quad...
@@ -198,78 +234,53 @@ void Framebuffer::RenderDeferredLightingPass()
 	}
 	
 	glBindVertexArray(vao);
-	
 	glDrawArrays(GL_TRIANGLES, 0, 6);
-
 	glBindVertexArray(0);
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////
-void Framebuffer::BlurPass()
-{
-	horizontal = true;
-	bool first_iter = true;
-
-	m_pBlurPostFX->Use();
-
-	glBindFramebuffer(GL_FRAMEBUFFER, bloomFBO[horizontal]);
-
-	for (int i = 0 ; i<2 * m_pFXData->m_iBlurIter ; i++)
-	{
-		glUniform1i(glGetUniformLocation(m_pBlurPostFX->GetShaderID(), "horizontal"), horizontal);
-
-		if (first_iter)
-		{
-			// First iteration requires brightness texture as input as both pingpongbuffer
-			// will be empty...
-			glBindTexture(GL_TEXTURE_2D, tbo[1]);
-		}
-		else
-		{
-			// For all iterations other than first, we choose other framebuffer's color
-			// buffer for uniform blur in both horizontal & vertical direction...
-			glBindTexture(GL_TEXTURE_2D, bloomColorBuffer[!horizontal]);
-		}
-
-		// Draw Quad...
-		glBindVertexArray(vao);
-		glDrawArrays(GL_TRIANGLES, 0, 6);
-		glBindVertexArray(0);
-
-		// setup for next iteration...
-		horizontal = !horizontal;
-		if(first_iter)
-			first_iter = false;
-	}
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
+void Framebuffer::RenderPostProcessingPass()
+{
+	glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT);
+
+	// No need of any depth testing while rendering a single scene aligned quad...
+	glDisable(GL_DEPTH_TEST);
+
+	m_pGenericPostFX->Use();
+	int id = m_pGenericPostFX->GetShaderID();
+
+	GLint hScreenTex = glGetUniformLocation(id, "screenTexture");
+	GLint hBrightTex = glGetUniformLocation(id, "brightTexture");
+
+	glUniform1i(hScreenTex, 0);
+	glUniform1i(hBrightTex, 1);
+
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, tboDeferred[0]);
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, tboDeferred[1]);
+
+	glBindVertexArray(vao);
+
+	glDrawArrays(GL_TRIANGLES, 0, 6);
+
+	glBindVertexArray(0);
+
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+void Framebuffer::BlurPass()
+{
+	
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
 void Framebuffer::BlendPass()
 {
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-	m_pBloomPostFX->Use();
-
-	// Original Scene rendered to 
-	glActiveTexture(GL_TEXTURE5);
-	GLint hVar1 = glGetUniformLocation(m_pBloomPostFX->GetShaderID(), "screenTexture");
-	glUniform1i(hVar1, 0);
-	glBindTexture(GL_TEXTURE_2D, tbo[0]);
-
-	// Blurred scene rendered to texture
-	glActiveTexture(GL_TEXTURE6);
-	GLint hVar2 = glGetUniformLocation(m_pBloomPostFX->GetShaderID(), "blurTexture");
-	glUniform1i(hVar2, 1);
-	glBindTexture(GL_TEXTURE_2D, bloomColorBuffer[!horizontal]);
-
-	glUniform1i(glGetUniformLocation(m_pBloomPostFX->GetShaderID(), "bloomEnabled"), m_pFXData->m_bBloomOn);
-	glUniform1f(glGetUniformLocation(m_pGenericPostFX->GetShaderID(), "exposure"), m_pFXData->m_fExposure);
-	// Draw Quad...
-	glBindVertexArray(vao);
-	glDrawArrays(GL_TRIANGLES, 0, 6);
-	glBindVertexArray(0);
+	
 }
 
 void Framebuffer::RenderBloomEffect()
@@ -359,4 +370,6 @@ void Framebuffer::DirectionalLightIlluminance( int shaderID )
 		glUniform1f(glGetUniformLocation(shaderID, dirLightIntStr.c_str()), intensity);
 	}
 }
+
+
 

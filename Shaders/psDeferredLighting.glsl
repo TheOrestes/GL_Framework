@@ -5,7 +5,10 @@
 
 in vec2 vs_outTexCoord;
 
-out vec4 outColor;
+layout (location = 0) out vec4 screenColor;
+layout (location = 1) out vec4 brightColor;
+
+//out vec4 outColor;
 
 uniform sampler2D positionBuffer;
 uniform sampler2D normalBuffer;
@@ -148,9 +151,12 @@ void main()
 	Reflection		= cubemapColor;
 	Emissive		= emissiveColor;	// Emissive color will not contribute to final color but instead will be used for Bloom!
 	
-	outColor = Emissive + Albedo * (Ambient + Diffuse/PI + Specular + specColor*Reflection); //(Ambient + specColor * Specular); //Emissive * (Ambient + Diffuse + Specular);
+	screenColor = Emissive + Albedo * (Ambient + Diffuse/PI + Specular + specColor*Reflection); //(Ambient + specColor * Specular); //Emissive * (Ambient + Diffuse + Specular);
+	float brightness = dot(screenColor.rgb, vec3(0.2126f, 0.7152f, 0.0722f));
+	if(brightness > 1.0f)
+		brightColor = vec4(screenColor.rgb, 1.0f);
 	
 	// Gamma correction!
-	outColor = vec4(pow(outColor.xyz, vec3(1/2.2)), 1);
+	//outColor = vec4(pow(outColor.xyz, vec3(1/2.2)), 1);
 }
 

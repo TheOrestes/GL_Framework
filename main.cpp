@@ -86,14 +86,16 @@ void GameLoop(float tick)
 	glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	gFBufferPtr->BeginRenderToFramebuffer();
+	gFBufferPtr->BeginRenderGeometryPass();
 	gScene.Update(tick);
 	gScene.Render();
-	gFBufferPtr->EndRenderToFramebuffer();
+	gFBufferPtr->EndRenderGeometryPass();
 
 	gFBufferPtr->RenderDeferredLightingPass();
 
-	gFBufferPtr->RenderBloomEffect();
+	gFBufferPtr->RenderPostProcessingPass();
+
+	//gFBufferPtr->RenderBloomEffect();
 }
 
 void InitializeScene()

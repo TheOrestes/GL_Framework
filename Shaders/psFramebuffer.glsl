@@ -6,7 +6,7 @@ in vec2 vs_outTexCoord;
 out vec4 outColor;
 
 uniform sampler2D screenTexture;
-uniform sampler2D blurTexture;
+uniform sampler2D brightTexture;
 
 uniform bool bloomEnabled;
 uniform float exposure;
@@ -125,19 +125,20 @@ void main()
 	for (int i = 0; i < 9; i++)
 	{
 		pixSample[i] = vec3(texture(screenTexture, vs_outTexCoord.st + offsets[i]));
-	}*/
+	}
 
-	//outColor = EdgeDetectionFilter(pixSample);
-	//outColor = BlackWhiteFilter();
+	outColor = EdgeDetectionFilter(pixSample);
+	outColor = BlackWhiteFilter(pixSample);*/
 
 
 	vec3 hdrColor = vec3(texture(screenTexture, vs_outTexCoord));
+	vec3 brightColor = vec3(texture(brightTexture, vs_outTexCoord));
 
-	if(bloomEnabled)
+	/*if(bloomEnabled)
 	{
 		vec3 bloomColor = texture(blurTexture, vs_outTexCoord).rgb;
 		hdrColor += bloomColor;	
-	}
+	}*/
 
 	// Tone Mapping...
 	//float exposure = 1.2f;
@@ -145,7 +146,7 @@ void main()
 
 	//vec3 result = hdrColor / (1+hdrColor);
 
-	vec3 result = vec3(1.0) - exp(-hdrColor * exposure);
+	vec3 result = hdrColor + brightColor; //vec3(1.0) - exp(-hdrColor * exposure);
 
 
 

@@ -29,7 +29,7 @@ void	Scene::Init()
 {
 	StaticObjectData dataMesh;
 	dataMesh.name = "SuperiorIronMan";
-	dataMesh.path = "Data/Models/imrod.FBX";
+	dataMesh.path = "Data/Models/imrod.fbx";
 	dataMesh.shader = "UberShader";
 	dataMesh.position = glm::vec3(0,3,0);
 	dataMesh.angle = 0.0f;
