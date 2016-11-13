@@ -6,6 +6,7 @@
 #include "../ShaderEngine/GLSLShader.h"
 #include "../Camera/Camera.h"
 #include "../ObjectSystem/LightsManager.h"
+#include "../Renderables/GLSkybox.h"
 
 //////////////////////////////////////////////////////////////////////////////////////////
 Scene::Scene()
@@ -40,7 +41,7 @@ void	Scene::Init()
 	m_pMesh = new StaticObject(dataMesh);
 	m_pMesh->Init();
 
-	StaticObjectData dataSkySphere;
+	/*StaticObjectData dataSkySphere;
 	dataSkySphere.name = "HDRISphere";
 	dataSkySphere.path = "Data/Models/SkySphere.FBX";
 	dataSkySphere.shader = "Skybox";
@@ -51,7 +52,9 @@ void	Scene::Init()
 	dataSkySphere.showBBox = false;
 
 	m_pSkySphere = new StaticObject(dataSkySphere);
-	m_pSkySphere->Init();
+	m_pSkySphere->Init();*/
+
+	GLSkybox::getInstance().Init();
 
 	m_pOmni1 =  new PointLightObject(glm::vec4(5,5,0,1));
 	m_pOmni1->Init();
@@ -70,7 +73,8 @@ void	Scene::Update(float dt)
 {
 	m_pOmni1->Update(dt);
 
-	m_pSkySphere->Update(0*dt);
+	GLSkybox::getInstance().Update(dt);
+	//m_pSkySphere->Update(0*dt);
 	m_pMesh->Update(dt);
 }
 
@@ -78,10 +82,7 @@ void	Scene::Update(float dt)
 void	Scene::Render()
 {
 	m_pOmni1->Render();
-
-	glDepthFunc(GL_LEQUAL);
-	m_pSkySphere->Render();
-	glDepthFunc(GL_LESS);
+	GLSkybox::getInstance().Render();
 	m_pMesh->Render();
 }
 

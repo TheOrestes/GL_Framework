@@ -62,10 +62,10 @@ void Framebuffer::GeometryPassFrameBufferSetup()
 	{
 		glBindTexture(GL_TEXTURE_2D, tbo[i]);
 
-		if (i != ALBEDO_COLOR_BUFFER)
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, 1280, 800, 0, GL_RGB, GL_FLOAT, NULL);
-		else
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1280, 800, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+		//if (i != ALBEDO_COLOR_BUFFER)
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, 1280, 800, 0, GL_RGBA, GL_FLOAT, NULL);
+		//else
+		//	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1280, 800, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
 
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);

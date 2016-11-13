@@ -35,7 +35,7 @@ uniform sampler2D	texture_normal;
 uniform sampler2D   texture_ambient;
 uniform sampler2D	texture_emissive;	
 uniform sampler2D	texture_height;
-uniform samplerCube texture_cubeMap;   
+uniform sampler2D	texture_environment;   
 
 uniform vec3 camPosition;
 
@@ -190,7 +190,7 @@ void main()
 
 	// calculate reflection vector for environment mapping..
 	vec3 R = reflect(view, normalize(vs_outNormal));
-	vec4 reflectionColor = texture(texture_cubeMap, R);
+	vec4 reflectionColor = texture(texture_environment, R.xy);
 
 	//vec4 ambientColor = vec4(textureLod(texture_cubeMap, vs_outNormal, 7)); 
 

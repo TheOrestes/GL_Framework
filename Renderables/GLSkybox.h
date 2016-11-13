@@ -1,9 +1,12 @@
 
 #pragma once
 
+#include <vector>
 #include "../Helpers/VertexStructures.h"
 
+
 class GLSLShader;
+struct VertexPNT;
 
 class GLSkybox
 {
@@ -21,11 +24,11 @@ public:
 	void		Update(float dt);
 	void		Kill();
 
-	void		BindCubemap();
-	void		UnbindCubemap();
+	GLuint		GetEnvironmentMapID() { return tbo; }
 
 private:
 	GLSkybox();
+	void		LoadModel();
 
 	GLuint		vao;
 	GLuint		vbo;
@@ -34,8 +37,8 @@ private:
 
 	GLint		posAttrib;
 
-	VertexP		vertices[8];
-	GLuint		indices[36];
+	std::vector<VertexPNT>	m_vertices;
+	std::vector<GLuint>		m_indices;
 
 	GLint		hWorld;
 	GLint		hView;

@@ -3,38 +3,17 @@
 #include "../ShaderEngine/GLSLShader.h"
 #include "../Camera/Camera.h"
 #include "../Helpers/TextureManager.h"
+#include "../Helpers/LogManager.h"
+
+#include "assimp/Importer.hpp"
+#include "assimp/postprocess.h"
+#include "assimp/scene.h"
 
 //////////////////////////////////////////////////////////////////////////////////////////
 GLSkybox::GLSkybox()
 {
-	// initialize skybox vertices...
-	vertices[0] = VertexP(glm::vec3(-1,-1,1));
-	vertices[1] = VertexP(glm::vec3(1,-1,1));
-	vertices[2] = VertexP(glm::vec3(1,1,1));
-	vertices[3] = VertexP(glm::vec3(-1,1,1));
-	vertices[4] = VertexP(glm::vec3(-1,-1,-1));
-	vertices[5] = VertexP(glm::vec3(1,-1,-1));
-	vertices[6] = VertexP(glm::vec3(1,1,-1));
-	vertices[7] = VertexP(glm::vec3(-1,1,-1));
-
-	// initialize skybox indices...
-	indices[0] = 0;				indices[1] = 1;			indices[2] = 2;
-	indices[3] = 2;				indices[4] = 3;			indices[5] = 0;
-
-	indices[6] = 3;				indices[7] = 2;			indices[8] = 6;
-	indices[9] = 6;				indices[10] = 7;		indices[11] = 3;
-
-	indices[12] = 7;			indices[13] = 6;		indices[14] = 5;
-	indices[15] = 5;			indices[16] = 4;		indices[17] = 7;
-
-	indices[18] = 4;			indices[19] = 5;		indices[20] = 1;
-	indices[21] = 1;			indices[22] = 0;		indices[23] = 4;
-
-	indices[24] = 4;			indices[25] = 0;		indices[26] = 3;
-	indices[27] = 3;			indices[28] = 7;		indices[29] = 4;
-
-	indices[30] = 1;			indices[31] = 5;		indices[32] = 6;
-	indices[33] = 6;			indices[34] = 2;		indices[35] = 1;
+	m_vertices.clear();
+	m_indices.clear();
 
 	// set position to origin
 	vecPosition = glm::vec3(0,0,0);
@@ -47,14 +26,56 @@ GLSkybox::~GLSkybox()
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
+void GLSkybox::LoadModel()
+{
+	Assimp::Importer importer;
+
+	const aiScene* scene = importer.ReadFile("Data\\Models\\SkySphere.fbx", aiProcess_Triangulate | aiProcess_GenSmoothNormals);
+
+	if (!scene || scene->mFlags == AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
+	{
+		std::string err = importer.GetErrorString();
+		LogManager::getInstance().WriteToConsole(LOG_ERROR, "Model", err);
+		return;
+	}
+
+	// Since we are sure that we just have one mesh of sphere, we can safely take 0th index!
+	aiMesh* mesh = scene->mMeshes[0];
+	
+	// loop through each vertex
+	for (GLuint i = 0; i < mesh->mNumVertices; i++)
+	{
+		VertexPNT vertex;
+		vertex.position = glm::vec3(mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z);
+		vertex.normal = glm::vec3(mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z);
+		vertex.texcoord = glm::vec2(mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y);
+
+		m_vertices.push_back(vertex);
+	}
+
+	// loop through each face to fetch indices
+	for (GLuint j = 0; j < mesh->mNumFaces; j++)
+	{
+		aiFace face = mesh->mFaces[j];
+
+		// fetch all the indices
+		for (GLuint k = 0; k < face.mNumIndices; k++)
+		{
+			m_indices.push_back(face.mIndices[k]);
+		}
+	}
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
 void GLSkybox::Init()
 {
+	LoadModel();
+
 	// create skybox instance...
 	m_pShader = new GLSLShader("Shaders/vsSkybox.glsl", "Shaders/psSkybox.glsl");
 
-	// Load cubemap and assign id ...
-	//tbo = TextureManager::getInstannce().LoadCubemapFromFile("Data/cubemaps/Yokohama2");
-	//tbo = TextureManager::getInstannce().LoadHDRICubemapFromFile("Data/cubemaps/Fjaderholmarna");
+	// Load HDRI & assign id ...
+	tbo = TextureManager::getInstannce().LoadTextureFromFile("Data/HDRI/GCanyon_3k.hdr");
 
 	// create vao
 	glGenVertexArrays(1, &vao);
@@ -65,31 +86,27 @@ void GLSkybox::Init()
 
 		// create vbo
 		glBindBuffer(GL_ARRAY_BUFFER, vbo);
-		glBufferData(GL_ARRAY_BUFFER, 8 * sizeof(VertexP), vertices, GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, m_vertices.size() * sizeof(VertexPNT), &m_vertices[0], GL_STATIC_DRAW);
 
 		// create ibo
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, m_indices.size() * sizeof(GLuint), &m_indices[0], GL_STATIC_DRAW);
 
 		GLuint shader = m_pShader->GetShaderID();
 
-		posAttrib = glGetAttribLocation(shader, "in_Position");
-		glEnableVertexAttribArray(posAttrib);
-		glVertexAttribPointer(posAttrib, 3, GL_FLOAT, GL_FALSE, sizeof(VertexP), (void*)0);
+		// position
+		glEnableVertexAttribArray(0);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(VertexPNT), (void*)0);
+
+		// normal 
+		glEnableVertexAttribArray(1);
+		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(VertexPNT), (void*)(offsetof(VertexPNT, normal)));
+
+		// texcoord
+		glEnableVertexAttribArray(2);
+		glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(VertexPNT), (void*)(offsetof(VertexPNT, texcoord)));
 
 	glBindVertexArray(0);
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////
-void GLSkybox::BindCubemap()
-{
-	glBindTexture(GL_TEXTURE_CUBE_MAP, tbo);
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////
-void GLSkybox::UnbindCubemap()
-{
-	glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -107,27 +124,32 @@ void GLSkybox::Render()
 	GLuint shader = m_pShader->GetShaderID();
 
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_CUBE_MAP, tbo);
+	glBindTexture(GL_TEXTURE_2D, tbo);
 
 	glUniformMatrix4fv(glGetUniformLocation(shader, "matWorld"), 1, GL_FALSE, glm::value_ptr(matWorld));
 	glUniformMatrix4fv(glGetUniformLocation(shader, "matView"), 1, GL_FALSE, glm::value_ptr(matView));
 	glUniformMatrix4fv(glGetUniformLocation(shader, "matProj"), 1, GL_FALSE, glm::value_ptr(matProj));
 
 	glBindVertexArray(vao);
-		glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
-	glBindVertexArray(0);	
+	glDrawElements(GL_TRIANGLES, m_indices.size(), GL_UNSIGNED_INT, 0);
+	glBindVertexArray(0);
 
 	// Set depth function back to default
 	glDepthFunc(GL_LESS);
 
-	glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
-	
+	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
 void GLSkybox::Update( float dt )
 {
-	matWorld = glm::translate(glm::mat4(1), vecPosition);
+	static float angle2 = 0;
+	angle2 += dt;
+
+	glm::mat4 model;
+	model = glm::rotate(model, angle2, glm::vec3(0,1,0));
+
+	matWorld = model; // glm::translate(glm::mat4(1), vecPosition);
 	matView = Camera::getInstance().getViewMatrix();
 	matProj = Camera::getInstance().getProjectionMatrix();
 }
@@ -135,6 +157,9 @@ void GLSkybox::Update( float dt )
 //////////////////////////////////////////////////////////////////////////////////////////
 void GLSkybox::Kill()
 {
+	m_vertices.clear();
+	m_indices.clear();
+
 	delete m_pShader;
 
 	glDeleteBuffers(1, &vbo);

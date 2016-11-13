@@ -38,7 +38,7 @@ GLint TextureManager::LoadTextureFromFile(const std::string& path)
 			LogManager::getInstance().WriteToConsole(LOG_INFO, "TextureManager", "HDRI texture loaded");
 			// Assign texture to ID
 			glBindTexture(GL_TEXTURE_2D, textureID);
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB9_E5, width, height, 0, GL_RGB, GL_FLOAT, (void*)data);
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB32F, width, height, 0, GL_RGB, GL_FLOAT, (void*)data);
 			glGenerateMipmap(GL_TEXTURE_2D);
 			stbi_image_free(data);
 

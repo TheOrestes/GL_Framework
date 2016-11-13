@@ -98,16 +98,13 @@ void	Mesh::Render(GLSLShader* shader, const glm::mat4& world, Material* mat)
 	if (!mat || !shader)
 		return;
 
-	GLuint diffuseNr = 1;		bool bDiffuseTexture = false;
-	GLuint specularNr = 1;		bool bSpecularTexture = false;
-	GLuint normalNr = 1;		bool bNormalMapTexture = false;
-	GLuint emissNr = 1;			bool bEmissiveTexture = false;
-	GLuint heightNr = 1;		bool bHeightMapTexture = false;
-	GLuint ambientNr = 1;		bool bAmbientOccTexture = false;
-	GLuint shininessNr = 1;		bool bShininessTexture = false;
-	GLuint dispNr = 1;			bool bDisplacementTexture = false;
-	GLuint lightmapNr = 1;		bool bLightMapTexture = false;
-	GLuint reflectionNr = 1;	bool bReflectionTexture = false;
+	bool bDiffuseTexture = false;
+	bool bSpecularTexture = false;
+	bool bNormalMapTexture = false;
+	bool bEmissiveTexture = false;
+	bool bHeightMapTexture = false;
+	bool bAmbientOccTexture = false;
+	bool bEnvironmentTexture = false;
 
 	shader->Use();
 
@@ -174,6 +171,9 @@ void	Mesh::Render(GLSLShader* shader, const glm::mat4& world, Material* mat)
 		glUniform1i(glGetUniformLocation(shaderID, "texture_specular"), 5);
 	}
 
+	// Get active Skybox
+	glUniform1i(glGetUniformLocation(shaderID, "texture_environment"), 6);
+
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, mat->m_pTexAlbedo.getID());
 
@@ -191,6 +191,10 @@ void	Mesh::Render(GLSLShader* shader, const glm::mat4& world, Material* mat)
 
 	glActiveTexture(GL_TEXTURE5);
 	glBindTexture(GL_TEXTURE_2D, mat->m_pTexSpecular.getID());
+
+	// Set active skybox texture
+	glActiveTexture(GL_TEXTURE6);
+	glBindTexture(GL_TEXTURE_2D, GLSkybox::getInstance().GetEnvironmentMapID());
 
 	/*GLuint i = 0;
 	for ( ; i < m_textures.size() ; i++)
