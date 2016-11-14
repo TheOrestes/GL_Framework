@@ -159,7 +159,7 @@ struct StaticObjectData
 		position  = glm::vec3(0);
 		rotation  = glm::vec3(0,1,0);
 		angle	  = 0.0f;
-		scale     = glm::vec3(1);
+		scale     = 1.0f;
 
 		showBBox  = false;
 	}
@@ -171,7 +171,7 @@ struct StaticObjectData
 	glm::vec3	position;
 	glm::vec3	rotation;
 	float		angle;
-	glm::vec3	scale;
+	float		scale;
 
 	bool		showBBox;
 };

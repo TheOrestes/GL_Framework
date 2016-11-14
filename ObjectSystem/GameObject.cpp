@@ -12,7 +12,7 @@ GameObject::GameObject()
 	m_vecPosition = glm::vec3(0);
 	m_vecRotation = glm::vec3(0,1,0);
 	m_fAngle	  = 0.0f;
-	m_vecScale    = glm::vec3(1);
+	m_fScale	  = 1.0f;
 	m_matWorld    = glm::mat4(1);
 	m_vecCentroid = glm::vec3(0);
 }

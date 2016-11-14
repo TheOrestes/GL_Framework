@@ -30,12 +30,12 @@ void	Scene::Init()
 {
 	StaticObjectData dataMesh;
 	dataMesh.name = "SuperiorIronMan";
-	dataMesh.path = "Data/Models/imrod.fbx";
+	dataMesh.path = "Data/Models/test.fbx";
 	dataMesh.shader = "UberShader";
-	dataMesh.position = glm::vec3(0,3,0);
+	dataMesh.position = glm::vec3(0,5,0);
 	dataMesh.angle = 0.0f;
 	dataMesh.rotation = glm::vec3(0,1,0);                                        
-	dataMesh.scale = glm::vec3(0.5);
+	dataMesh.scale = 3.0f;
 	dataMesh.showBBox = false;
 
 	m_pMesh = new StaticObject(dataMesh);
@@ -62,10 +62,22 @@ void	Scene::Init()
 	m_pOmni1->SetLightIntensity(1);
 	LightsManager::getInstance()->GatherPointLights(static_cast<GameObject*>(m_pOmni1));
 
-	m_pGlobalDirectional->SetLightDirection(glm::vec3(0,-1,-1));
-	m_pGlobalDirectional->SetLightColor(glm::vec4(1,1,1,1));
-	m_pGlobalDirectional->SetLightIntensity(1);
-	LightsManager::getInstance()->GatherDirectionalLights(static_cast<GameObject*>(m_pGlobalDirectional));
+	m_pGlobalDirectional->m_vecLightDirection = glm::vec3(2,-1,-1);
+	m_pGlobalDirectional->m_vecLightColor = glm::vec4(1,1,1,1);
+	m_pGlobalDirectional->m_fIntensity = 1.0f;
+	//LightsManager::getInstance()->GatherDirectionalLights(static_cast<GameObject*>(m_pGlobalDirectional));
+
+	InitUI();
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+void	Scene::InitUI()
+{
+	m_pSceneUIBar = TwNewBar("Scene");
+
+	TwAddVarRW(m_pSceneUIBar, "DirectionalLight", TW_TYPE_DIR3F, glm::value_ptr(m_pGlobalDirectional->m_vecLightDirection), "label='Light Direction'");
+	TwAddVarRW(m_pSceneUIBar, "LightColor", TW_TYPE_COLOR4F, glm::value_ptr(m_pGlobalDirectional->m_vecLightColor), "label='Light Color'");
+	TwAddVarRW(m_pSceneUIBar, "LightIntensity", TW_TYPE_FLOAT, &(m_pGlobalDirectional->m_fIntensity),"label='Intensity' min=0 max=10 step=0.1");
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////

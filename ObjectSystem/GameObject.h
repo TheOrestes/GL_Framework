@@ -42,7 +42,7 @@ protected:
 	glm::vec3				m_vecPosition;
 	glm::vec3				m_vecRotation;
 	float					m_fAngle;
-	glm::vec3				m_vecScale;
+	float					m_fScale;
 	glm::mat4				m_matWorld;
 	glm::vec3				m_vecCentroid;
 

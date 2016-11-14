@@ -34,7 +34,7 @@ StaticObject::StaticObject(const StaticObjectData& data)
 	m_vecPosition  = data.position;
 	m_fAngle = data.angle;
 	m_vecRotation = data.rotation;
-	m_vecScale = data.scale; 
+	m_fScale = data.scale; 
 	m_bShowBBox = data.showBBox;
 }
 
@@ -76,6 +76,9 @@ void StaticObject::Init()
 	glm::mat4 model;
 	model = glm::translate(model, m_vecPosition); 
 	model = glm::rotate(model, m_fAngle, m_vecRotation);
+
+	// Support & Apply uniform scale
+	glm::vec3 m_vecScale = glm::vec3(m_fScale);
 	model = glm::scale(model, m_vecScale);	
 
 	m_matWorld = model;
@@ -103,6 +106,25 @@ void TW_CALL UpdateTexture(void* data)
 void StaticObject::InitUI()
 {
 	m_pUIBar = TwNewBar(m_strName.c_str());
+
+	// Create a new TwType to edit 3D points: a struct that contains three floats
+	struct Point
+	{
+		float x, y, z;
+	};
+
+	TwStructMember pointMembers[] = 
+	{
+		{ "X", TW_TYPE_FLOAT, offsetof(Point, x), " Min=0.1 Max=1000 Step=0.1 " },
+		{ "Y", TW_TYPE_FLOAT, offsetof(Point, y), " Min=0.1 Max=1000 Step=0.1 " },
+		{ "Z", TW_TYPE_FLOAT, offsetof(Point, z), " Min=0.1 Max=1000 Step=0.1 " } 
+	};
+	TwType pointType = TwDefineStruct("Position", pointMembers, 3, sizeof(Point), NULL, NULL);
+
+
+	TwAddVarRW(m_pUIBar, "Translation", pointType, glm::value_ptr(m_vecPosition), "label='Translation'");
+	TwAddVarRW(m_pUIBar, "Rotation", pointType, glm::value_ptr(m_vecRotation), "label='Rotation'");
+	TwAddVarRW(m_pUIBar, "Scale", TW_TYPE_FLOAT, &m_fScale, "label='Scale' min=0.1 max=1000 step=0.01");
 
 	TwAddVarRW(m_pUIBar, "AlbdeoColor", TW_TYPE_COLOR4F, glm::value_ptr(m_pMaterial->m_colAlbedo), "label='Albdeo Color'");
 	TwAddVarRW(m_pUIBar, "EmissiveColor", TW_TYPE_COLOR4F, glm::value_ptr(m_pMaterial->m_colEmissive), "label='Emissive Color'");
@@ -140,6 +162,8 @@ void StaticObject::Update( float dt )
 	glm::mat4 matTranslate;
 	model = glm::translate(model, m_vecPosition); 
 	model = glm::rotate(model, m_fAngle, m_vecRotation);
+
+	glm::vec3 m_vecScale = glm::vec3(m_fScale);
 	model = glm::scale(model, m_vecScale);	
 
 	m_matWorld = model;
@@ -174,9 +198,9 @@ void StaticObject::SetRotation( const glm::vec3& axis, float angle )
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
-void StaticObject::SetScale( const glm::vec3& sc )
+void StaticObject::SetScale( const float& sc )
 {
-	m_vecScale = sc;
+	m_fScale = sc;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////

@@ -146,7 +146,7 @@ void main()
 
 	//vec3 result = hdrColor / (1+hdrColor);
 
-	vec3 result = hdrColor + brightColor; //vec3(1.0) - exp(-hdrColor * exposure);
+	vec3 result = hdrColor; //vec3(1.0) - exp(-hdrColor * exposure);
 
 	// Gamma Correction...
     vec3 retColor = pow(result, vec3(1/2.2));

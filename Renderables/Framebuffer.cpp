@@ -356,9 +356,9 @@ void Framebuffer::DirectionalLightIlluminance( int shaderID )
 	{
 		DirectionalLightObject* light = LightsManager::getInstance()->GetDirectionalLight(i);
 
-		glm::vec3 dir	   = light->GetLightDirection();
-		glm::vec4 color    = light->GetLightColor();
-		float intensity    = light->GetLightIntensity();
+		glm::vec3 dir	   = light->m_vecLightDirection;
+		glm::vec4 color    = light->m_vecLightColor;
+		float intensity    = light->m_fIntensity;
 
 		// form a string out of point light Ids
 		std::string dirLightPosStr = "dirLights["+ std::to_string(i) + "].direction";
