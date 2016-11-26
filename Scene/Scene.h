@@ -28,11 +28,8 @@ public:
 
 private:
 
-	PointLightObject*		m_pOmni1;
-
 	StaticObject*			m_pMesh;
-	StaticObject*			m_pSkySphere;
-
+	PointLightObject*		m_pOmni1;
 	DirectionalLightObject*	m_pGlobalDirectional;
 
 	TwBar*					m_pSceneUIBar;

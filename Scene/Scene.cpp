@@ -12,8 +12,6 @@
 Scene::Scene()
 {
 	m_pOmni1 = nullptr;
-
-	m_pSkySphere = nullptr;
 	m_pMesh = nullptr; 
 
 	m_pGlobalDirectional = new DirectionalLightObject(glm::vec4(0,1,0,1));
@@ -30,29 +28,16 @@ void	Scene::Init()
 {
 	StaticObjectData dataMesh;
 	dataMesh.name = "SuperiorIronMan";
-	dataMesh.path = "Data/Models/test.fbx";
+	dataMesh.path = "Data/Models/Maestro/Maestro.fbx";
 	dataMesh.shader = "UberShader";
 	dataMesh.position = glm::vec3(0,5,0);
 	dataMesh.angle = 0.0f;
 	dataMesh.rotation = glm::vec3(0,1,0);                                        
-	dataMesh.scale = 3.0f;
+	dataMesh.scale = 1.0f;
 	dataMesh.showBBox = false;
 
 	m_pMesh = new StaticObject(dataMesh);
 	m_pMesh->Init();
-
-	/*StaticObjectData dataSkySphere;
-	dataSkySphere.name = "HDRISphere";
-	dataSkySphere.path = "Data/Models/SkySphere.FBX";
-	dataSkySphere.shader = "Skybox";
-	dataSkySphere.position = glm::vec3(0, 0, 0);
-	dataSkySphere.angle = 0.0f;
-	dataSkySphere.rotation = glm::vec3(0, 1, 0);
-	dataSkySphere.scale = glm::vec3(1);
-	dataSkySphere.showBBox = false;
-
-	m_pSkySphere = new StaticObject(dataSkySphere);
-	m_pSkySphere->Init();*/
 
 	GLSkybox::getInstance().Init();
 
@@ -65,7 +50,7 @@ void	Scene::Init()
 	m_pGlobalDirectional->m_vecLightDirection = glm::vec3(2,-1,-1);
 	m_pGlobalDirectional->m_vecLightColor = glm::vec4(1,1,1,1);
 	m_pGlobalDirectional->m_fIntensity = 1.0f;
-	//LightsManager::getInstance()->GatherDirectionalLights(static_cast<GameObject*>(m_pGlobalDirectional));
+	LightsManager::getInstance()->GatherDirectionalLights(static_cast<GameObject*>(m_pGlobalDirectional));
 
 	InitUI();
 }
@@ -84,9 +69,7 @@ void	Scene::InitUI()
 void	Scene::Update(float dt)
 {
 	m_pOmni1->Update(dt);
-
 	GLSkybox::getInstance().Update(dt);
-	//m_pSkySphere->Update(0*dt);
 	m_pMesh->Update(dt);
 }
 
@@ -153,7 +136,5 @@ void	Scene::Kill()
 {
 	delete m_pOmni1;
 	delete m_pGlobalDirectional;
-
 	delete m_pMesh;
-	delete m_pSkySphere;
 }

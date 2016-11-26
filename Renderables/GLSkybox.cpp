@@ -30,7 +30,7 @@ void GLSkybox::LoadModel()
 {
 	Assimp::Importer importer;
 
-	const aiScene* scene = importer.ReadFile("Data\\Models\\SkySphere.fbx", aiProcess_Triangulate | aiProcess_GenSmoothNormals);
+	const aiScene* scene = importer.ReadFile("Data/Models/SkySphere/SkySphere.fbx", aiProcess_Triangulate | aiProcess_GenSmoothNormals);
 
 	if (!scene || scene->mFlags == AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
 	{
@@ -75,7 +75,7 @@ void GLSkybox::Init()
 	m_pShader = new GLSLShader("Shaders/vsSkybox.glsl", "Shaders/psSkybox.glsl");
 
 	// Load HDRI & assign id ...
-	tbo = TextureManager::getInstannce().LoadTextureFromFile("Data/HDRI/GCanyon_3k.hdr");
+	tbo = TextureManager::getInstannce().LoadTextureFromFile("Data/HDRI/uffizi-large.hdr");
 
 	// create vao
 	glGenVertexArrays(1, &vao);

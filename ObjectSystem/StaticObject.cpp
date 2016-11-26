@@ -115,9 +115,9 @@ void StaticObject::InitUI()
 
 	TwStructMember pointMembers[] = 
 	{
-		{ "X", TW_TYPE_FLOAT, offsetof(Point, x), " Min=0.1 Max=1000 Step=0.1 " },
-		{ "Y", TW_TYPE_FLOAT, offsetof(Point, y), " Min=0.1 Max=1000 Step=0.1 " },
-		{ "Z", TW_TYPE_FLOAT, offsetof(Point, z), " Min=0.1 Max=1000 Step=0.1 " } 
+		{ "X", TW_TYPE_FLOAT, offsetof(Point, x), " Min=0.0 Max=1000 Step=0.1 " },
+		{ "Y", TW_TYPE_FLOAT, offsetof(Point, y), " Min=0.0 Max=1000 Step=0.1 " },
+		{ "Z", TW_TYPE_FLOAT, offsetof(Point, z), " Min=0.0 Max=1000 Step=0.1 " } 
 	};
 	TwType pointType = TwDefineStruct("Position", pointMembers, 3, sizeof(Point), NULL, NULL);
 
