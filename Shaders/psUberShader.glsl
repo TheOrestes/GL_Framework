@@ -1,7 +1,7 @@
 ﻿
 #version 400
 
-#define PI 3.1428571
+#define PI 3.141592653589793
 
 in vec2		vs_outTex;
 in vec3		vs_outNormal;
@@ -22,6 +22,8 @@ struct Material
 {
 	vec4 Albedo;
 	vec4 Emissive;
+	float Roughness;
+	float Metallic;
 };
 
 uniform Material material;
@@ -147,6 +149,15 @@ vec4 CookTorranceBRDF(vec3 normal, vec3 camLook, vec3 lightDir, vec3 half)
 	return finalSpec;
 }
 
+vec2 RadialCoords(vec3 a_coords)
+{
+    vec3 a_coords_n = normalize(a_coords);
+    float lon = atan(a_coords_n.z, a_coords_n.x);
+    float lat = acos(a_coords_n.y);
+    vec2 sphereCoords = vec2(lon, lat) * (1.0 / PI);
+    return vec2(sphereCoords.x * 0.5 + 0.5, 1 - sphereCoords.y);
+}
+
 //---------------------------------------------------------------------------------------
 void main()
 {
@@ -190,7 +201,8 @@ void main()
 
 	// calculate reflection vector for environment mapping..
 	vec3 R = reflect(view, normalize(vs_outNormal));
-	vec4 reflectionColor = texture(texture_environment, R.xy);
+	vec2 equiUV = -RadialCoords(R);
+	vec4 reflectionColor = textureLod(texture_environment, equiUV, material.Roughness * 10.0f);
 
 	//vec4 ambientColor = vec4(textureLod(texture_cubeMap, vs_outNormal, 7)); 
 

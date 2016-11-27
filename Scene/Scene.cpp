@@ -28,7 +28,7 @@ void	Scene::Init()
 {
 	StaticObjectData dataMesh;
 	dataMesh.name = "SuperiorIronMan";
-	dataMesh.path = "Data/Models/Maestro/Maestro.fbx";
+	dataMesh.path = "Data/Models/SkySphere/SkySphere.fbx";
 	dataMesh.shader = "UberShader";
 	dataMesh.position = glm::vec3(0,5,0);
 	dataMesh.angle = 0.0f;
@@ -45,7 +45,7 @@ void	Scene::Init()
 	m_pOmni1->Init();
 	m_pOmni1->SetLightPosition(glm::vec3(6,15,0));
 	m_pOmni1->SetLightIntensity(1);
-	LightsManager::getInstance()->GatherPointLights(static_cast<GameObject*>(m_pOmni1));
+	//LightsManager::getInstance()->GatherPointLights(static_cast<GameObject*>(m_pOmni1));
 
 	m_pGlobalDirectional->m_vecLightDirection = glm::vec3(2,-1,-1);
 	m_pGlobalDirectional->m_vecLightColor = glm::vec4(1,1,1,1);
@@ -68,7 +68,7 @@ void	Scene::InitUI()
 //////////////////////////////////////////////////////////////////////////////////////////
 void	Scene::Update(float dt)
 {
-	m_pOmni1->Update(dt);
+	//m_pOmni1->Update(dt);
 	GLSkybox::getInstance().Update(dt);
 	m_pMesh->Update(dt);
 }
@@ -76,7 +76,7 @@ void	Scene::Update(float dt)
 //////////////////////////////////////////////////////////////////////////////////////////
 void	Scene::Render()
 {
-	m_pOmni1->Render();
+	//m_pOmni1->Render();
 	GLSkybox::getInstance().Render();
 	m_pMesh->Render();
 }

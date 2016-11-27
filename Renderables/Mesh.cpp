@@ -72,6 +72,8 @@ void Mesh::SetMaterialProperties(int shaderID, Material* mat)
 {
 	glUniform4fv(glGetUniformLocation(shaderID, "material.Albedo"), 1, glm::value_ptr(mat->m_colAlbedo));
 	glUniform4fv(glGetUniformLocation(shaderID, "material.Emissive"), 1, glm::value_ptr(mat->m_colEmissive));
+	glUniform1fv(glGetUniformLocation(shaderID, "material.Roughness"), 1, &(mat->m_fRoughness));
+	glUniform1fv(glGetUniformLocation(shaderID, "material.Metallic"), 1, &(mat->m_fMetallic));
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
