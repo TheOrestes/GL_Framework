@@ -15,6 +15,7 @@ x64/
 *.ilk
 *.pdb
 *.opensdf
+*.db
 
 
 *.opendb
