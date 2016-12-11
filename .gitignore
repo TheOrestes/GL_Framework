@@ -16,6 +16,7 @@ x64/
 *.pdb
 *.opensdf
 *.db
+*.VC.db
 
 
 *.opendb
