@@ -162,6 +162,20 @@ struct StaticObjectData
 		scale     = 1.0f;
 
 		showBBox  = false;
+		changed   = false;
+	}
+
+	StaticObjectData(const StaticObjectData& _data)
+	{
+		name = _data.name;
+		path = _data.path;
+		shader = _data.shader;
+		position = _data.position;
+		rotation = _data.rotation;
+		angle = _data.angle;
+		scale = _data.scale;
+		showBBox = _data.showBBox;
+		changed = _data.changed;
 	}
 
 	std::string name;
@@ -174,5 +188,6 @@ struct StaticObjectData
 	float		scale;
 
 	bool		showBBox;
+	bool		changed;
 };
 

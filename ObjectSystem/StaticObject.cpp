@@ -13,9 +13,7 @@
 //////////////////////////////////////////////////////////////////////////////////////////
 StaticObject::StaticObject()
 {
-	m_strShader.clear();
-	m_strPath.clear();
-
+	m_pObjData = nullptr;
 	m_pShader = nullptr;
 	m_pModel = nullptr;
 	m_pMaterial = nullptr;
@@ -24,18 +22,15 @@ StaticObject::StaticObject()
 
 //////////////////////////////////////////////////////////////////////////////////////////
 StaticObject::StaticObject(const StaticObjectData& data)
-	:	m_strName(data.name),
-		m_strPath(data.path),
-		m_strShader(data.shader),
-		m_pShader(nullptr),
+	:	m_pShader(nullptr),
 		m_pModel(nullptr),
 		m_pBBoxCube(nullptr)
 {
+	m_pObjData = new StaticObjectData(data);
 	m_vecPosition  = data.position;
 	m_fAngle = data.angle;
 	m_vecRotation = data.rotation;
 	m_fScale = data.scale; 
-	m_bShowBBox = data.showBBox;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -49,23 +44,23 @@ void StaticObject::Init()
 {
 	std::string msg;
 	std::string vertShaderPath;
-	vertShaderPath = "Shaders/vs" + m_strShader + ".glsl";
+	vertShaderPath = "Shaders/vs" + m_pObjData->shader + ".glsl";
 
 	std::string fragShaderPath;
-	fragShaderPath = "Shaders/ps" + m_strShader + ".glsl";
+	fragShaderPath = "Shaders/ps" + m_pObjData->shader + ".glsl";
 
 	m_pShader = new GLSLShader(vertShaderPath, fragShaderPath);
 	if(m_pShader) 
 	{
-		msg = m_strShader + " Compiled & Loaded...";
+		msg = m_pObjData->shader + " Compiled & Loaded...";
 		LogManager::getInstance().WriteToConsole(LOG_INFO, "StaticObject", msg);
 	}
 
 	// initialize model
-	m_pModel = new Model(m_strPath);
+	m_pModel = new Model(m_pObjData->path);
 	if(m_pModel)
 	{
-		msg = m_strPath + " Loaded...";
+		msg = m_pObjData->path + " Loaded...";
 		LogManager::getInstance().WriteToConsole(LOG_INFO, "StaticObject", msg);
 	}
 
@@ -90,6 +85,7 @@ void StaticObject::Init()
 	InitUI();
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////
 void TW_CALL UpdateTexture(void* data)
 {
 	nfdchar_t* outPath = nullptr;
@@ -103,9 +99,23 @@ void TW_CALL UpdateTexture(void* data)
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
+void TW_CALL UpdateMesh(void* data)
+{
+	nfdchar_t* outPath = nullptr;
+	nfdresult_t result = NFD_OpenDialog("fbx,obj,md5,md3,md2,collada", nullptr, &outPath);
+
+	if (result == NFD_OKAY)
+	{
+		StaticObjectData* objData = static_cast<StaticObjectData*>(data);
+		objData->path = (std::string)outPath;
+		objData->changed = true;
+	}
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
 void StaticObject::InitUI()
 {
-	m_pUIBar = TwNewBar(m_strName.c_str());
+	m_pUIBar = TwNewBar(m_pObjData->name.c_str());
 
 	// Create a new TwType to edit 3D points: a struct that contains three floats
 	struct Point
@@ -121,10 +131,11 @@ void StaticObject::InitUI()
 	};
 	TwType pointType = TwDefineStruct("Position", pointMembers, 3, sizeof(Point), NULL, NULL);
 
-
+	TwAddButton(m_pUIBar, "RenderMesh", UpdateMesh, m_pObjData, "label='Render Mesh'");
 	TwAddVarRW(m_pUIBar, "Translation", pointType, glm::value_ptr(m_vecPosition), "label='Translation'");
 	TwAddVarRW(m_pUIBar, "Rotation", pointType, glm::value_ptr(m_vecRotation), "label='Rotation'");
 	TwAddVarRW(m_pUIBar, "Scale", TW_TYPE_FLOAT, &m_fScale, "label='Scale' min=0.1 max=1000 step=0.01");
+	TwAddVarRW(m_pUIBar, "Show Bounds", TW_TYPE_BOOLCPP, &(m_pObjData->showBBox), "label='Show Bounds'");
 
 	TwAddVarRW(m_pUIBar, "AlbdeoColor", TW_TYPE_COLOR4F, glm::value_ptr(m_pMaterial->m_colAlbedo), "label='Albdeo Color'");
 	TwAddVarRW(m_pUIBar, "EmissiveColor", TW_TYPE_COLOR4F, glm::value_ptr(m_pMaterial->m_colEmissive), "label='Emissive Color'");
@@ -144,6 +155,7 @@ void StaticObject::InitUI()
 //////////////////////////////////////////////////////////////////////////////////////////
 void StaticObject::Kill()
 {
+	delete m_pObjData;
 	delete m_pShader;
 	delete m_pModel;
 	delete m_pMaterial;
@@ -174,9 +186,22 @@ void StaticObject::Update( float dt )
 //////////////////////////////////////////////////////////////////////////////////////////
 void StaticObject::Render()
 {
+	if (m_pObjData && m_pObjData->changed)
+	{
+		delete m_pModel;
+		m_pModel = nullptr;
+
+		m_pModel = new Model(m_pObjData->path);
+		if (m_pModel)
+		{
+			LogManager::getInstance().WriteToConsole(LOG_INFO, "StaticObject", m_pObjData->path + " Loaded...");
+			m_pObjData->changed = false;
+		}
+	}
+
 	m_pModel->Render(m_pShader, m_matWorld, m_pMaterial);
 	
-	if (m_bShowBBox)
+	if (m_pObjData->showBBox)
 	{
 		m_pBBoxCube->Render(m_matWorld);
 	}
@@ -212,7 +237,7 @@ void StaticObject::SetCentroid( const glm::vec3& center )
 //////////////////////////////////////////////////////////////////////////////////////////
 void StaticObject::ShowBBox( bool flag )
 {
-	m_bShowBBox = flag;
+	m_pObjData->showBBox = flag;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////

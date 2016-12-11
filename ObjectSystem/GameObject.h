@@ -45,6 +45,4 @@ protected:
 	float					m_fScale;
 	glm::mat4				m_matWorld;
 	glm::vec3				m_vecCentroid;
-
-	bool					m_bShowBBox;
 };
