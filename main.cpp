@@ -23,59 +23,81 @@ const float gScreenHeight	=	800.0f;
 
 const float tick			=	0.016667f;
 bool  bFirstMouse			=	true;
+bool  bMouseRotate			=	false;
 float lastX					=	gScreenWidth / 2.0f;
 float lastY					=	gScreenHeight / 2.0f;
 
 //////////////////////////////////////////////////////////////////////////////////////////
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
-	if(key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
+	if (!TwEventKeyGLFW3(window, key, scancode, action, mods))
 	{
-		glfwSetWindowShouldClose(window, true);
-	}
+		if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
+		{
+			glfwSetWindowShouldClose(window, true);
+		}
 
-	if (key == GLFW_KEY_W && (action == GLFW_REPEAT || GLFW_PRESS))
-	{
-		Camera::getInstance().ProcessKeyboard(CameraMovement::FORWARD, tick);	
-	}
+		if (key == GLFW_KEY_W && (action == GLFW_REPEAT || GLFW_PRESS))
+		{
+			Camera::getInstance().ProcessKeyboard(CameraMovement::FORWARD, tick);
+		}
 
-	if (key == GLFW_KEY_S && (action == GLFW_REPEAT || GLFW_PRESS))
-	{
-		Camera::getInstance().ProcessKeyboard(CameraMovement::BACK, tick);	
-	}
+		if (key == GLFW_KEY_S && (action == GLFW_REPEAT || GLFW_PRESS))
+		{
+			Camera::getInstance().ProcessKeyboard(CameraMovement::BACK, tick);
+		}
 
-	if (key == GLFW_KEY_A && (action == GLFW_REPEAT || GLFW_PRESS))
-	{
-		Camera::getInstance().ProcessKeyboard(CameraMovement::LEFT, tick);	
-	}
+		if (key == GLFW_KEY_A && (action == GLFW_REPEAT || GLFW_PRESS))
+		{
+			Camera::getInstance().ProcessKeyboard(CameraMovement::LEFT, tick);
+		}
 
-	if (key == GLFW_KEY_D && (action == GLFW_REPEAT || GLFW_PRESS))
-	{
-		Camera::getInstance().ProcessKeyboard(CameraMovement::RIGHT, tick);	
+		if (key == GLFW_KEY_D && (action == GLFW_REPEAT || GLFW_PRESS))
+		{
+			Camera::getInstance().ProcessKeyboard(CameraMovement::RIGHT, tick);
+		}
 	}
-// 
-// 	if(key == GLFW_KEY_ENTER && action == GLFW_PRESS)
-// 	{
-// 		bEditMode = !bEditMode;
-// 	}
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
-void Mouse_Callback(GLFWwindow* window, double xPos, double yPos)
+void MouseMovement_Callback(GLFWwindow* window, double xPos, double yPos)
 {
-	if(bFirstMouse)
-	{
+	if (!TwEventCursorPosGLFW3(window, xPos, yPos))  // send event to AntTweakBar
+	{ // event has not been handled by AntTweakBar
+	  // your code here to handle the event
+	  // ...
+		if (bFirstMouse)
+		{
+			lastX = xPos;
+			lastY = yPos;
+			bFirstMouse = false;
+		}
+
+		GLfloat xoffset = xPos - lastX;
+		GLfloat yoffset = lastY - yPos;
 		lastX = xPos;
 		lastY = yPos;
-		bFirstMouse = false;
+
+		// If mouse right click is pressed then we want to rotate the scene. 
+		// Set the flag in MouseButton callback & check it here during 
+		// MouseMovement callback!
+		if(bMouseRotate)
+		{
+			Camera::getInstance().ProcessMouseMovement(xoffset, yoffset);
+		}
 	}
+}
 
-	GLfloat xoffset = xPos - lastX;
-	GLfloat yoffset = lastY - yPos; 
-	lastX = xPos;
-	lastY = yPos;
-
-	Camera::getInstance().ProcessMouseMovement(xoffset, yoffset);
+//////////////////////////////////////////////////////////////////////////////////////////
+void MouseButton_Callback(GLFWwindow* window, int button, int action, int mods)
+{
+	if (!TwEventMouseButtonGLFW3(window, button, action, mods))
+	{
+		if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS)
+			bMouseRotate = true;
+		else
+			bMouseRotate = false;
+	}
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -147,13 +169,13 @@ int main(void)
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 
 	// - Directly redirect GLFW mouse button events to AntTweakBar 
-	glfwSetMouseButtonCallback(window, (GLFWmousebuttonfun)TwEventMouseButtonGLFW3);
+	glfwSetMouseButtonCallback(window, (GLFWmousebuttonfun)MouseButton_Callback);
 	// - Directly redirect GLFW mouse position events to AntTweakBar 
-	glfwSetCursorPosCallback(window, (GLFWcursorposfun)TwEventCursorPosGLFW3);
+	glfwSetCursorPosCallback(window, (GLFWcursorposfun)MouseMovement_Callback);
 	// - Directly redirect GLFW mouse wheel events to AntTweakBar 
 	glfwSetScrollCallback(window, (GLFWscrollfun)TwEventScrollGLFW3);
 	// - Directly redirect GLFW key events to AntTweakBar 
-	glfwSetKeyCallback(window, (GLFWkeyfun)TwEventKeyGLFW3);
+	glfwSetKeyCallback(window, (GLFWkeyfun)key_callback);
 	// - Directly redirect GLFW char events to AntTweakBar 
 	glfwSetCharCallback(window, (GLFWcharfun)TwEventCharModsGLFW3);
 

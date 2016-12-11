@@ -149,7 +149,7 @@ void GLSkybox::Update( float dt )
 	glm::mat4 model;
 	model = glm::rotate(model, angle2, glm::vec3(0,1,0));
 
-	matWorld = model; // glm::translate(glm::mat4(1), vecPosition);
+	matWorld = glm::translate(glm::mat4(1), vecPosition);
 	matView = Camera::getInstance().getViewMatrix();
 	matProj = Camera::getInstance().getProjectionMatrix();
 }

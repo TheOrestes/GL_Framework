@@ -34,7 +34,7 @@ public:
 	virtual void			SetCentroid(const glm::vec3& center);
 	virtual void			ShowBBox(bool flag);
 
-			void			InitBBox(std::vector<glm::vec3> _vecVertexPositions);
+			void			CalculateBounds(std::vector<glm::vec3> _vecVertexPositions);
 			void			UpdateBBox(const glm::mat3& _matWorld);
 
 	inline void				SetPath(const std::string& path){ if(m_pObjData) m_pObjData->path = path; }

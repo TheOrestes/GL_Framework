@@ -162,6 +162,7 @@ struct StaticObjectData
 		scale     = 1.0f;
 
 		showBBox  = false;
+		ttMode	  = false;
 		changed   = false;
 	}
 
@@ -175,6 +176,7 @@ struct StaticObjectData
 		angle = _data.angle;
 		scale = _data.scale;
 		showBBox = _data.showBBox;
+		ttMode = _data.ttMode;
 		changed = _data.changed;
 	}
 
@@ -188,6 +190,7 @@ struct StaticObjectData
 	float		scale;
 
 	bool		showBBox;
+	bool		ttMode;
 	bool		changed;
 };
 

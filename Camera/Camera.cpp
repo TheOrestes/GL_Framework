@@ -10,8 +10,8 @@ Camera::Camera() :
 	m_vecWorldUp(0,1,0),
 	m_fYaw(-90.0f),
 	m_fPitch(-5.0f),
-	m_fSpeed(30.0f),
-	m_fSensitivity(0.05f),
+	m_fSpeed(45.0f),
+	m_fSensitivity(0.5f),
 	m_fZoom(45.0f)
 {
 	Update();

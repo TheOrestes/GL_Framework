@@ -79,7 +79,7 @@ void StaticObject::Init()
 	m_matWorld = model;
 
 	// initialize bounding box
-	InitBBox(m_pModel->GetVertexPositions());
+	CalculateBounds(m_pModel->GetVertexPositions());
 
 	// Initialize AntTweakBar UI
 	InitUI();
@@ -136,6 +136,7 @@ void StaticObject::InitUI()
 	TwAddVarRW(m_pUIBar, "Rotation", pointType, glm::value_ptr(m_vecRotation), "label='Rotation'");
 	TwAddVarRW(m_pUIBar, "Scale", TW_TYPE_FLOAT, &m_fScale, "label='Scale' min=0.1 max=1000 step=0.01");
 	TwAddVarRW(m_pUIBar, "Show Bounds", TW_TYPE_BOOLCPP, &(m_pObjData->showBBox), "label='Show Bounds'");
+	TwAddVarRW(m_pUIBar, "TurnTable Mode", TW_TYPE_BOOLCPP, &(m_pObjData->ttMode), "label='TurnTable Mode'");
 
 	TwAddVarRW(m_pUIBar, "AlbdeoColor", TW_TYPE_COLOR4F, glm::value_ptr(m_pMaterial->m_colAlbedo), "label='Albdeo Color'");
 	TwAddVarRW(m_pUIBar, "EmissiveColor", TW_TYPE_COLOR4F, glm::value_ptr(m_pMaterial->m_colEmissive), "label='Emissive Color'");
@@ -166,10 +167,14 @@ void StaticObject::Kill()
 void StaticObject::Update( float dt )
 {
 	static float angle = 0;
-	angle += dt;
 
-	m_fAngle = angle;
-
+	// Handle TurnTable mode...
+	if (m_pObjData->ttMode)
+	{
+		angle += dt;
+		m_fAngle = angle;
+	}
+	
 	glm::mat4 model;
 	glm::mat4 matTranslate;
 	model = glm::translate(model, m_vecPosition); 
@@ -188,13 +193,16 @@ void StaticObject::Render()
 {
 	if (m_pObjData && m_pObjData->changed)
 	{
+		// delete old model...
 		delete m_pModel;
 		m_pModel = nullptr;
 
+		// create new model & recalculate bounding box!
 		m_pModel = new Model(m_pObjData->path);
 		if (m_pModel)
 		{
 			LogManager::getInstance().WriteToConsole(LOG_INFO, "StaticObject", m_pObjData->path + " Loaded...");
+			CalculateBounds(m_pModel->GetVertexPositions());
 			m_pObjData->changed = false;
 		}
 	}
@@ -241,7 +249,7 @@ void StaticObject::ShowBBox( bool flag )
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
-void StaticObject::InitBBox( std::vector<glm::vec3> _vecVertexPositions )
+void StaticObject::CalculateBounds( std::vector<glm::vec3> _vecVertexPositions )
 {
 	float min_x, min_y, min_z, max_x, max_y, max_z;
 	glm::vec3 size, center;
