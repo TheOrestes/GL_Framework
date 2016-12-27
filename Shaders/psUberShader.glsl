@@ -208,7 +208,7 @@ void main()
 
 	// Buffer color outputs for deferred rendering
 	positionColor = vec4(vs_outPosition, 1.0f);		// world space position data
-	normalColor.rgb = vs_outNormal;					// normal data
+	normalColor.rgb = Normal.xyz;					// normal data
 	normalColor.a = Specular.r;						// specular data
 	albedoColor.rgb = Albedo.rgb;					// albedo color
 	albedoColor.a = ao;								// ambient occlusion data

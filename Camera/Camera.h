@@ -56,6 +56,8 @@ private:
 
 	// Options
 	float			m_fSpeed;
+	float			m_fMaxSpeed;
+	float			m_fAccel;
 	float			m_fSensitivity;
 	float			m_fZoom;
 

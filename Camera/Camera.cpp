@@ -10,7 +10,9 @@ Camera::Camera() :
 	m_vecWorldUp(0,1,0),
 	m_fYaw(-90.0f),
 	m_fPitch(-5.0f),
-	m_fSpeed(45.0f),
+	m_fSpeed(0.0f),
+	m_fMaxSpeed(45.0f),
+	m_fAccel(10.0f),
 	m_fSensitivity(0.5f),
 	m_fZoom(45.0f)
 {
@@ -43,31 +45,34 @@ void Camera::Update()
 //////////////////////////////////////////////////////////////////////////////////////////
 void Camera::ProcessKeyboard(CameraMovement mov, float dt)
 {
-	float speed = m_fSpeed * dt;
+	m_fSpeed = 0.0f;
+
+	if (m_fSpeed < m_fMaxSpeed) m_fSpeed += m_fAccel;
+	else if (m_fSpeed > m_fMaxSpeed) m_fSpeed = m_fMaxSpeed;
 
 	switch (mov)
 	{
 	case FORWARD:
 		{
-			m_vecPosition += m_vecDirection * speed;
+			m_vecPosition += m_vecDirection * m_fSpeed * dt;
 		}
 		break;
 
 	case BACK:
 		{
-			m_vecPosition -= m_vecDirection * speed;
+			m_vecPosition -= m_vecDirection * m_fSpeed * dt;
 		}
 		break;
 
 	case LEFT:
 		{
-			m_vecPosition -= m_vecRight * speed;
+			m_vecPosition -= m_vecRight * m_fSpeed * dt;
 		}
 		break;
 
 	case RIGHT:
 		{
-			m_vecPosition += m_vecRight * speed;
+			m_vecPosition += m_vecRight * m_fSpeed * dt;
 		}
 		break;
 	}
