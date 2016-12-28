@@ -15,6 +15,8 @@ GLSkybox::GLSkybox()
 	m_vertices.clear();
 	m_indices.clear();
 
+	m_strPathHDRI.clear();
+
 	// set position to origin
 	vecPosition = glm::vec3(0,0,0);
 }
@@ -75,7 +77,8 @@ void GLSkybox::Init()
 	m_pShader = new GLSLShader("Shaders/vsSkybox.glsl", "Shaders/psSkybox.glsl");
 
 	// Load HDRI & assign id ...
-	tbo = TextureManager::getInstannce().LoadTextureFromFile("Data/HDRI/uffizi-large.hdr");
+	m_strPathHDRI = "Data/HDRI/uffizi-large.hdr";
+	tbo = TextureManager::getInstannce().LoadTextureFromFile(m_strPathHDRI);
 
 	// create vao
 	glGenVertexArrays(1, &vao);
@@ -112,6 +115,13 @@ void GLSkybox::Init()
 //////////////////////////////////////////////////////////////////////////////////////////
 void GLSkybox::Render()
 {
+	if (m_bChanged)
+	{
+		glDeleteTextures(1, &tbo);
+		tbo = TextureManager::getInstannce().LoadTextureFromFile(m_strPathHDRI);
+		m_bChanged = false;
+	}
+
 	// So based on shader for skybox, we have made sure that third component equal to w, 
 	// perspective divide always returns 1. This way depth value is always 1 which is at
     // back of all the geometries rendered. 
@@ -162,6 +172,7 @@ void GLSkybox::Kill()
 
 	delete m_pShader;
 
+	glDeleteTextures(1, &tbo);
 	glDeleteBuffers(1, &vbo);
 	glDeleteBuffers(1, &ibo);
 	glDeleteBuffers(1, &tbo);

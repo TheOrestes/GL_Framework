@@ -7,6 +7,7 @@
 #include "../Camera/Camera.h"
 #include "../ObjectSystem/LightsManager.h"
 #include "../Renderables/GLSkybox.h"
+#include "nfd.h"
 
 //////////////////////////////////////////////////////////////////////////////////////////
 Scene::Scene()
@@ -55,6 +56,19 @@ void	Scene::Init()
 	InitUI();
 }
 
+
+//////////////////////////////////////////////////////////////////////////////////////////
+void TW_CALL UpdateHDRI(void* data)
+{
+	nfdchar_t* outPath = nullptr;
+	nfdresult_t result = NFD_OpenDialog("hdr,exr", nullptr, &outPath);
+
+	if (result == NFD_OKAY)
+	{
+		GLSkybox::getInstance().SetHDRIPath((std::string)outPath);
+	}
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////
 void	Scene::InitUI()
 {
@@ -63,6 +77,7 @@ void	Scene::InitUI()
 	TwAddVarRW(m_pSceneUIBar, "DirectionalLight", TW_TYPE_DIR3F, glm::value_ptr(m_pGlobalDirectional->m_vecLightDirection), "label='Light Direction'");
 	TwAddVarRW(m_pSceneUIBar, "LightColor", TW_TYPE_COLOR4F, glm::value_ptr(m_pGlobalDirectional->m_vecLightColor), "label='Light Color'");
 	TwAddVarRW(m_pSceneUIBar, "LightIntensity", TW_TYPE_FLOAT, &(m_pGlobalDirectional->m_fIntensity),"label='Intensity' min=0 max=10 step=0.1");
+	TwAddButton(m_pSceneUIBar, "UpdateHDRI", UpdateHDRI, nullptr, "label='Change HDRI'");
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////

@@ -116,6 +116,12 @@ void	Mesh::Render(GLSLShader* shader, const glm::mat4& world, Material* mat)
 	if (mat->m_pTexAlbedo.hasChanged())
 	{
 		bDiffuseTexture = true;
+
+		// Remove current texture ID from the graphics memory!
+		GLuint currTexID = mat->m_pTexAlbedo.getID();
+		glDeleteTextures(1, &currTexID);
+
+		// Load new texture...
 		mat->m_pTexAlbedo.setID(TextureManager::getInstannce().LoadTextureFromFile(mat->m_pTexAlbedo.getPath()));
 		mat->m_pTexAlbedo.changed = false;
 		
@@ -126,6 +132,8 @@ void	Mesh::Render(GLSLShader* shader, const glm::mat4& world, Material* mat)
 	if (mat->m_pTexEmission.hasChanged())
 	{
 		bEmissiveTexture = true;
+		GLuint currTexID = mat->m_pTexEmission.getID();
+		glDeleteTextures(1, &currTexID);
 		mat->m_pTexEmission.setID(TextureManager::getInstannce().LoadTextureFromFile(mat->m_pTexEmission.getPath()));
 		mat->m_pTexEmission.changed = false;
 
@@ -136,6 +144,8 @@ void	Mesh::Render(GLSLShader* shader, const glm::mat4& world, Material* mat)
 	if (mat->m_pTexHeight.hasChanged())
 	{
 		bHeightMapTexture = true;
+		GLuint currTexID = mat->m_pTexHeight.getID();
+		glDeleteTextures(1, &currTexID);
 		mat->m_pTexHeight.setID(TextureManager::getInstannce().LoadTextureFromFile(mat->m_pTexHeight.getPath()));
 		mat->m_pTexHeight.changed = false;
 
@@ -146,6 +156,8 @@ void	Mesh::Render(GLSLShader* shader, const glm::mat4& world, Material* mat)
 	if (mat->m_pTexNormal.hasChanged())
 	{
 		bNormalMapTexture = true;
+		GLuint currTexID = mat->m_pTexNormal.getID();
+		glDeleteTextures(1, &currTexID);
 		mat->m_pTexNormal.setID(TextureManager::getInstannce().LoadTextureFromFile(mat->m_pTexNormal.getPath()));
 		mat->m_pTexNormal.changed = false;
 
@@ -156,6 +168,8 @@ void	Mesh::Render(GLSLShader* shader, const glm::mat4& world, Material* mat)
 	if (mat->m_pTexOcclusion.hasChanged())
 	{
 		bAmbientOccTexture = true;
+		GLuint currTexID = mat->m_pTexOcclusion.getID();
+		glDeleteTextures(1, &currTexID);
 		mat->m_pTexOcclusion.setID(TextureManager::getInstannce().LoadTextureFromFile(mat->m_pTexOcclusion.getPath()));
 		mat->m_pTexOcclusion.changed = false;
 
@@ -166,6 +180,8 @@ void	Mesh::Render(GLSLShader* shader, const glm::mat4& world, Material* mat)
 	if (mat->m_pTexSpecular.hasChanged())
 	{
 		bSpecularTexture = true;
+		GLuint currTexID = mat->m_pTexSpecular.getID();
+		glDeleteTextures(1, &currTexID);
 		mat->m_pTexSpecular.setID(TextureManager::getInstannce().LoadTextureFromFile(mat->m_pTexSpecular.getPath()));
 		mat->m_pTexSpecular.changed = false;
 

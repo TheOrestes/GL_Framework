@@ -25,6 +25,7 @@ public:
 	void		Kill();
 
 	GLuint		GetEnvironmentMapID() { return tbo; }
+	void		SetHDRIPath(const std::string& str) { m_bChanged = true; m_strPathHDRI = str; }
 
 private:
 	GLSkybox();
@@ -51,4 +52,7 @@ private:
 	glm::mat4	matWorld;
 	glm::mat4	matView;
 	glm::mat4   matProj;
+
+	std::string	m_strPathHDRI;
+	bool		m_bChanged;
 };

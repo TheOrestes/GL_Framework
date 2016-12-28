@@ -29,6 +29,7 @@ public:
 private:
 
 	StaticObject*			m_pMesh;
+	StaticObject*			m_pMesh2;
 	PointLightObject*		m_pOmni1;
 	DirectionalLightObject*	m_pGlobalDirectional;
 
