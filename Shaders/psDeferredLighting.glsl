@@ -15,6 +15,7 @@ uniform sampler2D normalBuffer;
 uniform sampler2D albedoBuffer;
 uniform sampler2D cubemapBuffer;
 uniform sampler2D emissiveBuffer;
+uniform float bloomThreshold;
 
 //---------------------------------------------------------------------------------------
 // Point Lights
@@ -149,14 +150,13 @@ void main()
 	Diffuse			= DiffuseDir + DiffusePoint;
 	Specular		= SpecularDir + SpecularPoint; 
 	Reflection		= cubemapColor;
-	Emissive		= emissiveColor;	// Emissive color will not contribute to final color but instead will be used for Bloom!
+	Emissive		= emissiveColor;
 	
 	screenColor = Emissive + Albedo * (Ambient + Diffuse/PI + Specular + specColor*Reflection); //(Ambient + specColor * Specular); //Emissive * (Ambient + Diffuse + Specular);
+
+	// calculate additional brightness from overall scene...
 	float brightness = dot(screenColor.rgb, vec3(0.2126f, 0.7152f, 0.0722f));
-	if(brightness > 1.0f)
+	if(brightness > bloomThreshold)
 		brightColor = vec4(screenColor.rgb, 1.0f);
-	
-	// Gamma correction!
-	//outColor = vec4(pow(outColor.xyz, vec3(1/2.2)), 1);
 }
 

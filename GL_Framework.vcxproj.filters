@@ -168,6 +168,7 @@
     <ClInclude Include="Helpers\LogManager.h">
       <Filter>Helpers</Filter>
     </ClInclude>
+    <ClInclude Include="Globals.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\ps.glsl">

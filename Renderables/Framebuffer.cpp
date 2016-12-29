@@ -8,6 +8,7 @@
 #include "../ObjectSystem/DirectionalLightObject.h"
 #include "../Camera/Camera.h"
 #include "../Helpers/LogManager.h"
+#include "../Globals.h"
 #include <iostream>
 
 #define BLOOM_ENABLED 0
@@ -63,7 +64,7 @@ void Framebuffer::GeometryPassFrameBufferSetup()
 		glBindTexture(GL_TEXTURE_2D, tbo[i]);
 
 		//if (i != ALBEDO_COLOR_BUFFER)
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, 1280, 800, 0, GL_RGBA, GL_FLOAT, NULL);
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, gScreenWidth, gScreenHeight, 0, GL_RGBA, GL_FLOAT, NULL);
 		//else
 		//	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1280, 800, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
 
@@ -79,7 +80,7 @@ void Framebuffer::GeometryPassFrameBufferSetup()
 	// create render buffer object
 	glGenRenderbuffers(1, &rbo);
 	glBindRenderbuffer(GL_RENDERBUFFER, rbo);
-	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, 1280, 800);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, gScreenWidth, gScreenHeight);
 	glBindRenderbuffer(GL_RENDERBUFFER, 0);
 
 	// attach render buffer object as depth & stencil attachment to framebuffer
@@ -114,7 +115,7 @@ void Framebuffer::DeferredPassFrameBufferSetup()
 	{
 		glBindTexture(GL_TEXTURE_2D, tboDeferred[i]);
 
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, 1280, 800, 0, GL_RGB, GL_FLOAT, NULL);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, gScreenWidth, gScreenHeight, 0, GL_RGB, GL_FLOAT, NULL);
 	
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -128,7 +129,7 @@ void Framebuffer::DeferredPassFrameBufferSetup()
 	// create render buffer object
 	glGenRenderbuffers(1, &rboDeferred);
 	glBindRenderbuffer(GL_RENDERBUFFER, rboDeferred);
-	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, 1280, 800);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, gScreenWidth, gScreenHeight);
 	glBindRenderbuffer(GL_RENDERBUFFER, 0);
 
 	// attach render buffer object as depth & stencil attachment to framebuffer
@@ -179,14 +180,16 @@ void Framebuffer::FramebufferSetup()
 	glBindVertexArray(0);
 
 	// FX Data initialize
-	m_pFXData = new PostFXData();
+	m_pFXData = new PostFXData(false, 1.0f, 3, 1.0f, gScreenWidth, gScreenHeight);
 
 	// Initialize FX UI
 	m_pFXUI = TwNewBar("Postprocess");
-	TwAddVarRW(m_pFXUI, "Bloom", TW_TYPE_BOOL8, &(m_pFXData->m_bBloomOn), "label='Bloom Control'");
+	TwAddVarRW(m_pFXUI, "Bloom", TW_TYPE_BOOL8, &(m_pFXData->m_bBloomOn), "label='Bloom'");
+	TwAddVarRW(m_pFXUI, "Threshold", TW_TYPE_FLOAT, &(m_pFXData->m_fBloomThreshold),
+		"label='Threshold' min=0 max=2 step=0.1");
 	TwAddVarRW(m_pFXUI, "Exposure", TW_TYPE_FLOAT, &(m_pFXData->m_fExposure), 
 						"label='Exposure Control' min=0 max=10 step=0.1");
-	TwAddVarRW(m_pFXUI, "BlurIter", TW_TYPE_INT8, &(m_pFXData->m_iBlurIter), 
+	TwAddVarRW(m_pFXUI, "BlurIter", TW_TYPE_INT8, &(m_pFXData->m_iBloomSamples), 
 						"label='Blur Iteration' min=0 max=5 step=1");
 }
 
@@ -254,9 +257,17 @@ void Framebuffer::RenderPostProcessingPass()
 
 	GLint hScreenTex = glGetUniformLocation(id, "screenTexture");
 	GLint hBrightTex = glGetUniformLocation(id, "brightTexture");
+	GLint hBloomEnabled = glGetUniformLocation(id, "bloomEnabled");
+	GLint hBloomSamples = glGetUniformLocation(id, "nBloomSamples");
+	GLint hExposure = glGetUniformLocation(id, "exposure");
+	GLint hResolution = glGetUniformLocation(id, "resolution");
 
 	glUniform1i(hScreenTex, 0);
 	glUniform1i(hBrightTex, 1);
+	glUniform1i(hBloomEnabled, m_pFXData->m_bBloomOn);
+	glUniform1i(hBloomSamples, m_pFXData->m_iBloomSamples);
+	glUniform1f(hExposure, m_pFXData->m_fExposure);
+	glUniform2fv(hResolution, 1, glm::value_ptr(m_pFXData->m_vecResolution));
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, tboDeferred[0]);
@@ -304,12 +315,14 @@ void Framebuffer::SetShaderVariables( int shaderID )
 	GLint hNormalTex = glGetUniformLocation(shaderID, "normalBuffer");
 	GLint hCubemapTex = glGetUniformLocation(shaderID, "cubemapBuffer");
 	GLint hEmissiveTex = glGetUniformLocation(shaderID, "emissiveBuffer");
+	GLint hBloomThreshold = glGetUniformLocation(shaderID, "bloomThreshold");
 
 	glUniform1i(hPositionTex, 0);
 	glUniform1i(hNormalTex, 1);
 	glUniform1i(hAlbedoTex, 2);
 	glUniform1i(hCubemapTex, 3);
 	glUniform1i(hEmissiveTex, 4);
+	glUniform1f(hBloomThreshold, m_pFXData->m_fBloomThreshold);
 
 	// Set Directional light related shader variables...
 	DirectionalLightIlluminance(shaderID);

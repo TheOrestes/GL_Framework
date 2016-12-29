@@ -23,12 +23,23 @@ struct PostFXData
 	{
 		m_bBloomOn = true;
 		m_fExposure = 1.2f;
-		m_iBlurIter = 5;
+		m_iBloomSamples = 5;
 	}
 
-	bool	m_bBloomOn;
-	float	m_fExposure;
-	int		m_iBlurIter;
+	PostFXData(bool flag, float exp, int samples, float threshold, float xRes, float yRes)
+	{
+		m_bBloomOn = flag;
+		m_fExposure = exp;
+		m_iBloomSamples = samples;
+		m_fBloomThreshold = threshold;
+		m_vecResolution = glm::vec2(xRes, yRes);
+	}
+
+	bool		m_bBloomOn;
+	float		m_fExposure;
+	int			m_iBloomSamples;
+	float		m_fBloomThreshold;
+	glm::vec2	m_vecResolution;
 };
 
 class Framebuffer

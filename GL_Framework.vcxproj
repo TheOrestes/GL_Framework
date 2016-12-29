@@ -171,6 +171,7 @@ xcopy $(SolutionDir)\Shaders $(SolutionDir)$(Platform)\$(Configuration)\Shaders 
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera\Camera.h" />
+    <ClInclude Include="Globals.h" />
     <ClInclude Include="Helpers\LogManager.h" />
     <ClInclude Include="Helpers\Helper.h" />
     <ClInclude Include="Helpers\TextureManager.h" />

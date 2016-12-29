@@ -28,8 +28,8 @@ Scene::~Scene()
 void	Scene::Init()
 {
 	StaticObjectData dataMesh;
-	dataMesh.name = "SuperiorIronMan";
-	dataMesh.path = "Data/Models/SkySphere/SkySphere.fbx";
+	dataMesh.name = "AngelStatue";
+	dataMesh.path = "Data/Models/angelStatue/angelStatue.fbx";
 	dataMesh.shader = "UberShader";
 	dataMesh.position = glm::vec3(0,5,0);
 	dataMesh.angle = 0.0f;

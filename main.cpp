@@ -10,16 +10,12 @@
 #include "UI/UIManager.h"
 #include "Helpers/LogManager.h"
 #include "AntTweakBar.h"
+#include "Globals.h"
 
 //////////////////////////////////////////////////////////////////////////////////////////
 GLFWwindow* window;
 Scene		gScene;
 Framebuffer* gFBufferPtr;  
- 
-//GLCube		cube;
-
-const float gScreenWidth	=	1280.0f;
-const float gScreenHeight	=	800.0f;
 
 const float tick			=	0.016667f;
 bool  bFirstMouse			=	true;

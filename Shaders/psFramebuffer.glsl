@@ -7,9 +7,10 @@ out vec4 outColor;
 
 uniform sampler2D screenTexture;
 uniform sampler2D brightTexture;
-
-uniform bool bloomEnabled;
+uniform int bloomEnabled;
 uniform float exposure;
+uniform int nBloomSamples;
+uniform vec2 resolution;
 
 const float offset = 1.0f/3000.0f;
 const vec2 offsets[9] = vec2[] (
@@ -118,6 +119,35 @@ vec4 EmbossFilter(vec3 inSample[9])
 	return vec4(color,1);
 }
 
+vec3 BloomBlur()
+{
+	float weight[5] = float[] (0.2270270270, 0.1945945946, 0.1216216216, 0.0540540541, 0.0162162162);
+
+	vec2 tex_offset = vec2(1.0 / resolution.x, 1.0 / resolution.y);
+	vec3 result = texture(brightTexture, vs_outTexCoord).rgb;
+	result *= weight[0];
+
+	int j,k = 0;
+
+	for (int i = 1; i < nBloomSamples*2; i++)
+	{
+		if(i%2 == 0)
+		{
+			result += texture(brightTexture, vs_outTexCoord + vec2(tex_offset.x * j, 0)).rgb * weight[j];
+			result += texture(brightTexture, vs_outTexCoord - vec2(tex_offset.x * j, 0)).rgb * weight[j];
+			j++;
+		}
+		else
+		{
+			result += texture(brightTexture, vs_outTexCoord + vec2(0, tex_offset.y * k)).rgb * weight[k];
+			result += texture(brightTexture, vs_outTexCoord - vec2(0, tex_offset.y * k)).rgb * weight[k];
+			k++;
+		}
+	}
+
+	return result;
+}
+
 void main()
 {
 	// Sample current pixel with the offset from current location
@@ -129,28 +159,21 @@ void main()
 
 	outColor = EdgeDetectionFilter(pixSample);
 	outColor = BlackWhiteFilter(pixSample);*/
-
-
 	vec3 hdrColor = vec3(texture(screenTexture, vs_outTexCoord));
-	vec3 brightColor = vec3(texture(brightTexture, vs_outTexCoord));
 
-	/*if(bloomEnabled)
+	if(bloomEnabled > 0)
 	{
-		vec3 bloomColor = texture(blurTexture, vs_outTexCoord).rgb;
+		vec3 bloomColor = BloomBlur();
 		hdrColor += bloomColor;	
-	}*/
+	}
 
 	// Tone Mapping...
 	//float exposure = 1.2f;
-	//hdrColor *= exposure;
+	hdrColor *= exposure;
 
-	//vec3 result = hdrColor / (1+hdrColor);
-
-	vec3 result = hdrColor; //vec3(1.0) - exp(-hdrColor * exposure);
+	vec3 result = hdrColor; 
 
 	// Gamma Correction...
     vec3 retColor = pow(result, vec3(1/2.2));
     outColor = vec4(retColor,1);
-
-	//outColor = BlackWhiteFilter(outColor);
 }
