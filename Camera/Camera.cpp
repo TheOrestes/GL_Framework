@@ -117,6 +117,6 @@ glm::mat4x4 Camera::getViewMatrix()
 //////////////////////////////////////////////////////////////////////////////////////////
 glm::mat4x4 Camera::getProjectionMatrix()
 {
-	return glm::perspective(m_fZoom, 1.6f, 0.1f, 1000.0f);
+	return glm::perspective(m_fZoom, 1.77f, 0.1f, 1000.0f);
 }
 

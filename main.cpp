@@ -110,7 +110,7 @@ void GameLoop(float tick)
 	gFBufferPtr->EndRenderGeometryPass();
 
 	gFBufferPtr->RenderDeferredLightingPass();
-
+	gFBufferPtr->RenderBloomEffectPass();
 	gFBufferPtr->RenderPostProcessingPass();
 
 	//gFBufferPtr->RenderBloomEffect();
@@ -141,8 +141,8 @@ int main(void)
 	}
 
 	/// Set OpenGL context version & profile version
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, true);	
 

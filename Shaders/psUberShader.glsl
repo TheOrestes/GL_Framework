@@ -53,35 +53,11 @@ uniform bool bLightMapTexture;
 uniform bool bReflectionTexture;
 
 //---------------------------------------------------------------------------------------
-// Phong Specular
-//---------------------------------------------------------------------------------------
-vec4 PhongBRDF(vec3 camLook, vec3 reflection)
-{
-	float VdotR = max(dot(camLook, reflection), 0);
-	float specular = pow(VdotR, 32);
-	
-	return vec4(specular, specular, specular, 1.0f);
-}
-
-//---------------------------------------------------------------------------------------
-// Blinn Specular
-//---------------------------------------------------------------------------------------
-vec4 BlinnBRDF(vec3 normal, vec3 half)
-{
-	float NdotH = max(dot(normal, half), 0);
-	//float specular = pow(NdotH, 1/(1-material.Roughness.x));
-
-	float specular = pow(NdotH, 32);
-	
-	return vec4(specular, specular, specular, 1.0f);
-}
-
-//---------------------------------------------------------------------------------------
 // Cook Torrance Specular
 //---------------------------------------------------------------------------------------
 vec4 CookTorranceBRDF(vec3 normal, vec3 camLook, vec3 lightDir, vec3 half)
 {
-	float roughness = 0.5f;// material.Roughness.x;
+	float roughness = material.Roughness;
 
 	float NdotL = clamp(dot(normal, lightDir), 0, 1);
 	float NdotH = clamp(dot(normal, half), 0, 1);
@@ -203,6 +179,7 @@ void main()
 	vec3 R = reflect(view, normalize(vs_outNormal));
 	vec2 equiUV = -RadialCoords(R);
 	vec4 reflectionColor = textureLod(texture_environment, equiUV, material.Roughness * 10.0f);
+	reflectionColor.a = material.Roughness;
 
 	//vec4 ambientColor = vec4(textureLod(texture_cubeMap, vs_outNormal, 7)); 
 
@@ -212,7 +189,8 @@ void main()
 	normalColor.a = Specular.r;						// specular data
 	albedoColor.rgb = Albedo.rgb;					// albedo color
 	albedoColor.a = ao;								// ambient occlusion data
-	cubemapColor = reflectionColor;					// reflection data
+	cubemapColor.rgb = reflectionColor.rgb;			// reflection data
+	cubemapColor.a = reflectionColor.a;				// roughness data
 	emissiveColor = Emissive;						// Emissive color
 
 

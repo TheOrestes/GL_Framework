@@ -93,7 +93,7 @@ void Framebuffer::GeometryPassFrameBufferSetup()
 	// Finally, check if framebuffer is complete
 	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
 	{
-		//std::cout << FRED("Frame Buffer status error!") << std::endl;
+		LogManager::getInstance().WriteToConsole(LOG_ERROR, "FrameBuffer", "FrameBuffer Status Error!");
 		return;
 	}
 
@@ -115,7 +115,7 @@ void Framebuffer::DeferredPassFrameBufferSetup()
 	{
 		glBindTexture(GL_TEXTURE_2D, tboDeferred[i]);
 
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, gScreenWidth, gScreenHeight, 0, GL_RGB, GL_FLOAT, NULL);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, gScreenWidth, gScreenHeight, 0, GL_RGB, GL_FLOAT, NULL);
 	
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -142,8 +142,37 @@ void Framebuffer::DeferredPassFrameBufferSetup()
 	// Finally, check if framebuffer is complete
 	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
 	{
-		//std::cout << FRED("Frame Buffer status error!") << std::endl;
+		LogManager::getInstance().WriteToConsole(LOG_ERROR, "FrameBuffer", "FrameBuffer Status Error!");
 		return;
+	}
+
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////
+void Framebuffer::BloomPassFrameBufferSetup()
+{
+	// Ping pong framebuffer for blurring
+	glGenFramebuffers(2, fboPingPong);
+	glGenTextures(2, tboPingPong);
+
+	for (GLuint i = 0; i < 2; i++)
+	{
+		glBindFramebuffer(GL_FRAMEBUFFER, fboPingPong[i]);
+		glBindTexture(GL_TEXTURE_2D, tboPingPong[i]);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, gScreenWidth, gScreenHeight, 0, GL_RGB, GL_FLOAT, NULL);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE); // We clamp to the edge as the blur filter would otherwise sample repeated texture values!
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, tboPingPong[i], 0);
+
+		// Also check if framebuffers are complete (no need for depth buffer)
+		if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+		{
+			LogManager::getInstance().WriteToConsole(LOG_ERROR, "FrameBuffer", "FrameBuffer Status Error!");
+			return;
+		}
 	}
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -154,6 +183,7 @@ void Framebuffer::FramebufferSetup()
 {
 	GeometryPassFrameBufferSetup();
 	DeferredPassFrameBufferSetup();
+	BloomPassFrameBufferSetup();
 
 	// Load all required shaders for post processing...
 	m_pGenericPostFX = new GLSLShader("Shaders/vsFramebuffer.glsl", "Shaders/psFramebuffer.glsl");
@@ -180,7 +210,7 @@ void Framebuffer::FramebufferSetup()
 	glBindVertexArray(0);
 
 	// FX Data initialize
-	m_pFXData = new PostFXData(false, 1.0f, 3, 1.0f, gScreenWidth, gScreenHeight);
+	m_pFXData = new PostFXData(false, 1.0f, 10, 1.0f, gScreenWidth, gScreenHeight);
 
 	// Initialize FX UI
 	m_pFXUI = TwNewBar("Postprocess");
@@ -190,7 +220,7 @@ void Framebuffer::FramebufferSetup()
 	TwAddVarRW(m_pFXUI, "Exposure", TW_TYPE_FLOAT, &(m_pFXData->m_fExposure), 
 						"label='Exposure Control' min=0 max=10 step=0.1");
 	TwAddVarRW(m_pFXUI, "BlurIter", TW_TYPE_INT8, &(m_pFXData->m_iBloomSamples), 
-						"label='Blur Iteration' min=0 max=5 step=1");
+						"label='Blur Iteration' min=0 max=10 step=1");
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -255,53 +285,75 @@ void Framebuffer::RenderPostProcessingPass()
 	m_pGenericPostFX->Use();
 	int id = m_pGenericPostFX->GetShaderID();
 
+	GLint hExposure = glGetUniformLocation(id, "exposure");
+	GLint hScreenTexture = glGetUniformLocation(id, "screenTexture");
+		
+	glUniform1f(hExposure, m_pFXData->m_fExposure);
+	glUniform1i(hScreenTexture, 0);
+
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, tboPingPong[0]);	
+
+	glBindVertexArray(vao);
+	glDrawArrays(GL_TRIANGLES, 0, 6);
+	glBindVertexArray(0);
+}
+
+void Framebuffer::RenderBloomEffectPass()
+{
+	glClearColor(0.1f, 0.01f, 0.01f, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT);
+
+	// No need of any depth testing while rendering a single scene aligned quad...
+	glDisable(GL_DEPTH_TEST);
+
+	bool bHorizontal = true;
+	bool bFirstIter = true;
+
+	m_pBlurPostFX->Use();
+	int id = m_pBlurPostFX->GetShaderID();
+
 	GLint hScreenTex = glGetUniformLocation(id, "screenTexture");
 	GLint hBrightTex = glGetUniformLocation(id, "brightTexture");
-	GLint hBloomEnabled = glGetUniformLocation(id, "bloomEnabled");
-	GLint hBloomSamples = glGetUniformLocation(id, "nBloomSamples");
-	GLint hExposure = glGetUniformLocation(id, "exposure");
-	GLint hResolution = glGetUniformLocation(id, "resolution");
+	GLint hDirection = glGetUniformLocation(id, "horizontal");
+	GLint hDoBloom = glGetUniformLocation(id, "doBloom");
 
 	glUniform1i(hScreenTex, 0);
 	glUniform1i(hBrightTex, 1);
-	glUniform1i(hBloomEnabled, m_pFXData->m_bBloomOn);
-	glUniform1i(hBloomSamples, m_pFXData->m_iBloomSamples);
-	glUniform1f(hExposure, m_pFXData->m_fExposure);
-	glUniform2fv(hResolution, 1, glm::value_ptr(m_pFXData->m_vecResolution));
+	glUniform1i(hDoBloom, m_pFXData->m_bBloomOn);
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, tboDeferred[0]);
-	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_2D, tboDeferred[1]);
 
-	glBindVertexArray(vao);
-
-	glDrawArrays(GL_TRIANGLES, 0, 6);
-
-	glBindVertexArray(0);
-
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////
-void Framebuffer::BlurPass()
-{
-	
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////
-void Framebuffer::BlendPass()
-{
-	
-}
-
-void Framebuffer::RenderBloomEffect()
-{
-	// Bloom controlled by UI?
-	if(m_pFXData->m_bBloomOn)
+	for (int i = 0; i < m_pFXData->m_iBloomSamples; i++)
 	{
-		BlurPass();
-		BlendPass();
+		glBindFramebuffer(GL_FRAMEBUFFER, fboPingPong[bHorizontal]);
+
+		glUniform1i(hDirection, bHorizontal);
+
+		if (bFirstIter)
+		{
+			glActiveTexture(GL_TEXTURE1);
+			glBindTexture(GL_TEXTURE_2D, tboDeferred[1]);		// brightness pass texture
+		}
+		else
+		{
+			glActiveTexture(GL_TEXTURE2);
+			glBindTexture(GL_TEXTURE_2D, tboPingPong[!bHorizontal]);
+		}
+
+		// Draw QUAD
+		glBindVertexArray(vao);
+		glDrawArrays(GL_TRIANGLES, 0, 6);
+		glBindVertexArray(0);
+
+		// TOGGLE!
+		bHorizontal = !bHorizontal;
+		if (bFirstIter)
+			bFirstIter = false;
 	}
+
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 //////////////////////////////////////////////////////////////////////////

@@ -53,7 +53,7 @@ public:
 	void			EndRenderGeometryPass();
 	void			RenderDeferredLightingPass();
 	void			RenderPostProcessingPass();
-	void			RenderBloomEffect();
+	void			RenderBloomEffectPass();
 	void			SetShaderVariables(int shaderID);
 
 private:
@@ -65,7 +65,7 @@ private:
 private:
 	GLuint			fbo;					// Framebuffer Object
 	GLuint			rbo;					// RenderBuffer Object
-	GLuint			tbo[MAX_NUM_BUFFER+1];	// Texture buffer Objects, for deferred rendering!
+	GLuint			tbo[MAX_NUM_BUFFER];	// Texture buffer Objects, for deferred rendering!
 
 	GLSLShader*		m_pGenericPostFX;
 	GLSLShader*		m_pBlurPostFX;
@@ -85,10 +85,15 @@ private:
 	GLuint			rboDeferred;
 	GLuint			tboDeferred[2];			// for deferred data & brightness data
 
+	// Bloom Pass
+	GLuint			fboPingPong[2];
+	GLuint			tboPingPong[2];			
+
 	// Tweakable data
 	PostFXData*		m_pFXData;
 	TwBar*			m_pFXUI;
 
 	void			GeometryPassFrameBufferSetup();
 	void			DeferredPassFrameBufferSetup();
+	void			BloomPassFrameBufferSetup();
 };

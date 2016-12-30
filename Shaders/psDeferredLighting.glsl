@@ -52,12 +52,12 @@ uniform vec3 camPosition;
 //---------------------------------------------------------------------------------------
 // Blinn Specular
 //---------------------------------------------------------------------------------------
-vec4 BlinnBRDF(vec3 normal, vec3 half)
+vec4 BlinnBRDF(vec3 normal, vec3 half, float roughness)
 {
 	float NdotH = max(dot(normal, half), 0);
-	//float specular = pow(NdotH, 1/(1-material.Roughness.x));
+	float specular = pow(NdotH, 1/roughness);
 
-	float specular = pow(NdotH, 16);
+	//float specular = pow(NdotH, 64);
 	
 	return vec4(specular, specular, specular, 1.0f);
 }
@@ -104,7 +104,7 @@ void main()
 		// specular
 		halfDir = normalize(lightDir + view);
 			
-		SpecDir = BlinnBRDF(normalColor.xyz, halfDir) * NdotLDir;
+		SpecDir = BlinnBRDF(normalColor.xyz, halfDir, cubemapColor.w) * NdotLDir;
 
 		// accumulate...
 		DiffuseDir += dirLights[i].color * NdotLDir * dirLights[i].intensity;
@@ -137,7 +137,7 @@ void main()
 		// specular
 		halfPoint = normalize(-LightDir + view);
 
-		SpecPoint = BlinnBRDF(normalColor.xyz, halfPoint) * NdotLPoint;
+		SpecPoint = BlinnBRDF(normalColor.xyz, halfPoint, cubemapColor.w) * NdotLPoint;
 
 		// accumulate...
 		DiffusePoint += pointLights[i].color * atten * NdotLPoint * pointLights[i].intensity;

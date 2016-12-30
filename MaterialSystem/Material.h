@@ -50,7 +50,7 @@ struct Material
 	// default constructor
 	Material()
 	{
-		m_colAlbedo = glm::vec4(0.8,0.8,0.8,1.0);
+		m_colAlbedo = glm::vec4(1);
 		m_colEmissive = glm::vec4(0, 0, 0, 1);
 		m_fMetallic = 0.0f;
 		m_fRoughness = 0.5f;
