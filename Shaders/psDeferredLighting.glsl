@@ -28,7 +28,7 @@ struct PointLight
 	float radius;
 	float intensity;
 	vec3 position;
-	vec4 color;
+	vec3 color;
 };
 
 uniform PointLight pointLights[MAX_POINT_LIGHTS];
@@ -43,7 +43,7 @@ struct DirectionalLight
 {
 	float intensity;
 	vec3 direction;
-	vec4 color;
+	vec3 color;
 };
 
 uniform DirectionalLight dirLights[MAX_DIR_LIGHTS];
@@ -63,6 +63,41 @@ vec4 BlinnBRDF(vec3 normal, vec3 half, float roughness)
 }
 
 //---------------------------------------------------------------------------------------
+// Cook Torrance Specular
+//---------------------------------------------------------------------------------------
+float D_GGX_TR(vec3 N, vec3 H, float r_sq)
+{
+	float NdotH = clamp(dot(N, H), 0, 1);
+	float NdotH_sq = NdotH * NdotH;
+
+	float denom = ((NdotH_sq) * (r_sq-1) + 1);
+	denom = denom * denom * PI;
+
+	return (r_sq / denom);
+}
+
+float GeometrySchlickGGX(float NdotV, float k)
+{
+	return (NdotV /  (NdotV)*(1-k) + k);
+}
+
+float GeometrySmith(vec3 N, vec3 V, vec3 L, float k)
+{
+	float NdotV = clamp(dot(N, V), 0, 1);
+	float NdotL = clamp(dot(N, L), 0, 1);
+	float ggx1 = GeometrySchlickGGX(NdotV, k);
+	float ggx2 = GeometrySchlickGGX(NdotL, k);
+
+	return ggx1*ggx2;
+}
+
+vec3 fresnelSchlick(float cosTheta, vec3 F0, float roughness)
+{
+	//return F0 + (1.0 - F0) * pow(1.0 - cosTheta, 5.0);
+	return F0 + (max(vec3(1.0 - roughness), F0) - F0) * pow(1.0 - cosTheta, 5.0);
+}
+
+//---------------------------------------------------------------------------------------
 // Main Function
 //---------------------------------------------------------------------------------------
 void main()
@@ -70,8 +105,6 @@ void main()
 	// Final contributors...
 	vec4 Albedo = vec4(0);
 	vec4 Ambient = vec4(0);
-	vec4 Diffuse = vec4(0);
-	vec4 Specular = vec4(0);
 	vec4 Reflection = vec4(0);
 	vec4 Emissive = vec4(0);
 
@@ -84,75 +117,85 @@ void main()
 	float ao = albedoColor.a; 
 	float specColor = normalColor.a;
 
-	// View vector
-	vec3 view = normalize(camPosition - positionColor);
+	vec3 N = normalize(normalColor.xyz);
+	vec3 V = normalize(camPosition - positionColor);
+
+	float roughness = cubemapColor.a;
+	float metallic = emissiveColor.a;
+	float r_sq = roughness * roughness;
+
+	float NdotV = clamp(dot(N, V), 0, 1);
+
+	// Fresnel 
+	vec3 F0 = vec3(0.03, 0.03, 0.03);
+	F0 = mix(F0, albedoColor.rgb, metallic);
+	vec3 F = fresnelSchlick(NdotV, F0, roughness);
+	vec3 Ks = F;
+	vec3 Kd = vec3(1.0) - Ks;
+	Kd *= 1.0 - metallic;
 
 	// ------------------------ Directional Illuminance -------------------
-	vec4 DiffuseDir = vec4(0,0,0,1);
-	float NdotLDir = 0.0f;
-	vec4 SpecularDir = vec4(0,0,0,1);
-	vec3 halfDir = vec3(0,0,0);
-	vec4 SpecDir = vec4(0,0,0,1);
+	vec3 LoDir = vec3(0);
 
 	for(int i = 0 ; i < numDirLights ; ++i)
 	{
 		vec3 lightDir = normalize(-dirLights[i].direction);
+		vec3 radianceDir = dirLights[i].color * dirLights[i].intensity;
+		vec3 halfDir = normalize(lightDir + V);
 
 		// diffuse
-		NdotLDir = max(dot(normalColor.xyz, lightDir), 0);
+		float NdotLDir = max(dot(N, lightDir), 0);
 
-		// specular
-		halfDir = normalize(lightDir + view);
-			
-		SpecDir = BlinnBRDF(normalColor.xyz, halfDir, cubemapColor.w) * NdotLDir;
+		// cook torrance brdf
+		float D = D_GGX_TR(N, halfDir, r_sq);
+		float G = GeometrySmith(N, V, lightDir, roughness);
+		vec3 nominator = D * G * F;
+		float denominator = 4 * NdotV * NdotLDir + 0.001;
+		vec3 brdfDir = nominator / denominator;		
 
-		// accumulate...
-		DiffuseDir += dirLights[i].color * NdotLDir * dirLights[i].intensity;
-		SpecularDir += dirLights[i].color * SpecDir * dirLights[i].intensity;
+		LoDir += (Kd * albedoColor.rgb / PI + brdfDir) * radianceDir * NdotLDir;
 	}
 
 	// ------------------------ Point Light Illuminance ------------------- 
-	// Diffuse & Specular accumulators for Point lights
-	vec4 DiffusePoint = vec4(0,0,0,1);
-	vec3 LightDir = vec3(0,0,0);
-	float NdotLPoint = 0.0f;
-	float atten = 0.0f;
-	vec4 SpecularPoint = vec4(0,0,0,1);
-	vec3 halfPoint = vec3(0,0,0);
-	vec4 SpecPoint = vec4(0,0,0,1);
+	vec3 LoPoint = vec3(0);
 
-	//--- Point Light contribution 
 	for(int i = 0 ; i < numPointLights ; ++i)
 	{
-		LightDir = normalize(positionColor - pointLights[i].position);
-		float dist = length(LightDir);
-		float r = pointLights[i].radius;
+		vec3 direction = normalize(positionColor - pointLights[i].position);
+		vec3 halfPoint = normalize(direction + V);
+		float dist = length(direction);
+		float atten = 1.0 / (dist*dist);
+		vec3 radiancePoint = pointLights[i].color * pointLights[i].intensity * atten;
 
-		// ref : https://imdoingitwrong.wordpress.com/2011/01/31/light-attenuation/
-		atten = 1 / dist; //(1 + ((2/r)*dist) + ((1/r*r)*(dist*dist)));
-		
 		// diffuse
-		NdotLPoint = max(dot(normalColor.xyz, -LightDir), 0);
+		float NdotLPoint = max(dot(normalColor.xyz, direction), 0);
+		
+		// cook torrance brdf
+		float D = D_GGX_TR(N, halfPoint, r_sq);
+		float G = GeometrySmith(N, V, direction, roughness);
+		vec3 nominator = D * G * F;
+		float denominator = 4 * NdotV * NdotLPoint + 0.001;
+		vec3 brdfPoint = nominator / denominator;	
 
-		// specular
-		halfPoint = normalize(-LightDir + view);
-
-		SpecPoint = BlinnBRDF(normalColor.xyz, halfPoint, cubemapColor.w) * NdotLPoint;
-
-		// accumulate...
-		DiffusePoint += pointLights[i].color * atten * NdotLPoint * pointLights[i].intensity;
-		SpecularPoint += pointLights[i].color * atten * SpecPoint * pointLights[i].intensity;
+		LoPoint += (Kd * albedoColor.rgb / PI + brdfPoint) * radiancePoint * NdotLPoint;
 	}
 
+	vec3 Lo = LoDir + LoPoint;
+
 	// Final Color components...
-	Albedo		= vec4(albedoColor.xyz,1);//vec4(0.0, 0, 0.6, 1.0); 
-	Ambient			= vec4(vec3(ao),1);
-	Diffuse			= DiffuseDir + DiffusePoint;
-	Specular		= SpecularDir + SpecularPoint; 
+	Albedo			= albedoColor;//vec4(0.0, 0, 0.6, 1.0); 
+
+	if(ao > 0)
+		Ambient			= Albedo * vec4(vec3(ao),1);
+	else
+		Ambient			= Albedo;
+
+	//vec4 Color = Ambient + vec4(Lo,1);
+
 	Reflection		= cubemapColor;
 	Emissive		= emissiveColor;
 	
-	screenColor = Emissive + Albedo * (Ambient + Diffuse/PI + Specular + specColor*Reflection); //(Ambient + specColor * Specular); //Emissive * (Ambient + Diffuse + Specular);
+	screenColor = Ambient * (vec4(LoDir,1) + vec4(LoPoint,1)); //Emissive + Ambient;// * (vec4(LoDir,1) + vec4(LoPoint,1));
 
 	// calculate additional brightness from overall scene...
 	float brightness = dot(screenColor.rgb, vec3(0.2126f, 0.7152f, 0.0722f));

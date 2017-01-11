@@ -16,6 +16,6 @@ public:
 	virtual ~DirectionalLightObject();
 
 	glm::vec3			m_vecLightDirection;
-	glm::vec4			m_vecLightColor;
+	glm::vec3			m_vecLightColor;
 	float				m_fIntensity;
 };

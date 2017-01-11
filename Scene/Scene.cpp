@@ -28,13 +28,13 @@ Scene::~Scene()
 void	Scene::Init()
 {
 	StaticObjectData dataMesh;
-	dataMesh.name = "AngelStatue";
-	dataMesh.path = "Data/Models/angelStatue/angelStatue.fbx";
+	dataMesh.name = "SmoothSphere";
+	dataMesh.path = "Data/Models/SmoothSphere/SmoothSphere.fbx";
 	dataMesh.shader = "UberShader";
 	dataMesh.position = glm::vec3(0,5,0);
 	dataMesh.angle = 0.0f;
 	dataMesh.rotation = glm::vec3(0,1,0);                                        
-	dataMesh.scale = 1.0f;
+	dataMesh.scale = 3.0f;
 	dataMesh.showBBox = false;
 
 	m_pMesh = new StaticObject(dataMesh);

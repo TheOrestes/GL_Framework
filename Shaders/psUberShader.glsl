@@ -52,78 +52,6 @@ uniform bool bDisplacementTexture;
 uniform bool bLightMapTexture;
 uniform bool bReflectionTexture;
 
-//---------------------------------------------------------------------------------------
-// Cook Torrance Specular
-//---------------------------------------------------------------------------------------
-vec4 CookTorranceBRDF(vec3 normal, vec3 camLook, vec3 lightDir, vec3 half)
-{
-	float roughness = material.Roughness;
-
-	float NdotL = clamp(dot(normal, lightDir), 0, 1);
-	float NdotH = clamp(dot(normal, half), 0, 1);
-	float NdotV = clamp(dot(normal, camLook), 0, 1);
-	float VdotH = clamp(dot(camLook, half), 0, 1);
-	float r_sq = roughness * roughness;
-
-	// Microfacet distribution function
-	//-------------------------------
-	float nh = length(normal) * length(half);
-	float beta = acos(NdotH / nh);
-	float Nr = exp(-pow((tan(beta) / roughness), 2));
-	float Dr = 4 * r_sq * pow(cos(beta), 4);
-	float D = Nr / Dr;
-
-	// Evaluate the geometric term
-	//-------------------------------
-	float geo_numerator = 2 * NdotH;
-	float geo_denominator = VdotH;
-
-	float geo_b = (geo_numerator * NdotV ) / geo_denominator;
-    float geo_c = (geo_numerator * NdotL ) / geo_denominator;
-    float geo   = min( 1.0f, min( geo_b, geo_c ) );
-
-
-	// Now evaluate the roughness term
-    // -------------------------------
-	/*float roughness_a = 1.0f / ( 4.0f * r_sq * pow( NdotH, 4 ) );
-    float roughness_b = NdotH * NdotH - 1.0f;
-    float roughness_c = r_sq * NdotH * NdotH;
- 
-    float roughness_value = roughness_a * exp( roughness_b / roughness_c );*/
-
-	// Next evaluate the Fresnel value
-	// http://filmicgames.com/archives/557
-    // -------------------------------
-    float base = 1 - VdotH;
-	float exponential = pow( base, 5.0);
-	// Natty Hoffman : SIGGRAPH 2010 ( Physically based shading ) 
-	// F0 depends on material we are planning to use
-	// Material				F(0◦) (Linear)		F(0◦) (sRGB) 
-	// Water				0.02,0.02,0.02		0.15,0.15,0.15
-	// Plastic / Glass(Low)	0.03,0.03,0.03		0.21,0.21,0.21
-	// Plastic High			0.05,0.05,0.05		0.24,0.24,0.24
-	// Glass (High)/Ruby	0.08,0.08,0.08		0.31,0.31,0.31
-	// Diamond				0.17,0.17,0.17		0.45,0.45,0.45
-	// Iron					0.56,0.57,0.58		0.77,0.78,0.78
-	// Copper				0.95,0.64,0.54		0.98,0.82,0.76
-	// Gold					1.00,0.71,0.29		1.00,0.86,0.57
-	// Aluminum				0.91,0.92,0.92		0.96,0.96,0.97
-	// Silver				0.95,0.93,0.88		0.98,0.97,0.95
-	vec3 F0 = vec3(0.03, 0.03, 0.03);
-	vec3 FSchlick = F0 + exponential * (1-F0); 
-	
-	// Put all the terms together to compute
-    // the specular term in the equation
-    // -------------------------------------
-	vec3 Rs_Nr = FSchlick * geo * D;
-    vec3  Rs_numerator    = Rs_Nr;
-    float Rs_denominator  = NdotV * NdotL;
-    vec3  Rs              = Rs_numerator / Rs_denominator;
-
-	vec4 finalSpec = vec4(Rs, 1.0f);
-
-	return finalSpec;
-}
 
 vec2 RadialCoords(vec3 a_coords)
 {
@@ -191,7 +119,8 @@ void main()
 	albedoColor.a = ao;								// ambient occlusion data
 	cubemapColor.rgb = reflectionColor.rgb;			// reflection data
 	cubemapColor.a = reflectionColor.a;				// roughness data
-	emissiveColor = Emissive;						// Emissive color
+	emissiveColor.rgb = Emissive.rgb;				// Emissive color
+	emissiveColor.a  = material.Metallic;			// Metallic data
 
 
 	// = Emissive * Diffuse + 0.35*reflectionColor; 

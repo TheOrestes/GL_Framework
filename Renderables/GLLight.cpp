@@ -39,17 +39,17 @@ GLLight::GLLight()
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
-GLLight::GLLight(const glm::vec4& color)
+GLLight::GLLight(const glm::vec3& color)
 {
 	// Vertex Data
-	vertices[0] = VertexPC(glm::vec3(-1,-1,1), color);
-	vertices[1] = VertexPC(glm::vec3(1,-1,1), color);
-	vertices[2] = VertexPC(glm::vec3(1,1,1), color);
-	vertices[3] = VertexPC(glm::vec3(-1,1,1), color);
-	vertices[4] = VertexPC(glm::vec3(-1,-1,-1), color);
-	vertices[5] = VertexPC(glm::vec3(1,-1,-1), color);
-	vertices[6] = VertexPC(glm::vec3(1,1,-1), color);
-	vertices[7] = VertexPC(glm::vec3(-1,1,-1), color);
+	vertices[0] = VertexPC(glm::vec3(-1,-1,1), glm::vec4(color,1));
+	vertices[1] = VertexPC(glm::vec3(1,-1,1), glm::vec4(color, 1));
+	vertices[2] = VertexPC(glm::vec3(1,1,1), glm::vec4(color, 1));
+	vertices[3] = VertexPC(glm::vec3(-1,1,1), glm::vec4(color, 1));
+	vertices[4] = VertexPC(glm::vec3(-1,-1,-1), glm::vec4(color, 1));
+	vertices[5] = VertexPC(glm::vec3(1,-1,-1), glm::vec4(color, 1));
+	vertices[6] = VertexPC(glm::vec3(1,1,-1), glm::vec4(color, 1));
+	vertices[7] = VertexPC(glm::vec3(-1,1,-1), glm::vec4(color, 1));
 
 	// Index data ( 6 faces = 12 triangles = 36 indices )
 
@@ -116,7 +116,7 @@ void GLLight::Init()
 
 	colAttrib = glGetAttribLocation(shader, "in_Color");
 	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 4, GL_FLOAT, false, sizeof(VertexPC), (void*)offsetof(VertexPC, color));
+	glVertexAttribPointer(1, 3, GL_FLOAT, false, sizeof(VertexPC), (void*)offsetof(VertexPC, color));
 
 	SetupViewProjMatrix();
 

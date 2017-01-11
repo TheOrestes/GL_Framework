@@ -141,9 +141,9 @@ void StaticObject::InitUI()
 	TwAddVarRW(m_pUIBar, "AlbdeoColor", TW_TYPE_COLOR4F, glm::value_ptr(m_pMaterial->m_colAlbedo), "label='Albdeo Color'");
 	TwAddVarRW(m_pUIBar, "EmissiveColor", TW_TYPE_COLOR4F, glm::value_ptr(m_pMaterial->m_colEmissive), "label='Emissive Color'");
 	TwAddVarRW(m_pUIBar, "Roughness", TW_TYPE_FLOAT, &(m_pMaterial->m_fRoughness), 
-						 "label='Roughness' min=0 max=1 step=0.1");
+						 "label='Roughness' min=0 max=1 step=0.01");
 	TwAddVarRW(m_pUIBar, "Metallic", TW_TYPE_FLOAT, &(m_pMaterial->m_fMetallic), 
-						 "label='Metallic' min=0 max=1 step=0.1");
+						 "label='Metallic' min=0 max=1 step=0.01");
 
 	TwAddButton(m_pUIBar, "AlbedoTexture", UpdateTexture, &(m_pMaterial->m_pTexAlbedo), "label='Albedo Texture'");
 	TwAddButton(m_pUIBar, "EmissionTexture", UpdateTexture, &(m_pMaterial->m_pTexEmission), "label='Emission Texture'");

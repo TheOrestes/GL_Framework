@@ -9,7 +9,7 @@ class GLLight
 {
 public:
 	GLLight();
-	GLLight(const glm::vec4& color);
+	GLLight(const glm::vec3& color);
 
 	virtual ~GLLight();
 

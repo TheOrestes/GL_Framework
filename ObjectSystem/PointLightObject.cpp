@@ -18,7 +18,7 @@ PointLightObject::PointLightObject(const glm::vec4& color)
 {
 	m_vecLightPosition = GameObject::m_vecPosition;
 	m_vecLightColor = color;
-	m_fIntensity = 1.0f;
+	//m_fIntensity = 1.0f;
 	m_fRadius = 10.0f;
 
 	m_pLightMesh = nullptr;
@@ -63,7 +63,7 @@ void PointLightObject::SetLightPosition(const glm::vec3& pos)
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////
-void PointLightObject::SetLightColor(const glm::vec4& col)
+void PointLightObject::SetLightColor(const glm::vec3& col)
 { 
 	m_vecLightColor = col; 
 
