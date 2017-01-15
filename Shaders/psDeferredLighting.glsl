@@ -13,8 +13,9 @@ layout (location = 1) out vec4 brightColor;
 uniform sampler2D positionBuffer;
 uniform sampler2D normalBuffer;
 uniform sampler2D albedoBuffer;
-uniform sampler2D cubemapBuffer;
+uniform sampler2D reflectionBuffer;
 uniform sampler2D emissiveBuffer;
+uniform sampler2D backgroundBuffer;
 uniform float bloomThreshold;
 
 //---------------------------------------------------------------------------------------
@@ -54,7 +55,7 @@ uniform vec3 camPosition;
 //---------------------------------------------------------------------------------------
 vec4 BlinnBRDF(vec3 normal, vec3 half, float roughness)
 {
-	float NdotH = max(dot(normal, half), 0);
+	float NdotH = clamp(dot(normal, half), 0, 1);
 	float specular = pow(NdotH, 1/roughness);
 
 	//float specular = pow(NdotH, 64);
@@ -106,21 +107,23 @@ void main()
 	vec4 Albedo = vec4(0);
 	vec4 Ambient = vec4(0);
 	vec4 Reflection = vec4(0);
+	vec4 Background = vec4(0);
 	vec4 Emissive = vec4(0);
 
 	// Input from G-Buffers
-	vec3 positionColor = texture(positionBuffer, vs_outTexCoord).rgb;
+	vec4 positionColor = texture(positionBuffer, vs_outTexCoord);
 	vec4 normalColor = texture(normalBuffer, vs_outTexCoord);
 	vec4 albedoColor = texture(albedoBuffer, vs_outTexCoord);
-	vec4 cubemapColor = texture(cubemapBuffer, vs_outTexCoord);
+	vec4 reflectionColor = texture(reflectionBuffer, vs_outTexCoord);
 	vec4 emissiveColor = texture(emissiveBuffer, vs_outTexCoord);
+	vec4 backgroundColor = texture(backgroundBuffer, vs_outTexCoord);
 	float ao = albedoColor.a; 
 	float specColor = normalColor.a;
 
 	vec3 N = normalize(normalColor.xyz);
-	vec3 V = normalize(camPosition - positionColor);
+	vec3 V = normalize(camPosition - positionColor.rgb);
 
-	float roughness = cubemapColor.a;
+	float roughness = reflectionColor.a;
 	float metallic = emissiveColor.a;
 	float r_sq = roughness * roughness;
 
@@ -134,6 +137,14 @@ void main()
 	vec3 Kd = vec3(1.0) - Ks;
 	Kd *= 1.0 - metallic;
 
+	// Albedo
+	Albedo			= albedoColor;//vec4(0.0, 0, 0.6, 1.0); 
+
+	if(ao > 0)
+		Ambient			= Albedo * vec4(vec3(ao),1);
+	else
+		Ambient			= Albedo;
+
 	// ------------------------ Directional Illuminance -------------------
 	vec3 LoDir = vec3(0);
 
@@ -144,13 +155,13 @@ void main()
 		vec3 halfDir = normalize(lightDir + V);
 
 		// diffuse
-		float NdotLDir = max(dot(N, lightDir), 0);
+		float NdotLDir = clamp(dot(N, lightDir), 0, 1);
 
 		// cook torrance brdf
 		float D = D_GGX_TR(N, halfDir, r_sq);
 		float G = GeometrySmith(N, V, lightDir, roughness);
 		vec3 nominator = D * G * F;
-		float denominator = 4 * NdotV * NdotLDir + 0.001;
+		float denominator = 4 * NdotV * NdotLDir;
 		vec3 brdfDir = nominator / denominator;		
 
 		LoDir += (Kd * albedoColor.rgb / PI + brdfDir) * radianceDir * NdotLDir;
@@ -161,14 +172,14 @@ void main()
 
 	for(int i = 0 ; i < numPointLights ; ++i)
 	{
-		vec3 direction = normalize(positionColor - pointLights[i].position);
+		vec3 direction = -normalize(positionColor.rgb - pointLights[i].position);
 		vec3 halfPoint = normalize(direction + V);
 		float dist = length(direction);
 		float atten = 1.0 / (dist*dist);
 		vec3 radiancePoint = pointLights[i].color * pointLights[i].intensity * atten;
 
 		// diffuse
-		float NdotLPoint = max(dot(normalColor.xyz, direction), 0);
+		float NdotLPoint = clamp(dot(N, direction), 0, 1);
 		
 		// cook torrance brdf
 		float D = D_GGX_TR(N, halfPoint, r_sq);
@@ -182,20 +193,13 @@ void main()
 
 	vec3 Lo = LoDir + LoPoint;
 
-	// Final Color components...
-	Albedo			= albedoColor;//vec4(0.0, 0, 0.6, 1.0); 
-
-	if(ao > 0)
-		Ambient			= Albedo * vec4(vec3(ao),1);
-	else
-		Ambient			= Albedo;
-
 	//vec4 Color = Ambient + vec4(Lo,1);
 
-	Reflection		= cubemapColor;
+	Reflection		= reflectionColor;
 	Emissive		= emissiveColor;
+	Background 		= backgroundColor;
 	
-	screenColor = Ambient * (vec4(LoDir,1) + vec4(LoPoint,1)); //Emissive + Ambient;// * (vec4(LoDir,1) + vec4(LoPoint,1));
+	screenColor = Emissive + Ambient * (vec4(Lo,1));
 
 	// calculate additional brightness from overall scene...
 	float brightness = dot(screenColor.rgb, vec3(0.2126f, 0.7152f, 0.0722f));

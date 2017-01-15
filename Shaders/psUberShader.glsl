@@ -12,8 +12,9 @@ in vec3		vs_outPosition;
 layout (location = 0) out vec4 positionColor;
 layout (location = 1) out vec4 normalColor;
 layout (location = 2) out vec4 albedoColor; 
-layout (location = 3) out vec4 cubemapColor;
+layout (location = 3) out vec4 reflectionColor;
 layout (location = 4) out vec4 emissiveColor;
+layout (location = 5) out vec4 backgroundColor;
 
 //---------------------------------------------------------------------------------------
 // Material Properties
@@ -70,6 +71,8 @@ void main()
 	vec4 Specular;
 	vec4 Emissive;
 	vec4 Normal;
+	vec4 Reflection;
+	vec4 Background;
 	float ao;
 
 	// BaseMap color aka Albedo
@@ -106,8 +109,8 @@ void main()
 	// calculate reflection vector for environment mapping..
 	vec3 R = reflect(view, normalize(vs_outNormal));
 	vec2 equiUV = -RadialCoords(R);
-	vec4 reflectionColor = textureLod(texture_environment, equiUV, material.Roughness * 10.0f);
-	reflectionColor.a = material.Roughness;
+	Reflection = textureLod(texture_environment, equiUV, material.Roughness * 10.0f);
+	Reflection.a = material.Roughness;
 
 	//vec4 ambientColor = vec4(textureLod(texture_cubeMap, vs_outNormal, 7)); 
 
@@ -117,8 +120,8 @@ void main()
 	normalColor.a = Specular.r;						// specular data
 	albedoColor.rgb = Albedo.rgb;					// albedo color
 	albedoColor.a = ao;								// ambient occlusion data
-	cubemapColor.rgb = reflectionColor.rgb;			// reflection data
-	cubemapColor.a = reflectionColor.a;				// roughness data
+	reflectionColor.rgb = Reflection.rgb;			// Reflection data
+	reflectionColor.a = material.Roughness;			// Roughness data
 	emissiveColor.rgb = Emissive.rgb;				// Emissive color
 	emissiveColor.a  = material.Metallic;			// Metallic data
 

@@ -56,8 +56,9 @@ void Framebuffer::GeometryPassFrameBufferSetup()
 	// 0. Position buffer
 	// 1. Normal buffer
 	// 2. Albedo color buffer
-	// 3. Cubemap buffer
+	// 3. Reflection buffer
 	// 4. Emissive buffer
+	// 5. Background buffer
 	glGenTextures(MAX_NUM_BUFFER, tbo);
 	for (int i = 0; i < MAX_NUM_BUFFER; i++)
 	{
@@ -87,7 +88,7 @@ void Framebuffer::GeometryPassFrameBufferSetup()
 	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo);
 
 	// Tell OGL which color attachments we will use...
-	GLuint attachments[MAX_NUM_BUFFER] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3, GL_COLOR_ATTACHMENT4 };
+	GLuint attachments[MAX_NUM_BUFFER] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3, GL_COLOR_ATTACHMENT4, GL_COLOR_ATTACHMENT5 };
 	glDrawBuffers(MAX_NUM_BUFFER, attachments);
 
 	// Finally, check if framebuffer is complete
@@ -362,18 +363,20 @@ void Framebuffer::SetShaderVariables( int shaderID )
 	glm::vec3 CamPosition = Camera::getInstance().getCameraPosition();
 	glUniform3fv(glGetUniformLocation(shaderID, "camPosition"), 1, glm::value_ptr(CamPosition));
 
-	GLint hAlbedoTex = glGetUniformLocation(shaderID, "albedoBuffer");
 	GLint hPositionTex = glGetUniformLocation(shaderID, "positionBuffer");
 	GLint hNormalTex = glGetUniformLocation(shaderID, "normalBuffer");
-	GLint hCubemapTex = glGetUniformLocation(shaderID, "cubemapBuffer");
+	GLint hAlbedoTex = glGetUniformLocation(shaderID, "albedoBuffer");
+	GLint hReflectionTex = glGetUniformLocation(shaderID, "reflectionBuffer");
 	GLint hEmissiveTex = glGetUniformLocation(shaderID, "emissiveBuffer");
+	GLint hBackgroundTex = glGetUniformLocation(shaderID, "backgroundBuffer");
 	GLint hBloomThreshold = glGetUniformLocation(shaderID, "bloomThreshold");
 
 	glUniform1i(hPositionTex, 0);
 	glUniform1i(hNormalTex, 1);
 	glUniform1i(hAlbedoTex, 2);
-	glUniform1i(hCubemapTex, 3);
+	glUniform1i(hReflectionTex, 3);
 	glUniform1i(hEmissiveTex, 4);
+	glUniform1i(hBackgroundTex, 5);
 	glUniform1f(hBloomThreshold, m_pFXData->m_fBloomThreshold);
 
 	// Set Directional light related shader variables...
