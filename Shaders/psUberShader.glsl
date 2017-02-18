@@ -5,9 +5,8 @@
 
 in vec2		vs_outTex;
 in vec3		vs_outNormal;
-in vec3		vs_outTangent;
-in vec3		vs_outBinormal;
 in vec3		vs_outPosition;
+in mat3		vs_outTBN;
 
 layout (location = 0) out vec4 positionColor;
 layout (location = 1) out vec4 normalColor;
@@ -67,13 +66,13 @@ vec2 RadialCoords(vec3 a_coords)
 void main()
 {
 	// Final contributors...
-	vec4 Albedo;
-	vec4 Specular;
-	vec4 Emissive;
-	vec4 Normal;
-	vec4 Reflection;
-	vec4 Background;
-	float ao;
+	vec4 Albedo = vec4(0);
+	vec4 Specular = vec4(0);
+	vec4 Emissive = vec4(0);
+	vec4 Normal = vec4(0);
+	vec4 Reflection = vec4(0);
+	vec4 Background = vec4(0);
+	float ao = 0.0f;
 
 	// BaseMap color aka Albedo
 	if(bDiffuseTexture)
@@ -99,7 +98,10 @@ void main()
 
 	// Normal map
 	if(bNormalMapTexture)
-		Normal = texture(texture_normal, vs_outTex) * 2.0 - 1.0f;
+	{
+		vec3 tempNormal = normalize(texture(texture_normal, vs_outTex).rgb * 2.0 - 1.0f);
+		Normal.xyz = normalize(vs_outTBN * tempNormal);
+	}
 	else
 		Normal.xyz = normalize(vs_outNormal);
 

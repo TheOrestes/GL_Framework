@@ -79,7 +79,9 @@ float D_GGX_TR(vec3 N, vec3 H, float r_sq)
 
 float GeometrySchlickGGX(float NdotV, float k)
 {
-	return (NdotV /  (NdotV)*(1-k) + k);
+	float Nr = NdotV;
+	float Dr = NdotV * (1.0-k) + k;
+	return (Nr/Dr);
 }
 
 float GeometrySmith(vec3 N, vec3 V, vec3 L, float k)
@@ -129,13 +131,7 @@ void main()
 
 	float NdotV = clamp(dot(N, V), 0, 1);
 
-	// Fresnel 
-	vec3 F0 = vec3(0.03, 0.03, 0.03);
-	F0 = mix(F0, albedoColor.rgb, metallic);
-	vec3 F = fresnelSchlick(NdotV, F0, roughness);
-	vec3 Ks = F;
-	vec3 Kd = vec3(1.0) - Ks;
-	Kd *= 1.0 - metallic;
+	
 
 	// Albedo
 	Albedo			= albedoColor;//vec4(0.0, 0, 0.6, 1.0); 
@@ -157,11 +153,22 @@ void main()
 		// diffuse
 		float NdotLDir = clamp(dot(N, lightDir), 0, 1);
 
+		float NdotH = clamp(dot(N, halfDir), 0, 1);
+
 		// cook torrance brdf
 		float D = D_GGX_TR(N, halfDir, r_sq);
 		float G = GeometrySmith(N, V, lightDir, roughness);
+
+		// Fresnel 
+		vec3 F0 = vec3(0.03, 0.03, 0.03);
+		F0 = mix(F0, albedoColor.rgb, metallic);
+		vec3 F = fresnelSchlick(NdotH, F0, roughness);
+		vec3 Ks = F;
+		vec3 Kd = vec3(1.0) - Ks;
+		Kd *= 1.0 - metallic;
+
 		vec3 nominator = D * G * F;
-		float denominator = 4 * NdotV * NdotLDir;
+		float denominator = 4 * NdotV * NdotLDir + 0.001;
 		vec3 brdfDir = nominator / denominator;		
 
 		LoDir += (Kd * albedoColor.rgb / PI + brdfDir) * radianceDir * NdotLDir;
@@ -180,10 +187,21 @@ void main()
 
 		// diffuse
 		float NdotLPoint = clamp(dot(N, direction), 0, 1);
+
+		float NdotH = clamp(dot(N, halfPoint), 0, 1);
 		
 		// cook torrance brdf
 		float D = D_GGX_TR(N, halfPoint, r_sq);
 		float G = GeometrySmith(N, V, direction, roughness);
+
+		// Fresnel 
+		vec3 F0 = vec3(0.03, 0.03, 0.03);
+		F0 = mix(F0, albedoColor.rgb, metallic);
+		vec3 F = fresnelSchlick(NdotH, F0, roughness);
+		vec3 Ks = F;
+		vec3 Kd = vec3(1.0) - Ks;
+		Kd *= 1.0 - metallic;
+
 		vec3 nominator = D * G * F;
 		float denominator = 4 * NdotV * NdotLPoint + 0.001;
 		vec3 brdfPoint = nominator / denominator;	

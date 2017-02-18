@@ -161,7 +161,7 @@ void	Mesh::Render(GLSLShader* shader, const glm::mat4& world, Material* mat)
 		mat->m_pTexNormal.setID(TextureManager::getInstannce().LoadTextureFromFile(mat->m_pTexNormal.getPath()));
 		mat->m_pTexNormal.changed = false;
 
-		glUniform1i(glGetUniformLocation(shaderID, "bNormalMapTexture"), bHeightMapTexture);
+		glUniform1i(glGetUniformLocation(shaderID, "bNormalMapTexture"), bNormalMapTexture);
 		glUniform1i(glGetUniformLocation(shaderID, "texture_normal"), 3);
 	}
 

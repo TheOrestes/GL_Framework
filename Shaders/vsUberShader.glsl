@@ -9,9 +9,8 @@ layout(location=4) in vec2 in_Tex;
 
 out vec2			vs_outTex;
 out vec3			vs_outNormal;
-out vec3			vs_outTangent;
-out vec3			vs_outBinormal;
 out vec3			vs_outPosition;
+out mat3			vs_outTBN;
 
 // uniforms...
 uniform mat4		matWorld;
@@ -33,8 +32,10 @@ void main()
 	vs_outNormal = (matWorld * vec4(in_Normal, 0)).xyz;
 
 	// output rest of the stuff for future use..
-	vs_outTangent = in_Tangent;
-	vs_outBinormal = in_Binormal;
+	vec3 T = normalize(vec3(matWorld * vec4(in_Tangent, 0)));
+	vec3 B = normalize(vec3(matWorld * vec4(in_Binormal, 0)));
+	vec3 N = normalize(vec3(matWorld * vec4(in_Normal, 0)));
+	vs_outTBN = mat3(T,B,N);
 
 	vs_outTex = in_Tex;
 }
