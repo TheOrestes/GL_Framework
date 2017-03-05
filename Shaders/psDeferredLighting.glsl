@@ -74,14 +74,14 @@ float D_GGX_TR(vec3 N, vec3 H, float r_sq)
 	float denom = ((NdotH_sq) * (r_sq-1) + 1);
 	denom = denom * denom * PI;
 
-	return (r_sq / denom);
+	return (r_sq / (denom));
 }
 
 float GeometrySchlickGGX(float NdotV, float k)
 {
 	float Nr = NdotV;
-	float Dr = NdotV * (1.0-k) + k;
-	return (Nr/Dr);
+	float Dr = (NdotV * (1.0-k)) + k;
+	return (Nr/(Dr+0.001));
 }
 
 float GeometrySmith(vec3 N, vec3 V, vec3 L, float k)
@@ -218,6 +218,7 @@ void main()
 	Background 		= backgroundColor;
 	
 	screenColor = Emissive + Ambient * (vec4(Lo,1));
+	//screenColor = albedoColor + Background;
 
 	// calculate additional brightness from overall scene...
 	float brightness = dot(screenColor.rgb, vec3(0.2126f, 0.7152f, 0.0722f));

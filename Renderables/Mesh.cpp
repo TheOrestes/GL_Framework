@@ -190,7 +190,7 @@ void	Mesh::Render(GLSLShader* shader, const glm::mat4& world, Material* mat)
 	}
 
 	// Get active Skybox
-	glUniform1i(glGetUniformLocation(shaderID, "texture_environment"), 6);
+	//glUniform1i(glGetUniformLocation(shaderID, "texture_environment"), 6);
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, mat->m_pTexAlbedo.getID());
@@ -211,8 +211,8 @@ void	Mesh::Render(GLSLShader* shader, const glm::mat4& world, Material* mat)
 	glBindTexture(GL_TEXTURE_2D, mat->m_pTexSpecular.getID());
 
 	// Set active skybox texture
-	glActiveTexture(GL_TEXTURE6);
-	glBindTexture(GL_TEXTURE_2D, GLSkybox::getInstance().GetEnvironmentMapID());
+	//glActiveTexture(GL_TEXTURE6);
+	//glBindTexture(GL_TEXTURE_2D, GLSkybox::getInstance().GetEnvironmentMapID());
 
 	/*GLuint i = 0;
 	for ( ; i < m_textures.size() ; i++)
@@ -304,7 +304,7 @@ void	Mesh::Render(GLSLShader* shader, const glm::mat4& world, Material* mat)
 
 	// Draw mesh
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); 
-	glEnable(GL_DEPTH_TEST);
+	//glEnable(GL_DEPTH_TEST);
 
 	// Set all Shader variables...
 	SetShaderVariables(shaderID, world, mat);

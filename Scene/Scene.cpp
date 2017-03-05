@@ -92,8 +92,8 @@ void	Scene::Update(float dt)
 void	Scene::Render()
 {
 	//m_pOmni1->Render();
-	GLSkybox::getInstance().Render();
 	m_pMesh->Render();
+	GLSkybox::getInstance().Render();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////

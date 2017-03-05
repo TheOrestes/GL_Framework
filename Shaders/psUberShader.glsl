@@ -13,7 +13,6 @@ layout (location = 1) out vec4 normalColor;
 layout (location = 2) out vec4 albedoColor; 
 layout (location = 3) out vec4 reflectionColor;
 layout (location = 4) out vec4 emissiveColor;
-layout (location = 5) out vec4 backgroundColor;
 
 //---------------------------------------------------------------------------------------
 // Material Properties
@@ -37,7 +36,7 @@ uniform sampler2D	texture_normal;
 uniform sampler2D   texture_ambient;
 uniform sampler2D	texture_emissive;	
 uniform sampler2D	texture_height;
-uniform sampler2D	texture_environment;   
+//uniform sampler2D	texture_environment;   
 
 uniform vec3 camPosition;
 
@@ -50,7 +49,7 @@ uniform bool bAmbientOccTexture;
 uniform bool bShininessTexture;
 uniform bool bDisplacementTexture;
 uniform bool bLightMapTexture;
-uniform bool bReflectionTexture;
+//uniform bool bReflectionTexture;
 
 
 vec2 RadialCoords(vec3 a_coords)
@@ -71,7 +70,7 @@ void main()
 	vec4 Emissive = vec4(0);
 	vec4 Normal = vec4(0);
 	vec4 Reflection = vec4(0);
-	vec4 Background = vec4(0);
+	//vec4 Background = vec4(0);
 	float ao = 0.0f;
 
 	// BaseMap color aka Albedo
@@ -108,11 +107,13 @@ void main()
 	// View vector
 	vec3 view = normalize(camPosition - vs_outPosition);
 
+	// Background color
+	//Background = texture(texture_environment, vs_outTex);
 	// calculate reflection vector for environment mapping..
-	vec3 R = reflect(view, normalize(vs_outNormal));
-	vec2 equiUV = -RadialCoords(R);
-	Reflection = textureLod(texture_environment, equiUV, material.Roughness * 10.0f);
-	Reflection.a = material.Roughness;
+	//vec3 R = reflect(view, normalize(vs_outNormal));
+	//vec2 equiUV = -RadialCoords(R);
+	//Reflection = textureLod(texture_environment, equiUV, material.Roughness * 10.0f);
+	//Reflection.a = material.Roughness;
 
 	//vec4 ambientColor = vec4(textureLod(texture_cubeMap, vs_outNormal, 7)); 
 
@@ -122,11 +123,11 @@ void main()
 	normalColor.a = Specular.r;						// specular data
 	albedoColor.rgb = Albedo.rgb;					// albedo color
 	albedoColor.a = ao;								// ambient occlusion data
-	reflectionColor.rgb = Reflection.rgb;			// Reflection data
+	//reflectionColor.rgb = Reflection.rgb;			// Reflection data
 	reflectionColor.a = material.Roughness;			// Roughness data
 	emissiveColor.rgb = Emissive.rgb;				// Emissive color
 	emissiveColor.a  = material.Metallic;			// Metallic data
-
+	//backgroundColor = Background;
 
 	// = Emissive * Diffuse + 0.35*reflectionColor; 
 
@@ -137,11 +138,11 @@ void main()
 		brightColor = vec4(outColor.rgb, 1.0f);*/
 	
 	// linear depth
-	/*float near = 0.1f;
-	float far = 10.0f;
+	// float near = 0.1f;
+	// float far = 1000.0f;
+	// 
+	// float z = gl_FragCoord.z * 2 - 1;
+	// float depth = (2 * near) / (far + near - z * (far-near));
 
-	float z = gl_FragCoord.z * 2 - 1;
-	float depth = (2 * near) / (far + near - z * (far-near));
-
-	outColor = vec4(vec3(1- depth), 1);*/
+	//outColor = vec4(vec3(1- depth), 1);
 }

@@ -4,15 +4,17 @@
 //in vec4 vs_outPosition;
 in vec2 vs_outTex;
 
+out vec4 outColor;
+
 //layout (location = 0) out vec4 positionColor;
-layout (location = 5) out vec4 backgroundColor;
+//layout (location = 5) out vec4 backgroundColor;
 
 uniform sampler2D texture_hdri;
 
 void main()
 {
 	//positionColor = vs_outPosition;
-	backgroundColor = texture(texture_hdri, vs_outTex);
+	outColor = texture(texture_hdri, vs_outTex);
 
 	// check whether fragment color is more than the threshold brightness value
 	// we calculate first grayscale equivalent...
